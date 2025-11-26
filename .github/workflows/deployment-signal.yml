@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: true
-          
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -30,27 +30,34 @@ jobs:
       - name: Generate deployment signal JSON
         run: |
           python scripts/fetch_and_compute.py
+          echo "=== Workspace contents after script ==="
+          ls -R .
+
+      - name: Debug git state
+        run: |
+          echo "=== Git status ==="
+          git status
+          echo "=== data/ directory listing ==="
+          ls -R data || echo "data directory not found"
 
       - name: Commit and push updated signal
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # If the file doesn't exist, nothing to do
+          echo "Checking for generated JSON..."
           if [ ! -f data/today_signal.json ]; then
             echo "today_signal.json not found, skipping commit."
             exit 0
           fi
 
-          # Check if there are changes to the JSON file
-          if git diff --quiet data/today_signal.json; then
-            echo "No changes in today_signal.json, skipping commit."
-            exit 0
-          fi
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
+          echo "Staging JSON file..."
           git add data/today_signal.json
-          git commit -m "Update deployment signal [skip ci]"
-          git push
 
+          echo "Attempting commit..."
+          git commit -m "Update deployment signal [skip ci]" || echo "No changes to commit"
+
+          echo "Pushing to main..."
+          git push origin HEAD:main || echo "Push failed or nothing to push"
