@@ -344,4 +344,84 @@ def compute_precomputed_signal(
     elif not early_breakout_flag and atr_trend == "falling":
         target = "3%"
         confidence = "medium"
-        notes = "ATR trend is falling with n
+        notes = "ATR trend is falling with no breakout; range contraction may favour moderate deployments."
+    else:
+        target = "2%"
+        confidence = "medium"
+        notes = "Mixed conditions; standard deployment target."
+
+    return {
+        "suggested_target": target,
+        "confidence": confidence,
+        "notes": notes,
+    }
+
+
+def main():
+    # Fetch candles from KuCoin
+    eth_usdt_candles = fetch_klines("ETH-USDT")
+    eth_btc_candles = fetch_klines("ETH-BTC")
+
+    # 24h stats (including open/close)
+    eth_usdt_stats = compute_24h_stats(eth_usdt_candles)
+    eth_btc_stats = compute_24h_stats(eth_btc_candles)
+
+    # Yesterday's range (ETH/USDT)
+    yesterday_range = compute_yesterday_range(eth_usdt_candles)
+
+    # Today's first 4h range (ETH/USDT)
+    today_first_4h = compute_today_first_4h_range(eth_usdt_candles, hours_window=4)
+
+    # ATR + trend on ETH/USDT
+    atr_value, atr_trend = compute_atr_and_trend(eth_usdt_candles, period=14)
+
+    # Early breakout detection on ETH/USDT
+    early_breakout_flag, early_breakout_desc = compute_early_breakout(
+        eth_usdt_candles, hours_window=4
+    )
+
+    # Intraday momentum on ETH/USDT
+    intraday_momentum = compute_intraday_momentum(eth_usdt_candles, atr_value)
+
+    # Precomputed signal (uses gap, ATR, breakout, momentum)
+    pre_signal = compute_precomputed_signal(
+        eth_usdt_stats,
+        atr_value,
+        atr_trend,
+        early_breakout_flag,
+        intraday_momentum,
+    )
+
+    today_str = datetime.now(LOCAL_TZ).date().isoformat()
+
+    payload = {
+        "date": today_str,
+        "timezone": "Africa/Johannesburg",
+        "eth_usdt": eth_usdt_stats,
+        "eth_btc": eth_btc_stats,
+        "yesterday": yesterday_range,
+        "today_first_4h": today_first_4h,
+        "atr_1h": {
+            "value": atr_value,
+            "periods": 14,
+            "trend": atr_trend,
+        },
+        "intraday_momentum": intraday_momentum,
+        "early_breakout": {
+            "occurred": early_breakout_flag,
+            "description": early_breakout_desc,
+        },
+        "precomputed_signal": pre_signal,
+    }
+
+    os.makedirs("data", exist_ok=True)
+    out_path = os.path.join("data", "today_signal.json")
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+
+    print(f"Wrote {out_path}")
+    print(json.dumps(payload, indent=2))
+
+
+if __name__ == "__main__":
+    main()
