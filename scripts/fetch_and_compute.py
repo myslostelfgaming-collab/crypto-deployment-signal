@@ -13,36 +13,56 @@ except ImportError:
     # Fallback if you ever run this manually on an older Python
     from backports.zoneinfo import ZoneInfo  # type: ignore
 
-BINANCE_URL = "https://api.binance.com/api/v3/klines"
+# KuCoin public spot candles endpoint (no API key required)
+KUCOIN_URL = "https://api.kucoin.com/api/v1/market/candles"
 LOCAL_TZ = ZoneInfo("Africa/Johannesburg")
 
 
-def fetch_klines(symbol: str, interval: str = "1h", limit: int = 48):
+def fetch_klines(symbol: str, interval: str = "1hour", limit: int = 48):
     """
-    Fetch OHLCV candles from Binance for the given symbol.
+    Fetch OHLCV candles from KuCoin for the given symbol.
 
-    Returns a list of dicts with:
-      - open_time (datetime, local)
-      - open, high, low, close, volume (floats)
+    KuCoin response format (each entry):
+      [
+        "1545904980",  # Start time (unix seconds)
+        "0.058",       # Open
+        "0.049",       # Close
+        "0.058",       # High
+        "0.049",       # Low
+        "0.018",       # Transaction amount
+        "0.000945"     # Transaction volume
+      ]
+
+    We:
+      - Convert times to Africa/Johannesburg
+      - Convert numbers to floats
+      - Sort by time ascending
+      - Return only the last `limit` candles
     """
-    params = {"symbol": symbol, "interval": interval, "limit": limit}
-    resp = requests.get(BINANCE_URL, params=params, timeout=15)
+    params = {"symbol": symbol, "type": interval}
+    resp = requests.get(KUCOIN_URL, params=params, timeout=15)
     resp.raise_for_status()
     raw = resp.json()
 
+    # KuCoin wraps data under "data"
+    data = raw.get("data", [])
     candles = []
-    for entry in raw:
-        # Binance kline format:
-        # 0 open time (ms), 1 open, 2 high, 3 low, 4 close, 5 volume, ...
-        open_time_ms = entry[0]
-        open_price = float(entry[1])
-        high = float(entry[2])
-        low = float(entry[3])
-        close = float(entry[4])
-        volume = float(entry[5])
+    for entry in data:
+        # Safety: skip malformed entries
+        if len(entry) < 7:
+            continue
 
-        open_dt_utc = datetime.fromtimestamp(open_time_ms / 1000, tz=timezone.utc)
+        # entry[0] is unix seconds as string
+        ts = int(entry[0])
+        open_dt_utc = datetime.fromtimestamp(ts, tz=timezone.utc)
         open_dt_local = open_dt_utc.astimezone(LOCAL_TZ)
+
+        open_price = float(entry[1])
+        close_price = float(entry[2])
+        high = float(entry[3])
+        low = float(entry[4])
+        # entry[5] amount, entry[6] volume
+        volume = float(entry[6])
 
         candles.append(
             {
@@ -50,10 +70,18 @@ def fetch_klines(symbol: str, interval: str = "1h", limit: int = 48):
                 "open": open_price,
                 "high": high,
                 "low": low,
-                "close": close,
+                "close": close_price,
                 "volume": volume,
             }
         )
+
+    # Sort by time ascending, then trim to last `limit`
+    candles.sort(key=lambda c: c["open_time"])
+    if len(candles) > limit:
+        candles = candles[-limit:]
+
+    if not candles:
+        raise ValueError(f"No candles returned for symbol {symbol}")
 
     return candles
 
@@ -188,9 +216,9 @@ def compute_precomputed_signal(eth_usdt_stats, atr_value):
 
 
 def main():
-    # Fetch candles
-    eth_usdt_candles = fetch_klines("ETHUSDT")
-    eth_btc_candles = fetch_klines("ETHBTC")
+    # Fetch candles from KuCoin
+    eth_usdt_candles = fetch_klines("ETH-USDT")
+    eth_btc_candles = fetch_klines("ETH-BTC")
 
     # 24h stats
     eth_usdt_stats = compute_24h_stats(eth_usdt_candles)
