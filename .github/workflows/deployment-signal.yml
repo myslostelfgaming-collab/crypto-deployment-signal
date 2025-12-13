@@ -2,17 +2,20 @@ name: Deployment Signal
 
 on:
   schedule:
-    # Runs hourly at minute 0 (UTC)
     - cron: "0 * * * *"
   workflow_dispatch: {}
 
-# Allow this workflow to push commits with GITHUB_TOKEN
 permissions:
   contents: write
+
+concurrency:
+  group: deployment-signal
+  cancel-in-progress: true
 
 jobs:
   build-signal:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Check out repo
@@ -25,30 +28,22 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests
+          pip install -r requirements.txt
 
       - name: Generate deployment signal JSON
         run: |
           python scripts/fetch_and_compute.py
-          echo "=== Workspace contents after script ==="
-          ls -R .
-
-      - name: Debug git state
-        run: |
-          echo "=== Git status ==="
-          git status
-          echo "=== data/ directory listing ==="
-          ls -R data || echo "data directory not found"
+          ls -R data || true
 
       - name: Commit and push updated signal
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Checking for generated JSON..."
           if [ ! -f data/today_signal.json ]; then
             echo "today_signal.json not found, skipping commit."
             exit 0
@@ -57,11 +52,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          echo "Staging JSON file..."
-          git add data/today_signal.json
+          git add data/today_signal.json requirements.txt scripts/fetch_and_compute.py
 
-          echo "Attempting commit..."
-          git commit -m "Update deployment signal [skip ci]" || echo "No changes to commit"
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
 
-          echo "Pushing to main..."
-          git push origin HEAD:main || echo "Push failed or nothing to push"
+          git commit -m "Update deployment signal [skip ci]"
+          git push origin HEAD:main
