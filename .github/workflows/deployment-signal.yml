@@ -45,6 +45,22 @@ jobs:
           python scripts/fetch_and_log_history.py
           ls -R data/history || true
 
+      - name: Update history index (CSV)
+        run: |
+          python scripts/update_history_index.py
+          ls -l data/history/index.csv || true
+
+      # Prune only once daily to reduce churn (runs at 00:00 UTC only)
+      - name: Prune old history (daily)
+        if: github.event_name == 'schedule' && github.event.schedule == '0 * * * *'
+        run: |
+          # Only prune at 00:00 UTC
+          if [ "$(date -u +%H)" = "00" ]; then
+            python scripts/prune_history.py
+          else
+            echo "Not 00:00 UTC; skipping prune."
+          fi
+
       - name: Commit and push updated signal
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -57,7 +73,14 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add data/today_signal.json data/history requirements.txt scripts/fetch_and_compute.py scripts/fetch_and_log_history.py
+          git add \
+            data/today_signal.json \
+            data/history \
+            requirements.txt \
+            scripts/fetch_and_compute.py \
+            scripts/fetch_and_log_history.py \
+            scripts/update_history_index.py \
+            scripts/prune_history.py
 
           git diff --cached --quiet && echo "No changes to commit" && exit 0
 
