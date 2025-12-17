@@ -61,6 +61,14 @@ jobs:
           ls -l data/history/index.csv || true
 
       # -----------------------------
+      # Labels (API-free stitch)
+      # -----------------------------
+      - name: Build labels (API-free stitch)
+        run: |
+          python scripts/build_labels_v1.py || true
+          ls -R data/labels || true
+
+      # -----------------------------
       # Repo hygiene (daily prune)
       # -----------------------------
       - name: Prune old history (daily, 00:00 UTC only)
@@ -97,10 +105,12 @@ jobs:
           git add \
             data/today_signal.json \
             data/history \
+            data/labels \
             requirements.txt \
             scripts/fetch_and_compute.py \
             scripts/fetch_and_log_history.py \
             scripts/update_history_index.py \
+            scripts/build_labels_v1.py \
             scripts/prune_history.py \
             scripts/health_check.py
 
