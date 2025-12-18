@@ -74,7 +74,9 @@ jobs:
       - name: Validate labels (report only)
         run: |
           python scripts/validate_labels_v1.py || true
-
+     - name: Debug label state (temporary)
+       run: |
+         python scripts/debug_labels_state.py || true
       # -----------------------------
       # Repo hygiene (daily prune)
       # -----------------------------
