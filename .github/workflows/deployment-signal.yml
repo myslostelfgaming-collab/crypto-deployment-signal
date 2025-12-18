@@ -69,6 +69,13 @@ jobs:
           ls -R data/labels || true
 
       # -----------------------------
+      # Validate labels (REPORT ONLY)
+      # -----------------------------
+      - name: Validate labels (report only)
+        run: |
+          python scripts/validate_labels_v1.py || true
+
+      # -----------------------------
       # Repo hygiene (daily prune)
       # -----------------------------
       - name: Prune old history (daily, 00:00 UTC only)
@@ -111,6 +118,7 @@ jobs:
             scripts/fetch_and_log_history.py \
             scripts/update_history_index.py \
             scripts/build_labels_v1.py \
+            scripts/validate_labels_v1.py \
             scripts/prune_history.py \
             scripts/health_check.py
 
