@@ -16,7 +16,6 @@ HORIZONS = [12, 24, 36, 48, 60, 72, 84, 96]
 # Confirmed thresholds (%)
 THRESHOLDS = [0.5, 1.0, 2.0, 3.0, 5.0]
 
-
 # Candle compact format in history snapshots:
 # [ts_utc, open, high, low, close, volume]
 Candle = List[float]
@@ -92,39 +91,31 @@ def build_master_candle_map(history_paths: List[str]) -> Dict[int, Candle]:
 
 def get_entry_ts_and_close_from_snapshot(snap: dict) -> Tuple[Optional[int], Optional[float]]:
     """
-    Determine the 'decision time' candle for snapshot:
-      - Use integrity.eth_usdt.last_candle_open_time_utc if present
-      - Entry price uses eth_usdt.close (rolling 24h close)
-    We convert last_candle_open_time_utc into epoch seconds and align to candle open.
+    Robust entry alignment:
+      - Use the snapshot's own last candle timestamp as entry_ts_utc (candles[-1][0])
+      - Use the snapshot's own last candle close as entry_close (candles[-1][4])
+
+    This guarantees alignment with the master candle map (also built from c[0]).
     """
-    last_ts_str = (
-        snap.get("integrity", {})
-            .get("eth_usdt", {})
-            .get("last_candle_open_time_utc")
-    )
-    entry_close = (
-        snap.get("eth_usdt", {})
-            .get("close")
+    candles = (
+        snap.get("candles", {})
+            .get("eth_usdt_1h", [])
     )
 
-    if last_ts_str is None or entry_close is None:
+    if not candles or not isinstance(candles, list):
         return None, None
 
-    # Parse ISO string like "2025-12-14T03:00:00+00:00"
-    try:
-        # datetime.fromisoformat handles offsets
-        from datetime import datetime
-        dt = datetime.fromisoformat(last_ts_str.replace("Z", "+00:00"))
-        entry_ts = int(dt.timestamp())
-    except Exception:
+    last = candles[-1]
+    if not isinstance(last, list) or len(last) < 5:
         return None, None
 
     try:
-        entry_close_f = float(entry_close)
+        entry_ts = int(last[0])
+        entry_close = float(last[4])
     except Exception:
         return None, None
 
-    return entry_ts, entry_close_f
+    return entry_ts, entry_close
 
 
 def forward_window(master: Dict[int, Candle], entry_ts: int, hours: int) -> Optional[List[Candle]]:
@@ -164,7 +155,6 @@ def compute_time_to_hit_and_mdd(entry_close: float, fwd96: List[Candle]) -> dict
     Compute time-to-hit (earliest hour) for thresholds up to 96h,
     and max drawdown before the first hit of upside target.
     """
-    # Precompute running min low (drawdown path) and running max high (hit path)
     running_min_low = []
     cur_min = float("inf")
     for c in fwd96:
@@ -206,7 +196,6 @@ def compute_time_to_hit_and_mdd(entry_close: float, fwd96: List[Candle]) -> dict
         mdd_val = ""
         if hit_up_t != "":
             t = int(hit_up_t)
-            # max drawdown before (and including) the hit hour
             min_before = min(running_min_low[:t])
             mdd_val = str(round(pct_change(min_before, entry_close), 4))  # negative %
         out[f"mdd_before_hit_up_{thr_key}"] = mdd_val
@@ -224,7 +213,6 @@ def build_header() -> List[str]:
         "entry_close",
     ]
 
-    # Continuous labels per horizon
     for h in HORIZONS:
         fields += [
             f"max_up_pct_{h}",
@@ -233,7 +221,6 @@ def build_header() -> List[str]:
             f"range_pct_{h}",
         ]
 
-    # Time-to-hit + mdd (computed once up to 96)
     for thr in THRESHOLDS:
         k = fmt_thr(thr)
         fields.append(f"t_hit_up_{k}")
@@ -298,16 +285,14 @@ def main():
                 skipped_missing += 1
                 continue
 
-            # Continuous labels per horizon
             for h in HORIZONS:
-                fwd = fwd96[:h]  # first h hours
+                fwd = fwd96[:h]
                 cont = compute_continuous_labels(entry_close, fwd)
                 row[f"max_up_pct_{h}"] = str(cont["max_up_pct"])
                 row[f"max_down_pct_{h}"] = str(cont["max_down_pct"])
                 row[f"close_change_pct_{h}"] = str(cont["close_change_pct"])
                 row[f"range_pct_{h}"] = str(cont["range_pct"])
 
-            # Time-to-hit + MDD (once, up to 96h)
             ttm = compute_time_to_hit_and_mdd(entry_close, fwd96)
             row.update(ttm)
 
