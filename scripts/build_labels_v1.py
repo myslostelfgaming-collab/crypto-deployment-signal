@@ -75,10 +75,7 @@ def build_master_candle_map(history_paths: List[str]) -> Dict[int, Candle]:
 
     for p in history_paths:
         snap = load_json(p)
-        candles = (
-            snap.get("candles", {})
-                .get("eth_usdt_1h", [])
-        )
+        candles = snap.get("candles", {}).get("eth_usdt_1h", [])
         for c in candles:
             if not c or len(c) < 6:
                 continue
@@ -97,10 +94,7 @@ def get_entry_ts_and_close_from_snapshot(snap: dict) -> Tuple[Optional[int], Opt
 
     This guarantees alignment with the master candle map (also built from c[0]).
     """
-    candles = (
-        snap.get("candles", {})
-            .get("eth_usdt_1h", [])
-    )
+    candles = snap.get("candles", {}).get("eth_usdt_1h", [])
 
     if not candles or not isinstance(candles, list):
         return None, None
@@ -154,6 +148,9 @@ def compute_time_to_hit_and_mdd(entry_close: float, fwd96: List[Candle]) -> dict
     """
     Compute time-to-hit (earliest hour) for thresholds up to 96h,
     and max drawdown before the first hit of upside target.
+
+    NOTE: Drawdown is clamped to <= 0.0. If price never goes below entry
+    before the upside hit, drawdown is reported as 0.0 (not positive).
     """
     running_min_low = []
     cur_min = float("inf")
@@ -192,12 +189,14 @@ def compute_time_to_hit_and_mdd(entry_close: float, fwd96: List[Candle]) -> dict
                 break
         out[f"t_hit_down_{thr_key}"] = hit_dn_t
 
-        # MDD before upside hit (within 96h window)
+        # MDD before upside hit (within 96h window) — clamped to <= 0
         mdd_val = ""
         if hit_up_t != "":
             t = int(hit_up_t)
             min_before = min(running_min_low[:t])
-            mdd_val = str(round(pct_change(min_before, entry_close), 4))  # negative %
+            mdd_pct = round(pct_change(min_before, entry_close), 4)
+            mdd_pct = min(0.0, mdd_pct)  # clamp: drawdown cannot be positive
+            mdd_val = str(mdd_pct)
         out[f"mdd_before_hit_up_{thr_key}"] = mdd_val
 
     return out
@@ -213,6 +212,7 @@ def build_header() -> List[str]:
         "entry_close",
     ]
 
+    # Continuous labels per horizon
     for h in HORIZONS:
         fields += [
             f"max_up_pct_{h}",
@@ -221,6 +221,7 @@ def build_header() -> List[str]:
             f"range_pct_{h}",
         ]
 
+    # Time-to-hit + mdd (computed once up to 96)
     for thr in THRESHOLDS:
         k = fmt_thr(thr)
         fields.append(f"t_hit_up_{k}")
@@ -285,14 +286,16 @@ def main():
                 skipped_missing += 1
                 continue
 
+            # Continuous labels per horizon
             for h in HORIZONS:
-                fwd = fwd96[:h]
+                fwd = fwd96[:h]  # first h hours
                 cont = compute_continuous_labels(entry_close, fwd)
                 row[f"max_up_pct_{h}"] = str(cont["max_up_pct"])
                 row[f"max_down_pct_{h}"] = str(cont["max_down_pct"])
                 row[f"close_change_pct_{h}"] = str(cont["close_change_pct"])
                 row[f"range_pct_{h}"] = str(cont["range_pct"])
 
+            # Time-to-hit + MDD (once, up to 96h)
             ttm = compute_time_to_hit_and_mdd(entry_close, fwd96)
             row.update(ttm)
 
@@ -300,7 +303,9 @@ def main():
             added += 1
 
     print(f"Labels written to: {OUT_CSV}")
-    print(f"Added: {added}, skipped duplicates: {skipped_dupe}, skipped (missing forward window/fields): {skipped_missing}")
+    print(
+        f"Added: {added}, skipped duplicates: {skipped_dupe}, skipped (missing forward window/fields): {skipped_missing}"
+    )
 
 
 if __name__ == "__main__":
