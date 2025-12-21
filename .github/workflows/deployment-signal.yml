@@ -83,6 +83,18 @@ jobs:
           python scripts/validate_labels_v1.py || true
 
       # -----------------------------
+      # Baseline forecast (API-free)
+      # -----------------------------
+      - name: Build baseline forecast (v1)
+        run: |
+          python scripts/build_forecast_baseline_v1.py || true
+          ls -R data/forecast || true
+
+      - name: Validate baseline forecast (report only)
+        run: |
+          python scripts/validate_forecast_baseline_v1.py || true
+
+      # -----------------------------
       # Debug label state (TEMPORARY)
       # -----------------------------
       - name: Debug label state (temporary)
@@ -127,6 +139,7 @@ jobs:
             data/today_signal.json \
             data/history \
             data/labels \
+            data/forecast \
             requirements.txt \
             scripts/fetch_and_compute.py \
             scripts/fetch_and_log_history.py \
@@ -134,6 +147,8 @@ jobs:
             scripts/build_labels_v1.py \
             scripts/repair_labels_v1.py \
             scripts/validate_labels_v1.py \
+            scripts/build_forecast_baseline_v1.py \
+            scripts/validate_forecast_baseline_v1.py \
             scripts/debug_labels_state.py \
             scripts/prune_history.py \
             scripts/health_check.py
