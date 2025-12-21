@@ -69,6 +69,13 @@ jobs:
           ls -R data/labels || true
 
       # -----------------------------
+      # Repair labels (clamp legacy MDD)
+      # -----------------------------
+      - name: Repair labels (clamp MDD, safe)
+        run: |
+          python scripts/repair_labels_v1.py || true
+
+      # -----------------------------
       # Validate labels (REPORT ONLY)
       # -----------------------------
       - name: Validate labels (report only)
@@ -125,6 +132,7 @@ jobs:
             scripts/fetch_and_log_history.py \
             scripts/update_history_index.py \
             scripts/build_labels_v1.py \
+            scripts/repair_labels_v1.py \
             scripts/validate_labels_v1.py \
             scripts/debug_labels_state.py \
             scripts/prune_history.py \
