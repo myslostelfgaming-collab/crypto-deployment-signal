@@ -357,7 +357,7 @@ def main():
     }
 
     os.makedirs("data", exist_ok=True)
-    with open("data/today_signal.json", "w", encoding="utf-8") as f:
+    with open("data/hourly_signal.json", "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2)
 
     print(json.dumps(payload, indent=2))
