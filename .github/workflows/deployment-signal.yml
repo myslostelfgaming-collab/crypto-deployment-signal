@@ -90,6 +90,14 @@ jobs:
           python scripts/debug_labels_state.py || true
 
       # -----------------------------
+      # Build hourly report (single paste artifact)
+      # -----------------------------
+      - name: Build hourly report (single paste artifact)
+        run: |
+          python scripts/build_hourly_report_v1.py || true
+          ls -l data/hourly_report.json || true
+
+      # -----------------------------
       # Repo hygiene (daily prune)
       # -----------------------------
       - name: Prune old history (daily, 00:00 UTC only)
@@ -115,8 +123,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ ! -f data/hourly_signal.json ]; then
-            echo "hourly_signal.json not found, skipping commit."
+          if [ ! -f data/hourly_report.json ]; then
+            echo "hourly_report.json not found, skipping commit."
             exit 0
           fi
 
@@ -125,6 +133,7 @@ jobs:
 
           git add \
             data/hourly_signal.json \
+            data/hourly_report.json \
             data/history \
             data/labels \
             requirements.txt \
@@ -135,6 +144,7 @@ jobs:
             scripts/repair_labels_v1.py \
             scripts/validate_labels_v1.py \
             scripts/debug_labels_state.py \
+            scripts/build_hourly_report_v1.py \
             scripts/prune_history.py \
             scripts/health_check.py
 
