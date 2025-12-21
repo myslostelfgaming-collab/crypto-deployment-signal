@@ -1,4 +1,4 @@
-name: Deployment Signal
+name: Deployment Signal (Hourly)
 
 on:
   schedule:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: deployment-signal
+  group: deployment-signal-hourly
   cancel-in-progress: true
 
 jobs:
@@ -37,17 +37,17 @@ jobs:
           pip install -r requirements.txt
 
       # -----------------------------
-      # Core signal generation (v3.0)
+      # Core hourly signal (V3.0)
       # -----------------------------
-      - name: Generate deployment signal JSON
+      - name: Generate hourly deployment signal JSON
         run: |
           python scripts/fetch_and_compute.py
           ls -R data || true
 
       # -----------------------------
-      # Append-only forecasting data
+      # Append-only history (forecast dataset)
       # -----------------------------
-      - name: Log history snapshot (forecast dataset)
+      - name: Log hourly history snapshot
         run: |
           python scripts/fetch_and_log_history.py
           ls -R data/history || true
@@ -69,9 +69,9 @@ jobs:
           ls -R data/labels || true
 
       # -----------------------------
-      # Repair labels (clamp legacy MDD)
+      # Repair labels (safe clamp)
       # -----------------------------
-      - name: Repair labels (clamp MDD, safe)
+      - name: Repair labels (clamp MDD)
         run: |
           python scripts/repair_labels_v1.py || true
 
@@ -81,18 +81,6 @@ jobs:
       - name: Validate labels (report only)
         run: |
           python scripts/validate_labels_v1.py || true
-
-      # -----------------------------
-      # Baseline forecast (API-free)
-      # -----------------------------
-      - name: Build baseline forecast (v1)
-        run: |
-          python scripts/build_forecast_baseline_v1.py || true
-          ls -R data/forecast || true
-
-      - name: Validate baseline forecast (report only)
-        run: |
-          python scripts/validate_forecast_baseline_v1.py || true
 
       # -----------------------------
       # Debug label state (TEMPORARY)
@@ -127,8 +115,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ ! -f data/today_signal.json ]; then
-            echo "today_signal.json not found, skipping commit."
+          if [ ! -f data/hourly_signal.json ]; then
+            echo "hourly_signal.json not found, skipping commit."
             exit 0
           fi
 
@@ -136,10 +124,9 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           git add \
-            data/today_signal.json \
+            data/hourly_signal.json \
             data/history \
             data/labels \
-            data/forecast \
             requirements.txt \
             scripts/fetch_and_compute.py \
             scripts/fetch_and_log_history.py \
@@ -147,13 +134,11 @@ jobs:
             scripts/build_labels_v1.py \
             scripts/repair_labels_v1.py \
             scripts/validate_labels_v1.py \
-            scripts/build_forecast_baseline_v1.py \
-            scripts/validate_forecast_baseline_v1.py \
             scripts/debug_labels_state.py \
             scripts/prune_history.py \
             scripts/health_check.py
 
           git diff --cached --quiet && echo "No changes to commit" && exit 0
 
-          git commit -m "Update deployment signal [skip ci]"
+          git commit -m "Hourly deployment signal update [skip ci]"
           git push origin HEAD:main
