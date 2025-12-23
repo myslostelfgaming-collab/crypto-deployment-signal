@@ -2,8 +2,8 @@ name: Deployment Signal (Hourly)
 
 on:
   schedule:
-    # Runs hourly at minute 0 (UTC)
-    - cron: "07 * * * *"
+    # Runs hourly at minute 07 (UTC)
+    - cron: "11 * * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -90,6 +90,14 @@ jobs:
           python scripts/debug_labels_state.py || true
 
       # -----------------------------
+      # Build baseline forecast (from labels)
+      # -----------------------------
+      - name: Build baseline forecast (from labels)
+        run: |
+          python scripts/build_forecast_baseline.py || true
+          ls -R data/forecast || true
+
+      # -----------------------------
       # Build hourly report (single paste artifact)
       # -----------------------------
       - name: Build hourly report (single paste artifact)
@@ -135,7 +143,9 @@ jobs:
             data/hourly_signal.json \
             data/hourly_report.json \
             data/history \
+            data/history/index.csv \
             data/labels \
+            data/forecast \
             requirements.txt \
             scripts/fetch_and_compute.py \
             scripts/fetch_and_log_history.py \
@@ -144,6 +154,7 @@ jobs:
             scripts/repair_labels_v1.py \
             scripts/validate_labels_v1.py \
             scripts/debug_labels_state.py \
+            scripts/build_forecast_baseline.py \
             scripts/build_hourly_report_v1.py \
             scripts/prune_history.py \
             scripts/health_check.py
