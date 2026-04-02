@@ -227,9 +227,11 @@ def main():
     now_utc = now_local.astimezone(timezone.utc)
 
     eth_usdt = fetch_klines("ETH-USDT", interval=interval, limit=limit)
+    btc_usdt = fetch_klines("BTC-USDT", interval=interval, limit=limit)
     eth_btc = fetch_klines("ETH-BTC", interval=interval, limit=limit)
 
     eth_usdt_stats = compute_24h_stats(eth_usdt)
+    btc_usdt_stats = compute_24h_stats(btc_usdt)
     eth_btc_stats = compute_24h_stats(eth_btc)
 
     prior_24 = compute_prior_24h_range(eth_usdt)
@@ -246,27 +248,27 @@ def main():
         "published_at_utc": now_utc.isoformat(timespec="seconds"),
         "integrity": {
             "eth_usdt": build_integrity_meta("ETH-USDT", interval, limit, eth_usdt, now_local),
+            "btc_usdt": build_integrity_meta("BTC-USDT", interval, limit, btc_usdt, now_local),
             "eth_btc": build_integrity_meta("ETH-BTC", interval, limit, eth_btc, now_local),
         },
         "eth_usdt": eth_usdt_stats,
+        "btc_usdt": btc_usdt_stats,
         "eth_btc": eth_btc_stats,
         "prior_24h": prior_24,
         "first_4h_current_24h": first_4h,
         "atr_1h": {"value": atr, "periods": 14, "method": "wilder", "trend": atr_trend},
         "intraday_momentum": momentum,
         "early_breakout": {"occurred": early_flag, "description": early_desc, "mode": "rolling"},
-        # Forecasting bootstraps:
         "candles": {
             "eth_usdt_1h": compact_candles(eth_usdt),
+            "btc_usdt_1h": compact_candles(btc_usdt),
             "eth_btc_1h": compact_candles(eth_btc),
         },
     }
 
-    # Append-only history path
     day_dir = os.path.join("data", "history", now_local.date().isoformat())
     os.makedirs(day_dir, exist_ok=True)
 
-    # Use UTC timestamp for filename stability
     ts_name = now_utc.strftime("%Y-%m-%dT%H-%M-%SZ")
     out_path = os.path.join(day_dir, f"{ts_name}.json")
 
