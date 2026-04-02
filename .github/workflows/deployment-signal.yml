@@ -102,7 +102,10 @@ jobs:
       - name: Validate labels
         run: |
           python scripts/validate_labels_v1.py || true
-
+      - name: Build AI handoff v1
+        run: |
+          python scripts/build_ai_handoff_v1.py
+          ls -l data/ai_handoff_v1.json || true
       - name: Debug labels
         run: |
           python scripts/debug_labels_state.py || true
