@@ -15,26 +15,28 @@ concurrency:
 jobs:
   build-signal:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
 
-      - name: Install dependencies (fresh install)
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install --no-cache-dir -r requirements.txt
 
       # -----------------------------
-      # V2 Collector (THIS IS THE TEST)
+      # Core collector
       # -----------------------------
       - name: Run fetch_and_compute_v2
         run: |
@@ -58,67 +60,77 @@ jobs:
           ls -l data/history/index.csv || true
 
       # -----------------------------
-      # Labels
+      # Labels v1
       # -----------------------------
-      - name: Build labels
+      - name: Build labels v1
         run: |
           python scripts/build_labels_v1.py || true
           ls -R data/labels || true
 
-      - name: Repair labels
+      - name: Repair labels v1
         run: |
           python scripts/repair_labels_v1.py || true
-      - name: Build labels v2
-        run: |
-          python scripts/build_labels_v2.py || true
-          ls -l data/labels/labels_v2.csv || true
-      - name: Build features v1
-        run: |
-          python scripts/build_features_v1.py || true
-          ls -l data/features/features_v1.csv || true
-      - name: Build model dataset v1
-        run: |
-          python scripts/build_model_dataset_v1.py || true
-          ls -l data/model/model_dataset_v1.csv || true
-      - name: Build similarity forecast v1
-        run: |
-          python scripts/build_similarity_forecast_v1.py || true
-          ls -l data/model/similarity_forecast_v1.json || true
-      - name: Build similarity forecast v2
-        run: |
-          python scripts/build_similarity_forecast_v2.py || true
-          ls -l data/model/similarity_forecast_v2.json || true
-      - name: Build predictions v1
-        run: |
-          python scripts/build_predictions_v1.py || true
-          ls -l data/model/predictions_v1.csv || true
-      - name: Evaluate predictions v1
-        run: |
-          python scripts/evaluate_predictions_v1.py || true
-          ls -l data/model/predictions_v1.csv || true
-      - name: Performance summary v1
-        run: |
-          python scripts/build_performance_summary_v1.py || true
-      - name: Validate labels
+
+      - name: Validate labels v1
         run: |
           python scripts/validate_labels_v1.py || true
-      - name: Build AI handoff v1
-        run: |
-          python scripts/build_ai_handoff_v1.py
-          ls -l data/ai_handoff_v1.json || true
-      - name: Debug labels
+
+      - name: Debug labels state
         run: |
           python scripts/debug_labels_state.py || true
 
       # -----------------------------
-      # Forecast
+      # Labels v2 / model pipeline
+      # -----------------------------
+      - name: Build labels v2
+        run: |
+          python scripts/build_labels_v2.py || true
+          ls -l data/labels/labels_v2.csv || true
+
+      - name: Build features v1
+        run: |
+          python scripts/build_features_v1.py || true
+          ls -l data/features/features_v1.csv || true
+
+      - name: Build model dataset v1
+        run: |
+          python scripts/build_model_dataset_v1.py || true
+          ls -l data/model/model_dataset_v1.csv || true
+
+      - name: Build similarity forecast v1
+        run: |
+          python scripts/build_similarity_forecast_v1.py || true
+          ls -l data/model/similarity_forecast_v1.json || true
+
+      - name: Build similarity forecast v2
+        run: |
+          python scripts/build_similarity_forecast_v2.py || true
+          ls -l data/model/similarity_forecast_v2.json || true
+
+      - name: Build predictions v1
+        run: |
+          python scripts/build_predictions_v1.py || true
+          ls -l data/model/predictions_v1.csv || true
+
+      - name: Evaluate predictions v1
+        run: |
+          python scripts/evaluate_predictions_v1.py || true
+          ls -l data/model/predictions_v1.csv || true
+
+      - name: Build performance summary v1
+        run: |
+          python scripts/build_performance_summary_v1.py || true
+          ls -l data/model/performance_summary_v1.json || true
+
+      # -----------------------------
+      # Baseline forecast
       # -----------------------------
       - name: Build forecast baseline
         run: |
           python scripts/build_forecast_baseline_v1.py || true
           ls -R data/forecast || true
 
-      - name: Validate forecast
+      - name: Validate forecast baseline
         run: |
           python scripts/validate_forecast_baseline_v1.py || true
 
@@ -131,9 +143,19 @@ jobs:
           ls -l data/hourly_report.json || true
 
       # -----------------------------
+      # AI handoff
+      # -----------------------------
+      - name: Build AI handoff v1
+        run: |
+          python scripts/build_ai_handoff_v1.py
+          ls -l data/ai_handoff_v1.json || true
+
+      # -----------------------------
       # Commit outputs
       # -----------------------------
       - name: Commit and push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ ! -f data/hourly_report.json ]; then
             echo "No report generated"
@@ -143,9 +165,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add data/
+          git add data/ scripts/ requirements.txt .github/workflows/
 
           git diff --cached --quiet && echo "No changes" && exit 0
 
           git commit -m "Hourly update [skip ci]"
-          git push
+          git push origin HEAD:main
