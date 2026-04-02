@@ -2,7 +2,6 @@ name: Deployment Signal (Hourly)
 
 on:
   schedule:
-    # Runs hourly at minute 07 (UTC)
     - cron: "07 * * * *"
   workflow_dispatch: {}
 
@@ -37,11 +36,11 @@ jobs:
           pip install -r requirements.txt
 
       # -----------------------------
-      # Core hourly signal (V3.0)
+      # Core hourly signal (V6.0 test collector)
       # -----------------------------
-      - name: Generate hourly deployment signal JSON
+      - name: Generate hourly deployment signal JSON (v2 test)
         run: |
-          python scripts/fetch_and_compute.py
+          python scripts/fetch_and_compute_v2.py
           ls -R data || true
 
       # -----------------------------
@@ -155,6 +154,7 @@ jobs:
             data/forecast \
             requirements.txt \
             scripts/fetch_and_compute.py \
+            scripts/fetch_and_compute_v2.py \
             scripts/fetch_and_log_history.py \
             scripts/update_history_index.py \
             scripts/build_labels_v1.py \
