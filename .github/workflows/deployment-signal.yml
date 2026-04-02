@@ -22,29 +22,27 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: "pip"
 
-      - name: Install dependencies (force fresh)
-  run: |
-    python -m pip install --upgrade pip
-    pip install --no-cache-dir -r requirements.txt
+      - name: Install dependencies (fresh install)
+        run: |
+          python -m pip install --upgrade pip
+          pip install --no-cache-dir -r requirements.txt
 
       # -----------------------------
-      # Core hourly signal (V6.0 test collector)
+      # V2 Collector (THIS IS THE TEST)
       # -----------------------------
-      - name: Generate hourly deployment signal JSON (v2 test)
+      - name: Run fetch_and_compute_v2
         run: |
           python scripts/fetch_and_compute_v2.py
           ls -R data || true
 
       # -----------------------------
-      # Append-only history (forecast dataset)
+      # History logging
       # -----------------------------
       - name: Log hourly history snapshot
         run: |
@@ -52,122 +50,69 @@ jobs:
           ls -R data/history || true
 
       # -----------------------------
-      # Lightweight history index
+      # History index
       # -----------------------------
-      - name: Update history index (CSV)
+      - name: Update history index
         run: |
           python scripts/update_history_index.py
           ls -l data/history/index.csv || true
 
       # -----------------------------
-      # Labels (API-free stitch)
+      # Labels
       # -----------------------------
-      - name: Build labels (API-free stitch)
+      - name: Build labels
         run: |
           python scripts/build_labels_v1.py || true
           ls -R data/labels || true
 
-      # -----------------------------
-      # Repair labels (safe clamp)
-      # -----------------------------
-      - name: Repair labels (clamp MDD)
+      - name: Repair labels
         run: |
           python scripts/repair_labels_v1.py || true
 
-      # -----------------------------
-      # Validate labels (REPORT ONLY)
-      # -----------------------------
-      - name: Validate labels (report only)
+      - name: Validate labels
         run: |
           python scripts/validate_labels_v1.py || true
 
-      # -----------------------------
-      # Debug label state (TEMPORARY)
-      # -----------------------------
-      - name: Debug label state (temporary)
+      - name: Debug labels
         run: |
           python scripts/debug_labels_state.py || true
 
       # -----------------------------
-      # Baseline forecast (from labels)
+      # Forecast
       # -----------------------------
-      - name: Build baseline forecast (from labels)
+      - name: Build forecast baseline
         run: |
           python scripts/build_forecast_baseline_v1.py || true
           ls -R data/forecast || true
 
-      # -----------------------------
-      # Validate baseline forecast (REPORT ONLY)
-      # -----------------------------
-      - name: Validate baseline forecast (report only)
+      - name: Validate forecast
         run: |
           python scripts/validate_forecast_baseline_v1.py || true
 
       # -----------------------------
-      # Build hourly report (single paste artifact)
+      # Final report
       # -----------------------------
-      - name: Build hourly report (single paste artifact)
+      - name: Build hourly report
         run: |
           python scripts/build_hourly_report_v1.py || true
           ls -l data/hourly_report.json || true
 
       # -----------------------------
-      # Repo hygiene (daily prune)
-      # -----------------------------
-      - name: Prune old history (daily, 00:00 UTC only)
-        if: github.event_name == 'schedule'
-        run: |
-          if [ "$(date -u +%H)" = "00" ]; then
-            python scripts/prune_history.py
-          else
-            echo "Not 00:00 UTC; skipping prune."
-          fi
-
-      # -----------------------------
-      # Health check (REPORT ONLY)
-      # -----------------------------
-      - name: Health check (report only)
-        run: |
-          python scripts/health_check.py --days 7 || true
-
-      # -----------------------------
       # Commit outputs
       # -----------------------------
-      - name: Commit and push updated data
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit and push
         run: |
           if [ ! -f data/hourly_report.json ]; then
-            echo "hourly_report.json not found, skipping commit."
+            echo "No report generated"
             exit 0
           fi
 
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          git add \
-            data/hourly_signal.json \
-            data/hourly_report.json \
-            data/history \
-            data/history/index.csv \
-            data/labels \
-            data/forecast \
-            requirements.txt \
-            scripts/fetch_and_compute.py \
-            scripts/fetch_and_compute_v2.py \
-            scripts/fetch_and_log_history.py \
-            scripts/update_history_index.py \
-            scripts/build_labels_v1.py \
-            scripts/repair_labels_v1.py \
-            scripts/validate_labels_v1.py \
-            scripts/debug_labels_state.py \
-            scripts/build_forecast_baseline_v1.py \
-            scripts/validate_forecast_baseline_v1.py \
-            scripts/build_hourly_report_v1.py \
-            scripts/prune_history.py \
-            scripts/health_check.py
+          git add data/
 
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git diff --cached --quiet && echo "No changes" && exit 0
 
-          git commit -m "Hourly deployment signal update [skip ci]"
-          git push origin HEAD:main
+          git commit -m "Hourly update [skip ci]"
+          git push
