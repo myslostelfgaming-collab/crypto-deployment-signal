@@ -22,7 +22,9 @@ ASSET_CANDLE_KEYS = {
     "BTC-USDT": "btc_usdt_1h",
 }
 
-Candle = List[float]  # [ts_utc, open, close, high, low, volume]
+# Correct compact candle format:
+# [ts_utc, open, high, low, close, volume]
+Candle = List[float]
 
 
 def pct_change(new: float, base: float) -> float:
@@ -112,6 +114,7 @@ def extract_asset_candles(snapshot: dict, candle_key: str) -> List[Candle]:
         if not isinstance(c, list) or len(c) < 6:
             continue
         try:
+            # Correct format: [ts_utc, open, high, low, close, volume]
             out.append([
                 int(c[0]),
                 float(c[1]),
@@ -123,6 +126,7 @@ def extract_asset_candles(snapshot: dict, candle_key: str) -> List[Candle]:
         except Exception:
             continue
 
+    out.sort(key=lambda x: x[0])
     return out
 
 
@@ -153,7 +157,7 @@ def get_entry_from_snapshot(snapshot: dict, candle_key: str) -> Tuple[Optional[i
     last = candles[-1]
     try:
         entry_ts = int(last[0])
-        entry_close = float(last[2])  # compact format index 2 = close
+        entry_close = float(last[4])  # close is index 4
     except Exception:
         return None, None
 
@@ -175,9 +179,9 @@ def forward_window(master: Dict[int, Candle], entry_ts: int, hours: int) -> Opti
 
 
 def compute_continuous_labels(entry_close: float, fwd: List[Candle]) -> dict:
-    highs = [c[3] for c in fwd]
-    lows = [c[4] for c in fwd]
-    closes = [c[2] for c in fwd]
+    highs = [c[2] for c in fwd]
+    lows = [c[3] for c in fwd]
+    closes = [c[4] for c in fwd]
 
     max_high = max(highs)
     min_low = min(lows)
@@ -199,14 +203,14 @@ def compute_time_to_hit_and_mdd(entry_close: float, fwd_max: List[Candle]) -> di
     running_min_low = []
     cur_min = float("inf")
     for c in fwd_max:
-        low = c[4]
+        low = c[3]
         cur_min = min(cur_min, low)
         running_min_low.append(cur_min)
 
     running_max_high = []
     cur_max = -float("inf")
     for c in fwd_max:
-        high = c[3]
+        high = c[2]
         cur_max = max(cur_max, high)
         running_max_high.append(cur_max)
 
