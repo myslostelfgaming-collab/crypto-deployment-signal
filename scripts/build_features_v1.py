@@ -4,7 +4,7 @@ import csv
 import json
 import os
 from glob import glob
-from typing import Dict, List, Tuple, Optional
+from typing import List, Tuple, Optional
 
 HISTORY_ROOT = os.path.join("data", "history")
 OUT_DIR = os.path.join("data", "features")
@@ -15,7 +15,9 @@ ASSET_CANDLE_KEYS = {
     "BTC-USDT": "btc_usdt_1h",
 }
 
-Candle = List[float]  # [ts_utc, open, close, high, low, volume]
+# Correct compact candle format from history snapshots:
+# [ts_utc, open, high, low, close, volume]
+Candle = List[float]
 
 
 def load_json(path: str) -> dict:
@@ -117,6 +119,7 @@ def extract_asset_candles(snapshot: dict, candle_key: str) -> List[Candle]:
         if not isinstance(c, list) or len(c) < 6:
             continue
         try:
+            # Correct format: [ts_utc, open, high, low, close, volume]
             out.append([
                 int(c[0]),
                 float(c[1]),
@@ -137,7 +140,8 @@ def get_entry_from_snapshot(candles: List[Candle]) -> Tuple[Optional[int], Optio
         return None, None
     last = candles[-1]
     try:
-        return int(last[0]), float(last[2])
+        # close is index 4
+        return int(last[0]), float(last[4])
     except Exception:
         return None, None
 
@@ -149,11 +153,12 @@ def window_last(candles: List[Candle], n: int) -> Optional[List[Candle]]:
 
 
 def calc_return_feature(candles: List[Candle], lookback_h: int) -> Optional[float]:
+    # Need current candle plus lookback reference
     w = window_last(candles, lookback_h + 1)
     if not w:
         return None
-    start_close = w[0][2]
-    end_close = w[-1][2]
+    start_close = w[0][4]
+    end_close = w[-1][4]
     return pct_change(end_close, start_close)
 
 
@@ -161,9 +166,9 @@ def calc_range_pct(candles: List[Candle], lookback_h: int) -> Optional[float]:
     w = window_last(candles, lookback_h)
     if not w:
         return None
-    highs = [c[3] for c in w]
-    lows = [c[4] for c in w]
-    entry_close = w[-1][2]
+    highs = [c[2] for c in w]
+    lows = [c[3] for c in w]
+    entry_close = w[-1][4]
     if entry_close == 0:
         return None
     return ((max(highs) - min(lows)) / entry_close) * 100.0
@@ -174,14 +179,14 @@ def calc_dist_from_high_low(candles: List[Candle], lookback_h: int) -> Tuple[Opt
     if not w:
         return None, None
 
-    highs = [c[3] for c in w]
-    lows = [c[4] for c in w]
-    close = w[-1][2]
+    highs = [c[2] for c in w]
+    lows = [c[3] for c in w]
+    close = w[-1][4]
 
     high = max(highs)
     low = min(lows)
 
-    if high == 0 or close == 0:
+    if close == 0:
         return None, None
 
     dist_from_high = ((close - high) / close) * 100.0
@@ -193,7 +198,7 @@ def calc_sma(candles: List[Candle], lookback_h: int) -> Optional[float]:
     w = window_last(candles, lookback_h)
     if not w:
         return None
-    closes = [c[2] for c in w]
+    closes = [c[4] for c in w]
     return sum(closes) / len(closes)
 
 
@@ -201,7 +206,7 @@ def calc_close_vs_sma(candles: List[Candle], lookback_h: int) -> Optional[float]
     sma = calc_sma(candles, lookback_h)
     if sma is None or sma == 0:
         return None
-    close = candles[-1][2]
+    close = candles[-1][4]
     return pct_change(close, sma)
 
 
@@ -211,9 +216,9 @@ def calc_wilder_atr_pct(candles: List[Candle], period: int = 14) -> Optional[flo
 
     trs = []
     for i in range(1, len(candles)):
-        high = candles[i][3]
-        low = candles[i][4]
-        prev_close = candles[i - 1][2]
+        high = candles[i][2]
+        low = candles[i][3]
+        prev_close = candles[i - 1][4]
         tr = max(high - low, abs(high - prev_close), abs(low - prev_close))
         trs.append(tr)
 
@@ -224,7 +229,7 @@ def calc_wilder_atr_pct(candles: List[Candle], period: int = 14) -> Optional[flo
     for j in range(period, len(trs)):
         atr = ((atr * (period - 1)) + trs[j]) / period
 
-    close = candles[-1][2]
+    close = candles[-1][4]
     if close == 0:
         return None
 
