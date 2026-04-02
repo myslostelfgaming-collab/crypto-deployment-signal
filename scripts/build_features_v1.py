@@ -280,4 +280,50 @@ def main():
                 ret_24h = calc_return_feature(candles, 24)
                 ret_48h = calc_return_feature(candles, 48)
 
-                range_24h
+                range_24h = calc_range_pct(candles, 24)
+                range_48h = calc_range_pct(candles, 48)
+                atr14_pct = calc_wilder_atr_pct(candles, 14)
+
+                dist_24h_high, dist_24h_low = calc_dist_from_high_low(candles, 24)
+                dist_48h_high, dist_48h_low = calc_dist_from_high_low(candles, 48)
+
+                close_vs_sma_24 = calc_close_vs_sma(candles, 24)
+                close_vs_sma_48 = calc_close_vs_sma(candles, 48)
+
+                row = {
+                    "asset": asset,
+                    "published_at_utc": pub_utc,
+                    "published_at_local": pub_local,
+                    "date_local": date_local,
+                    "history_file": rel,
+                    "entry_ts_utc": str(entry_ts),
+                    "entry_close": str(entry_close),
+                    "n_candles_snapshot": str(len(candles)),
+                    "ret_6h_pct": safe_round(ret_6h),
+                    "ret_12h_pct": safe_round(ret_12h),
+                    "ret_24h_pct": safe_round(ret_24h),
+                    "ret_48h_pct": safe_round(ret_48h),
+                    "range_24h_pct": safe_round(range_24h),
+                    "range_48h_pct": safe_round(range_48h),
+                    "atr14_pct": safe_round(atr14_pct),
+                    "dist_from_24h_high_pct": safe_round(dist_24h_high),
+                    "dist_from_24h_low_pct": safe_round(dist_24h_low),
+                    "dist_from_48h_high_pct": safe_round(dist_48h_high),
+                    "dist_from_48h_low_pct": safe_round(dist_48h_low),
+                    "close_vs_sma_24_pct": safe_round(close_vs_sma_24),
+                    "close_vs_sma_48_pct": safe_round(close_vs_sma_48),
+                    "is_up_24h": bool_flag_str(ret_24h),
+                    "is_up_48h": bool_flag_str(ret_48h),
+                }
+
+                writer.writerow(row)
+                added += 1
+
+    print(f"Features written to: {OUT_CSV}")
+    print(f"Added: {added}")
+    print(f"Skipped duplicates: {skipped_dupe}")
+    print(f"Skipped missing asset candles in snapshot: {skipped_missing_asset}")
+
+
+if __name__ == "__main__":
+    main()
