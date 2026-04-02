@@ -293,4 +293,97 @@ def build_integrity_meta(symbol, interval, requested_limit, candles, now_local):
     def iso(dt):
         return dt.isoformat(timespec="seconds") if dt else None
 
-    w_last_24 = _window_slice
+    w_last_24 = _window_slice(candles, -24, None) if returned_count >= 24 else None
+    w_prior_24 = _window_slice(candles, -48, -24) if returned_count >= 48 else None
+    w_first_4 = _window_slice(candles, -24, -20) if returned_count >= 24 else None
+
+    def win_bounds(w):
+        if not w:
+            return None
+        return {
+            "start_local": iso(w[0]["open_time"]),
+            "end_local": iso(w[-1]["open_time"]),
+            "start_utc": iso(w[0]["open_time_utc"]),
+            "end_utc": iso(w[-1]["open_time_utc"]),
+        }
+
+    return {
+        "symbol": symbol,
+        "source": "kucoin",
+        "interval": interval,
+        "requested_limit": requested_limit,
+        "returned_count": returned_count,
+        "first_candle_open_time_local": iso(first_local),
+        "last_candle_open_time_local": iso(last_local),
+        "first_candle_open_time_utc": iso(first_utc),
+        "last_candle_open_time_utc": iso(last_utc),
+        "data_freshness_minutes": freshness_min,
+        "windows": {
+            "last_24h": win_bounds(w_last_24),
+            "prior_24h": win_bounds(w_prior_24),
+            "first_4h_current_24h": win_bounds(w_first_4),
+        },
+    }
+
+
+def main():
+    interval = "1hour"
+    limit = 400
+
+    now_local = datetime.now(LOCAL_TZ)
+
+    eth_usdt = fetch_klines("ETH-USDT", interval=interval, limit=limit)
+    btc_usdt = fetch_klines("BTC-USDT", interval=interval, limit=limit)
+    eth_btc = fetch_klines("ETH-BTC", interval=interval, limit=limit)
+
+    eth_usdt_stats = compute_24h_stats(eth_usdt)
+    btc_usdt_stats = compute_24h_stats(btc_usdt)
+    eth_btc_stats = compute_24h_stats(eth_btc)
+
+    # Keep current live logic ETH-focused for now
+    prior_24 = compute_prior_24h_range(eth_usdt)
+    first_4h = compute_first_4h_of_current_24h(eth_usdt)
+
+    atr, atr_trend = compute_wilder_atr_and_trend(eth_usdt)
+    early_flag, early_desc = compute_early_breakout_rolling(eth_usdt)
+    momentum = compute_intraday_momentum_rolling(eth_usdt, atr)
+
+    signal = compute_precomputed_signal(
+        eth_usdt_stats, atr, atr_trend, early_flag, momentum
+    )
+
+    payload = {
+        "date": now_local.date().isoformat(),
+        "timezone": "Africa/Johannesburg",
+        "published_at_local": now_local.isoformat(timespec="seconds"),
+        "published_at_utc": now_local.astimezone(timezone.utc).isoformat(timespec="seconds"),
+        "integrity": {
+            "eth_usdt": build_integrity_meta("ETH-USDT", interval, limit, eth_usdt, now_local),
+            "btc_usdt": build_integrity_meta("BTC-USDT", interval, limit, btc_usdt, now_local),
+            "eth_btc": build_integrity_meta("ETH-BTC", interval, limit, eth_btc, now_local),
+        },
+        "eth_usdt": eth_usdt_stats,
+        "btc_usdt": btc_usdt_stats,
+        "eth_btc": eth_btc_stats,
+        "prior_24h": prior_24,
+        "first_4h_current_24h": first_4h,
+        "atr_1h": {"value": atr, "periods": 14, "method": "wilder", "trend": atr_trend},
+        "intraday_momentum": momentum,
+        "early_breakout": {"occurred": early_flag, "description": early_desc, "mode": "rolling"},
+        "precomputed_signal": signal,
+        "candles": {
+            "eth_usdt_1h": serialize_candles(eth_usdt),
+            "btc_usdt_1h": serialize_candles(btc_usdt),
+            "eth_btc_1h": serialize_candles(eth_btc),
+        },
+    }
+
+    os.makedirs("data", exist_ok=True)
+    with open("data/hourly_signal.json", "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
+
+    print(json.dumps(payload, indent=2))
+
+
+if __name__ == "__main__":
+    main()
