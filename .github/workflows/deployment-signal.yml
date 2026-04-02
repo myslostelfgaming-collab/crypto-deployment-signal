@@ -92,6 +92,10 @@ jobs:
         run: |
           python scripts/build_predictions_v1.py || true
           ls -l data/model/predictions_v1.csv || true
+      - name: Evaluate predictions v1
+        run: |
+          python scripts/evaluate_predictions_v1.py || true
+          ls -l data/model/predictions_v1.csv || true
       - name: Validate labels
         run: |
           python scripts/validate_labels_v1.py || true
