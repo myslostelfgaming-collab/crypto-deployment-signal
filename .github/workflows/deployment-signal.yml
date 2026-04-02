@@ -72,6 +72,10 @@ jobs:
         run: |
           python scripts/build_labels_v2.py || true
           ls -l data/labels/labels_v2.csv || true
+      - name: Build features v1
+        run: |
+          python scripts/build_features_v1.py || true
+          ls -l data/features/features_v1.csv || true
       - name: Validate labels
         run: |
           python scripts/validate_labels_v1.py || true
