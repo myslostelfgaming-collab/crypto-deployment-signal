@@ -9,6 +9,9 @@ from datetime import datetime, timezone
 PREDICTIONS_PATH = os.path.join("data", "model", "predictions_v1.csv")
 HISTORY_ROOT = os.path.join("data", "history")
 
+# Accept nearest candle within ±45 minutes
+TOLERANCE_SECONDS = 45 * 60
+
 
 def safe_float(x):
     try:
@@ -29,11 +32,23 @@ def iter_history_files():
     return sorted(glob(pattern))
 
 
+def extract_eth_candles(snapshot: dict):
+    candles = snapshot.get("candles", {}).get("eth_usdt_1h")
+    if candles is None:
+        candles = snapshot.get("signal", {}).get("candles", {}).get("eth_usdt_1h", [])
+    if not isinstance(candles, list):
+        return []
+    return candles
+
+
 def build_eth_close_map():
     """
     Build:
       ts_utc -> ETH close
     from all history snapshots.
+
+    Expected compact format:
+      [ts_utc, open, high, low, close, volume]
     """
     close_map = {}
 
@@ -43,7 +58,7 @@ def build_eth_close_map():
         except Exception:
             continue
 
-        candles = snap.get("candles", {}).get("eth_usdt_1h", [])
+        candles = extract_eth_candles(snap)
         for c in candles:
             if not isinstance(c, list) or len(c) < 5:
                 continue
@@ -58,6 +73,36 @@ def build_eth_close_map():
                 close_map[ts] = close
 
     return close_map
+
+
+def find_nearest_close(target_ts: int, close_map: dict, tolerance_seconds: int = TOLERANCE_SECONDS):
+    """
+    Find the nearest available candle close to target_ts,
+    but only if within tolerance_seconds.
+    Returns:
+      matched_ts, matched_close, diff_seconds
+    or:
+      None, None, None
+    """
+    if not close_map:
+        return None, None, None
+
+    best_ts = None
+    best_diff = None
+
+    for ts in close_map.keys():
+        diff = abs(ts - target_ts)
+        if best_diff is None or diff < best_diff:
+            best_diff = diff
+            best_ts = ts
+
+    if best_ts is None or best_diff is None:
+        return None, None, None
+
+    if best_diff > tolerance_seconds:
+        return None, None, None
+
+    return best_ts, close_map[best_ts], best_diff
 
 
 def classify_hit_direction(pred_pct, actual_pct):
@@ -109,18 +154,24 @@ def main():
         return
 
     updated = 0
-    still_pending = 0
+    already_evaluated = 0
+    pending_not_matured = 0
+    pending_no_match = 0
+    still_pending_other_asset = 0
 
-    now_utc = datetime.now(timezone.utc).isoformat()
+    now_dt = datetime.now(timezone.utc)
+    now_ts = int(now_dt.timestamp())
+    now_utc = now_dt.isoformat()
 
     for row in rows:
         status = row.get("status", "")
         if status == "evaluated":
+            already_evaluated += 1
             continue
 
         asset = row.get("asset")
         if asset != "ETH-USDT":
-            still_pending += 1
+            still_pending_other_asset += 1
             continue
 
         target_ts_utc = row.get("target_ts_utc")
@@ -129,25 +180,30 @@ def main():
         pred_pct = safe_float(row.get("predicted_close_change_pct"))
 
         if not target_ts_utc or entry_close is None:
-            still_pending += 1
+            pending_no_match += 1
             continue
 
         try:
             target_dt = datetime.fromisoformat(target_ts_utc)
             target_ts = int(target_dt.timestamp())
         except Exception:
-            still_pending += 1
+            pending_no_match += 1
             continue
 
-        actual_close = close_map.get(target_ts)
+        # Do not evaluate before the target time has actually arrived
+        if now_ts < target_ts:
+            pending_not_matured += 1
+            continue
+
+        matched_ts, actual_close, diff_seconds = find_nearest_close(target_ts, close_map, TOLERANCE_SECONDS)
         if actual_close is None:
-            still_pending += 1
+            pending_no_match += 1
             continue
 
         actual_pct = ((actual_close / entry_close) - 1.0) * 100.0
+
         error_abs = None
         error_pct = None
-
         if pred_price is not None:
             error_abs = actual_close - pred_price
             error_pct = ((actual_close / pred_price) - 1.0) * 100.0 if pred_price != 0 else None
@@ -161,6 +217,12 @@ def main():
         row["evaluated_at_utc"] = now_utc
         row["status"] = "evaluated"
 
+        # Optional debug fields if they already exist in the CSV header
+        if "matched_target_ts_utc" in fieldnames:
+            row["matched_target_ts_utc"] = datetime.fromtimestamp(matched_ts, tz=timezone.utc).isoformat()
+        if "matched_target_diff_seconds" in fieldnames:
+            row["matched_target_diff_seconds"] = str(diff_seconds)
+
         updated += 1
 
     with open(PREDICTIONS_PATH, "w", encoding="utf-8", newline="") as f:
@@ -168,8 +230,13 @@ def main():
         writer.writeheader()
         writer.writerows(rows)
 
-    print(f"Predictions evaluated: {updated}")
-    print(f"Predictions still pending: {still_pending}")
+    print(f"Predictions evaluated this run: {updated}")
+    print(f"Already evaluated: {already_evaluated}")
+    print(f"Pending (target time not yet reached): {pending_not_matured}")
+    print(f"Pending (no candle within tolerance): {pending_no_match}")
+    print(f"Pending (other asset): {still_pending_other_asset}")
+    print(f"Tolerance used: ±{TOLERANCE_SECONDS} seconds")
+    print(f"ETH close map size: {len(close_map)}")
     print(f"File updated: {PREDICTIONS_PATH}")
 
 
