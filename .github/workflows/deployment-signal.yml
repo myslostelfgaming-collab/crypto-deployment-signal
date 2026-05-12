@@ -84,43 +84,51 @@ jobs:
       # -----------------------------
       - name: Build labels v2
         run: |
-          python scripts/build_labels_v2.py || true
-          ls -l data/labels/labels_v2.csv || true
+          python scripts/build_labels_v2.py
+          test -s data/labels/labels_v2.csv
+          ls -l data/labels/labels_v2.csv
 
       - name: Build features v1
         run: |
-          python scripts/build_features_v1.py || true
-          ls -l data/features/features_v1.csv || true
+          python scripts/build_features_v1.py
+          test -s data/features/features_v1.csv
+          ls -l data/features/features_v1.csv
 
       - name: Build model dataset v1
         run: |
-          python scripts/build_model_dataset_v1.py || true
-          ls -l data/model/model_dataset_v1.csv || true
+          python scripts/build_model_dataset_v1.py
+          test -s data/model/model_dataset_v1.csv
+          ls -l data/model/model_dataset_v1.csv
 
       - name: Build similarity forecast v1
         run: |
-          python scripts/build_similarity_forecast_v1.py || true
-          ls -l data/model/similarity_forecast_v1.json || true
+          python scripts/build_similarity_forecast_v1.py
+          test -s data/model/similarity_forecast_v1.json
+          ls -l data/model/similarity_forecast_v1.json
 
       - name: Build similarity forecast v2
         run: |
-          python scripts/build_similarity_forecast_v2.py || true
-          ls -l data/model/similarity_forecast_v2.json || true
+          python scripts/build_similarity_forecast_v2.py
+          test -s data/model/similarity_forecast_v2.json
+          ls -l data/model/similarity_forecast_v2.json
 
       - name: Build predictions v1
         run: |
-          python scripts/build_predictions_v1.py || true
-          ls -l data/model/predictions_v1.csv || true
+          python scripts/build_predictions_v1.py
+          test -s data/model/predictions_v1.csv
+          ls -l data/model/predictions_v1.csv
 
       - name: Evaluate predictions v1
         run: |
-          python scripts/evaluate_predictions_v1.py || true
-          ls -l data/model/predictions_v1.csv || true
+          python scripts/evaluate_predictions_v1.py
+          test -s data/model/predictions_v1.csv
+          ls -l data/model/predictions_v1.csv
 
       - name: Build performance summary v1
         run: |
-          python scripts/build_performance_summary_v1.py || true
-          ls -l data/model/performance_summary_v1.json || true
+          python scripts/build_performance_summary_v1.py
+          test -s data/model/performance_summary_v1.json
+          ls -l data/model/performance_summary_v1.json
 
       # -----------------------------
       # Baseline forecast
