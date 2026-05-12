@@ -41,7 +41,8 @@ jobs:
       - name: Run fetch_and_compute_v2
         run: |
           python scripts/fetch_and_compute_v2.py
-          ls -R data || true
+          test -s data/hourly_signal.json
+          ls -R data
 
       # -----------------------------
       # History logging
@@ -49,7 +50,7 @@ jobs:
       - name: Log hourly history snapshot
         run: |
           python scripts/fetch_and_log_history.py
-          ls -R data/history || true
+          ls -R data/history
 
       # -----------------------------
       # History index
@@ -57,10 +58,12 @@ jobs:
       - name: Update history index
         run: |
           python scripts/update_history_index.py
-          ls -l data/history/index.csv || true
+          test -s data/history/index.csv
+          ls -l data/history/index.csv
 
       # -----------------------------
-      # Labels v1
+      # Labels v1 legacy/support layer
+      # Keep soft for now
       # -----------------------------
       - name: Build labels v1
         run: |
@@ -80,7 +83,8 @@ jobs:
           python scripts/debug_labels_state.py || true
 
       # -----------------------------
-      # Labels v2 / model pipeline
+      # Labels v2 / active model pipeline
+      # Hard fail if outputs are missing
       # -----------------------------
       - name: Build labels v2
         run: |
@@ -135,20 +139,23 @@ jobs:
       # -----------------------------
       - name: Build forecast baseline
         run: |
-          python scripts/build_forecast_baseline_v1.py || true
-          ls -R data/forecast || true
+          python scripts/build_forecast_baseline_v1.py
+          test -s data/forecast/baseline_probs_v1.csv
+          test -s data/forecast/baseline_summary_v1.json
+          ls -R data/forecast
 
       - name: Validate forecast baseline
         run: |
-          python scripts/validate_forecast_baseline_v1.py || true
+          python scripts/validate_forecast_baseline_v1.py
 
       # -----------------------------
       # Final report
       # -----------------------------
       - name: Build hourly report
         run: |
-          python scripts/build_hourly_report_v1.py || true
-          ls -l data/hourly_report.json || true
+          python scripts/build_hourly_report_v1.py
+          test -s data/hourly_report.json
+          ls -l data/hourly_report.json
 
       # -----------------------------
       # AI handoff
@@ -156,14 +163,22 @@ jobs:
       - name: Build AI handoff v1
         run: |
           python scripts/build_ai_handoff_v1.py
-          ls -l data/ai_handoff_v1.json || true
+          test -s data/ai_handoff_v1.json
+          ls -l data/ai_handoff_v1.json
+
       # -----------------------------
       # Diagnostics
       # -----------------------------
       - name: Build repo diagnostics
         run: |
           python scripts/build_repo_diagnostics.py
-          ls -R data/diagnostics || true
+          test -s data/diagnostics/repo_status.json
+          test -s data/diagnostics/file_sizes.json
+          test -s data/diagnostics/model_readiness.json
+          test -s data/diagnostics/prediction_summary.json
+          test -s data/diagnostics/latest_rows_preview.json
+          ls -R data/diagnostics
+
       # -----------------------------
       # Commit outputs
       # -----------------------------
@@ -173,7 +188,7 @@ jobs:
         run: |
           if [ ! -f data/hourly_report.json ]; then
             echo "No report generated"
-            exit 0
+            exit 1
           fi
 
           git config --global user.name "github-actions[bot]"
