@@ -239,6 +239,7 @@ jobs:
 
           print("Actionability v1 validated.")
           PY
+
       - name: Build model readiness v2
         run: |
           python scripts/build_model_readiness_v2.py
@@ -287,6 +288,7 @@ jobs:
 
           print("Model readiness v2 validated.")
           PY
+
       # -----------------------------
       # Baseline forecast
       # -----------------------------
@@ -348,6 +350,20 @@ jobs:
                   f"hourly_report actionability missing assets: {missing_action_assets}"
               )
 
+          readiness = payload.get("readiness_state", {})
+          if readiness.get("schema") != "model_readiness_v2":
+              raise SystemExit(
+                  f"hourly_report missing model_readiness_v2 block, got {readiness.get('schema')}"
+              )
+
+          readiness_assets = set((readiness.get("by_asset") or {}).keys())
+          missing_readiness_assets = sorted(required - readiness_assets)
+
+          if missing_readiness_assets:
+              raise SystemExit(
+                  f"hourly_report readiness missing assets: {missing_readiness_assets}"
+              )
+
           print("Hourly report v2 validated.")
           PY
 
@@ -405,6 +421,20 @@ jobs:
                   f"ai_handoff actionability missing assets: {missing_action_assets}"
               )
 
+          readiness = payload.get("readiness_state", {})
+          if readiness.get("schema") != "model_readiness_v2":
+              raise SystemExit(
+                  f"ai_handoff missing model_readiness_v2 block, got {readiness.get('schema')}"
+              )
+
+          readiness_assets = set((readiness.get("by_asset") or {}).keys())
+          missing_readiness_assets = sorted(required - readiness_assets)
+
+          if missing_readiness_assets:
+              raise SystemExit(
+                  f"ai_handoff readiness missing assets: {missing_readiness_assets}"
+              )
+
           print("AI handoff v2 validated.")
           PY
 
@@ -417,11 +447,13 @@ jobs:
           test -s data/diagnostics/repo_status.json
           test -s data/diagnostics/file_sizes.json
           test -s data/diagnostics/model_readiness.json
+          test -s data/diagnostics/model_readiness_v2.json
           test -s data/diagnostics/prediction_summary.json
           test -s data/diagnostics/latest_rows_preview.json
           ls -l data/diagnostics/repo_status.json
           ls -l data/diagnostics/file_sizes.json
           ls -l data/diagnostics/model_readiness.json
+          ls -l data/diagnostics/model_readiness_v2.json
           ls -l data/diagnostics/prediction_summary.json
           ls -l data/diagnostics/latest_rows_preview.json
 
@@ -455,10 +487,12 @@ jobs:
           repo_status_path = Path("data/diagnostics/repo_status.json")
           prediction_summary_path = Path("data/diagnostics/prediction_summary.json")
           model_readiness_path = Path("data/diagnostics/model_readiness.json")
+          model_readiness_v2_path = Path("data/diagnostics/model_readiness_v2.json")
 
           repo_status = json.loads(repo_status_path.read_text(encoding="utf-8"))
           prediction_summary = json.loads(prediction_summary_path.read_text(encoding="utf-8"))
           model_readiness = json.loads(model_readiness_path.read_text(encoding="utf-8"))
+          model_readiness_v2 = json.loads(model_readiness_v2_path.read_text(encoding="utf-8"))
 
           status_assets = repo_status.get("summary", {}).get("prediction_assets", {})
           summary_assets = prediction_summary.get("by_asset", {})
@@ -470,6 +504,7 @@ jobs:
               )
 
           readiness_assets = model_readiness.get("assets", {})
+          readiness_v2_assets = model_readiness_v2.get("by_asset", {})
           required_assets = ["ETH-USDT", "BTC-USDT"]
 
           for asset in required_assets:
@@ -483,6 +518,14 @@ jobs:
                   raise SystemExit(
                       f"Diagnostics mismatch for {asset}: "
                       f"model_readiness prediction_rows={readiness_rows}, "
+                      f"prediction_summary rows={summary_rows}"
+                  )
+
+              readiness_v2_rows = readiness_v2_assets.get(asset, {}).get("prediction_rows_total")
+              if readiness_v2_rows != summary_rows:
+                  raise SystemExit(
+                      f"Diagnostics mismatch for {asset}: "
+                      f"model_readiness_v2 prediction_rows_total={readiness_v2_rows}, "
                       f"prediction_summary rows={summary_rows}"
                   )
 
@@ -500,8 +543,8 @@ jobs:
           test -s data/hourly_report.json
           test -s data/ai_handoff_v1.json
           test -s data/diagnostics/repo_status.json
-          test -s data/model/actionability_v1.json
           test -s data/diagnostics/model_readiness_v2.json
+          test -s data/model/actionability_v1.json
           test -s data/model/similarity_forecast_v2_multi.json
           test -s data/model/similarity_forecast_v2_ETH-USDT.json
           test -s data/model/similarity_forecast_v2_BTC-USDT.json
