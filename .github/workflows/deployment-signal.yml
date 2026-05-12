@@ -124,6 +124,29 @@ jobs:
           ls -l data/model/similarity_forecast_v2_ETH-USDT.json
           ls -l data/model/similarity_forecast_v2_BTC-USDT.json
 
+      - name: Validate similarity forecast v2 assets
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("data/model/similarity_forecast_v2_multi.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+
+          generated = set(payload.get("assets_generated", []))
+          required = {"ETH-USDT", "BTC-USDT"}
+          missing = sorted(required - generated)
+
+          if missing:
+              raise SystemExit(f"Missing generated similarity assets: {missing}")
+
+          failed = payload.get("assets_failed", {})
+          if failed:
+              raise SystemExit(f"Similarity forecast asset failures: {failed}")
+
+          print("Similarity forecast assets validated:", sorted(generated))
+          PY
+
       - name: Build predictions v1
         run: |
           python scripts/build_predictions_v1.py
@@ -192,6 +215,27 @@ jobs:
           ls -l data/diagnostics/prediction_summary.json
           ls -l data/diagnostics/latest_rows_preview.json
 
+      - name: Validate repo diagnostics
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("data/diagnostics/repo_status.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+
+          missing_count = payload.get("summary", {}).get("watched_files_missing_count")
+          missing_files = payload.get("missing_watched_files", [])
+
+          if missing_count not in (0, None):
+              raise SystemExit(f"Diagnostics reports missing watched files: {missing_files}")
+
+          if missing_files:
+              raise SystemExit(f"Diagnostics reports missing watched files: {missing_files}")
+
+          print("Repo diagnostics validated.")
+          PY
+
       # -----------------------------
       # Commit outputs
       # -----------------------------
@@ -202,6 +246,9 @@ jobs:
           test -s data/hourly_report.json
           test -s data/ai_handoff_v1.json
           test -s data/diagnostics/repo_status.json
+          test -s data/model/similarity_forecast_v2_multi.json
+          test -s data/model/similarity_forecast_v2_ETH-USDT.json
+          test -s data/model/similarity_forecast_v2_BTC-USDT.json
 
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
