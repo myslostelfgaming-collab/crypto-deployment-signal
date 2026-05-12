@@ -116,7 +116,13 @@ jobs:
         run: |
           python scripts/build_similarity_forecast_v2.py
           test -s data/model/similarity_forecast_v2.json
+          test -s data/model/similarity_forecast_v2_multi.json
+          test -s data/model/similarity_forecast_v2_ETH-USDT.json
+          test -s data/model/similarity_forecast_v2_BTC-USDT.json
           ls -l data/model/similarity_forecast_v2.json
+          ls -l data/model/similarity_forecast_v2_multi.json
+          ls -l data/model/similarity_forecast_v2_ETH-USDT.json
+          ls -l data/model/similarity_forecast_v2_BTC-USDT.json
 
       - name: Build predictions v1
         run: |
