@@ -147,7 +147,7 @@ jobs:
           print("Similarity forecast assets validated:", sorted(generated))
           PY
 
-            - name: Build predictions v1
+      - name: Build predictions v1
         run: |
           python scripts/build_predictions_v1.py
           test -s data/model/predictions_v1.csv
