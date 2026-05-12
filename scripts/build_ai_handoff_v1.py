@@ -12,6 +12,8 @@ SIMILARITY_MULTI_PATH = os.path.join("data", "model", "similarity_forecast_v2_mu
 SIMILARITY_LEGACY_PATH = os.path.join("data", "model", "similarity_forecast_v2.json")
 PREDICTIONS_V1_PATH = os.path.join("data", "model", "predictions_v1.csv")
 PERFORMANCE_SUMMARY_PATH = os.path.join("data", "model", "performance_summary_v1.json")
+ACTIONABILITY_PATH = os.path.join("data", "model", "actionability_v1.json")
+
 REPO_STATUS_PATH = os.path.join("data", "diagnostics", "repo_status.json")
 MODEL_READINESS_PATH = os.path.join("data", "diagnostics", "model_readiness.json")
 PREDICTION_SUMMARY_PATH = os.path.join("data", "diagnostics", "prediction_summary.json")
@@ -291,14 +293,16 @@ def diagnostics_state() -> Dict[str, Any]:
     model_readiness = load_json(MODEL_READINESS_PATH)
     prediction_summary = load_json(PREDICTION_SUMMARY_PATH)
     performance_summary = load_json(PERFORMANCE_SUMMARY_PATH)
+    actionability_state = load_json(ACTIONABILITY_PATH)
 
     return {
-        "available": any([repo_status, model_readiness, prediction_summary, performance_summary]),
+        "available": any([repo_status, model_readiness, prediction_summary, performance_summary, actionability_state]),
         "repo_status_summary": (repo_status or {}).get("summary"),
         "missing_watched_files": (repo_status or {}).get("missing_watched_files"),
         "model_readiness": model_readiness,
         "prediction_summary": prediction_summary,
         "performance_summary": performance_summary,
+        "actionability_state": actionability_state,
     }
 
 
@@ -313,6 +317,7 @@ def build_interpretation_instructions() -> Dict[str, Any]:
             "For each active asset, explain the 24h, 48h, 7d, and 14d outlook.",
             "Separate observed market facts from model inference.",
             "Explain confidence and analogue quality clearly.",
+            "Use the actionability_state block to distinguish raw predictions from actionable/caution/not-actionable signals.",
             "If prediction evaluations are available, explain whether the model has been accurate or drifting.",
             "Give a cautious deployment posture, not financial advice.",
         ],
@@ -321,11 +326,12 @@ def build_interpretation_instructions() -> Dict[str, Any]:
             "2. ETH outlook: 24h / 48h / 7d / 14d",
             "3. BTC outlook: 24h / 48h / 7d / 14d",
             "4. Similarity quality and confidence",
-            "5. Recent prediction performance",
-            "6. Main upside case",
-            "7. Main downside risk",
-            "8. Deployment posture for a cautious user",
-            "9. Final verdict in 1-2 sentences",
+            "5. Actionability: ACTIONABLE / CAUTION / NOT_ACTIONABLE",
+            "6. Recent prediction performance",
+            "7. Main upside case",
+            "8. Main downside risk",
+            "9. Deployment posture for a cautious user",
+            "10. Final verdict in 1-2 sentences",
         ],
         "rules": [
             "Use plain English.",
@@ -334,6 +340,7 @@ def build_interpretation_instructions() -> Dict[str, Any]:
             "Treat 24h and 48h as tactical horizons, and 7d and 14d as broader directional horizons.",
             "If ETH and BTC conflict, explain the conflict.",
             "If confidence is low, say so clearly.",
+            "Do not treat every prediction as actionable; follow the ACTIONABLE / CAUTION / NOT_ACTIONABLE labels.",
             "BTC prediction history is newly active, so be cautious when interpreting BTC performance.",
         ],
     }
@@ -342,6 +349,7 @@ def build_interpretation_instructions() -> Dict[str, Any]:
 def main() -> None:
     hourly_report = load_json(HOURLY_REPORT_PATH)
     pred_rows = load_csv_rows(PREDICTIONS_V1_PATH)
+    actionability_state = load_json(ACTIONABILITY_PATH)
 
     payload = {
         "schema": "ai_handoff_v2",
@@ -353,6 +361,7 @@ def main() -> None:
                 "similarity_forecast_v2_legacy": SIMILARITY_LEGACY_PATH if os.path.isfile(SIMILARITY_LEGACY_PATH) else None,
                 "predictions_v1": PREDICTIONS_V1_PATH if os.path.isfile(PREDICTIONS_V1_PATH) else None,
                 "performance_summary_v1": PERFORMANCE_SUMMARY_PATH if os.path.isfile(PERFORMANCE_SUMMARY_PATH) else None,
+                "actionability_v1": ACTIONABILITY_PATH if os.path.isfile(ACTIONABILITY_PATH) else None,
                 "repo_status": REPO_STATUS_PATH if os.path.isfile(REPO_STATUS_PATH) else None,
                 "model_readiness": MODEL_READINESS_PATH if os.path.isfile(MODEL_READINESS_PATH) else None,
                 "prediction_summary": PREDICTION_SUMMARY_PATH if os.path.isfile(PREDICTION_SUMMARY_PATH) else None,
@@ -364,6 +373,7 @@ def main() -> None:
         "baseline_forecast_state": compact_baseline_forecast(hourly_report),
         "similarity_forecast_state": compact_similarity_forecasts(),
         "latest_prediction_state": latest_prediction_state(pred_rows),
+        "actionability_state": actionability_state or {"available": False},
         "prediction_evaluation_state": prediction_evaluation_state(pred_rows),
         "diagnostics_state": diagnostics_state(),
         "interpretation_instructions": build_interpretation_instructions(),
@@ -375,6 +385,9 @@ def main() -> None:
 
     print(f"AI handoff written to: {OUT_PATH}")
     print(f"Schema: {payload['schema']}")
+
+    if actionability_state:
+        print(f"Actionability schema: {actionability_state.get('schema')}")
 
     for asset, state in payload["latest_prediction_state"].get("assets", {}).items():
         print(f"{asset}: latest predictions available={state.get('available')}, rows={len(state.get('rows', []))}")
