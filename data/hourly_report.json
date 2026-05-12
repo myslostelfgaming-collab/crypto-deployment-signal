@@ -1,13 +1,20 @@
 {
-  "schema": "hourly_report_v1",
+  "schema": "hourly_report_v2",
   "timezone": "Africa/Johannesburg",
-  "published_at_utc": "2026-05-12T07:40:59.273916+00:00",
-  "published_at_local": "2026-05-12T09:40:59.273916+02:00",
+  "published_at_utc": "2026-05-12T07:47:46.240032+00:00",
+  "published_at_local": "2026-05-12T09:47:46.240032+02:00",
+  "active_prediction_assets": [
+    "ETH-USDT",
+    "BTC-USDT"
+  ],
+  "context_assets": [
+    "ETH-BTC"
+  ],
   "signal": {
     "date": "2026-05-12",
     "timezone": "Africa/Johannesburg",
-    "published_at_local": "2026-05-12T09:40:59.273916+02:00",
-    "published_at_utc": "2026-05-12T07:40:59.273916+00:00",
+    "published_at_local": "2026-05-12T09:47:46.240032+02:00",
+    "published_at_utc": "2026-05-12T07:47:46.240032+00:00",
     "integrity": {
       "eth_usdt": {
         "symbol": "ETH-USDT",
@@ -837,10 +844,10 @@
         [
           1778569200,
           2303.76,
-          2299.75,
+          2296.94,
           2304.99,
           2295.48,
-          1527.6591779
+          1817.8695702
         ]
       ],
       "btc_usdt_1h": [
@@ -1639,10 +1646,10 @@
         [
           1778569200,
           81021.4,
-          80967.2,
+          80860.5,
           81135.4,
-          80880.1,
-          35.06682708
+          80850.0,
+          40.99996694
         ]
       ],
       "eth_btc_1h": [
@@ -2444,7 +2451,7 @@
           0.02839,
           0.02851,
           0.02838,
-          72.3521773
+          72.4625596
         ]
       ]
     },
@@ -2452,14 +2459,14 @@
       "high": 2345.75,
       "low": 2295.48,
       "open": 2330.67,
-      "close": 2299.75,
+      "close": 2296.94,
       "gap_pct": 2.16
     },
     "btc_usdt": {
       "high": 82135.5,
       "low": 80461.2,
       "open": 80742.1,
-      "close": 80967.2,
+      "close": 80860.5,
       "gap_pct": 2.07
     },
     "eth_btc": {
@@ -2472,7 +2479,7 @@
   },
   "forecast": {
     "schema": "forecast_baseline_v1",
-    "as_of_utc": "2026-05-12T07:40:59.273916+00:00",
+    "as_of_utc": "2026-05-12T07:47:46.240032+00:00",
     "source": {
       "baseline_summary": "data/forecast/baseline_summary_v1.json",
       "labels": "data/labels/labels_v1.csv",
@@ -3018,8 +3025,1432 @@
       }
     ],
     "notes": [
-      "Baseline probabilities are empirical from labels_v1.csv (hit-anytime within horizon).",
-      "Sample size may be small early on; interpret probabilities cautiously until n_labels grows."
+      "Baseline probabilities are empirical from historical label outcomes.",
+      "Similarity predictions are reported separately under prediction_state and similarity_forecast_state."
     ]
-  }
+  },
+  "market_state": {
+    "date": "2026-05-12",
+    "timezone": "Africa/Johannesburg",
+    "published_at_utc": "2026-05-12T07:47:46.240032+00:00",
+    "published_at_local": "2026-05-12T09:47:46.240032+02:00",
+    "eth_usdt": {
+      "high": 2345.75,
+      "low": 2295.48,
+      "open": 2330.67,
+      "close": 2296.94,
+      "gap_pct": 2.16
+    },
+    "btc_usdt": {
+      "high": 82135.5,
+      "low": 80461.2,
+      "open": 80742.1,
+      "close": 80860.5,
+      "gap_pct": 2.07
+    },
+    "eth_btc": {
+      "high": 0.02889,
+      "low": 0.02838,
+      "open": 0.02887,
+      "close": 0.02839,
+      "gap_pct": 1.77
+    },
+    "integrity": {
+      "eth_usdt": {
+        "symbol": "ETH-USDT",
+        "interval": "1hour",
+        "requested_limit": 400,
+        "returned_count": 100,
+        "first_candle_open_time_utc": "2026-05-08T04:00:00+00:00",
+        "last_candle_open_time_utc": "2026-05-12T07:00:00+00:00",
+        "first_candle_open_time_local": "2026-05-08T06:00:00+02:00",
+        "last_candle_open_time_local": "2026-05-12T09:00:00+02:00"
+      },
+      "btc_usdt": {
+        "symbol": "BTC-USDT",
+        "interval": "1hour",
+        "requested_limit": 400,
+        "returned_count": 100,
+        "first_candle_open_time_utc": "2026-05-08T04:00:00+00:00",
+        "last_candle_open_time_utc": "2026-05-12T07:00:00+00:00",
+        "first_candle_open_time_local": "2026-05-08T06:00:00+02:00",
+        "last_candle_open_time_local": "2026-05-12T09:00:00+02:00"
+      },
+      "eth_btc": {
+        "symbol": "ETH-BTC",
+        "interval": "1hour",
+        "requested_limit": 400,
+        "returned_count": 100,
+        "first_candle_open_time_utc": "2026-05-08T04:00:00+00:00",
+        "last_candle_open_time_utc": "2026-05-12T07:00:00+00:00",
+        "first_candle_open_time_local": "2026-05-08T06:00:00+02:00",
+        "last_candle_open_time_local": "2026-05-12T09:00:00+02:00"
+      }
+    }
+  },
+  "baseline_forecast_state": {
+    "schema": "forecast_baseline_v1",
+    "as_of_utc": "2026-05-12T07:47:46.240032+00:00",
+    "source": {
+      "baseline_summary": "data/forecast/baseline_summary_v1.json",
+      "labels": "data/labels/labels_v1.csv",
+      "n_labels": 2568
+    },
+    "thresholds": [
+      0.5,
+      1.0,
+      2.0,
+      3.0,
+      5.0
+    ],
+    "horizons": [
+      12,
+      24,
+      36,
+      48,
+      60,
+      72,
+      84,
+      96
+    ],
+    "targets": [
+      {
+        "target_pct": 0.5,
+        "horizon_h": 12,
+        "n_total": 2568,
+        "n_hit": 1845,
+        "p_hit": 0.718458,
+        "t_hit_p25": 1.0,
+        "t_hit_median": 2.0,
+        "t_hit_p75": 4.0,
+        "mdd_p25": -0.7285,
+        "mdd_median": -0.2918,
+        "mdd_p75": -0.0515
+      },
+      {
+        "target_pct": 0.5,
+        "horizon_h": 24,
+        "n_total": 2568,
+        "n_hit": 2083,
+        "p_hit": 0.811137,
+        "t_hit_p25": 1.0,
+        "t_hit_median": 3.0,
+        "t_hit_p75": 6.0,
+        "mdd_p25": -0.9079999999999999,
+        "mdd_median": -0.3548,
+        "mdd_p75": -0.08085
+      },
+      {
+        "target_pct": 0.5,
+        "horizon_h": 36,
+        "n_total": 2568,
+        "n_hit": 2198,
+        "p_hit": 0.855919,
+        "t_hit_p25": 1.0,
+        "t_hit_median": 3.0,
+        "t_hit_p75": 8.0,
+        "mdd_p25": -0.990475,
+        "mdd_median": -0.39690000000000003,
+        "mdd_p75": -0.0957
+      },
+      {
+        "target_pct": 0.5,
+        "horizon_h": 48,
+        "n_total": 2568,
+        "n_hit": 2243,
+        "p_hit": 0.873442,
+        "t_hit_p25": 1.0,
+        "t_hit_median": 3.0,
+        "t_hit_p75": 8.0,
+        "mdd_p25": -1.0628000000000002,
+        "mdd_median": -0.4142,
+        "mdd_p75": -0.10135
+      },
+      {
+        "target_pct": 0.5,
+        "horizon_h": 60,
+        "n_total": 2568,
+        "n_hit": 2266,
+        "p_hit": 0.882399,
+        "t_hit_p25": 1.0,
+        "t_hit_median": 3.0,
+        "t_hit_p75": 9.0,
+        "mdd_p25": -1.1195,
+        "mdd_median": -0.4204,
+        "mdd_p75": -0.10297500000000001
+      },
+      {
+        "target_pct": 0.5,
+        "horizon_h": 72,
+        "n_total": 2568,
+        "n_hit": 2305,
+        "p_hit": 0.897586,
+        "t_hit_p25": 1.0,
+        "t_hit_median": 3.0,
+        "t_hit_p75": 9.0,
+        "mdd_p25": -1.1729,
+        "mdd_median": -0.436,
+        "mdd_p75": -0.1057
+      },
+      {
+        "target_pct": 0.5,
+        "horizon_h": 84,
+        "n_total": 2568,
+        "n_hit": 2348,
+        "p_hit": 0.91433,
+        "t_hit_p25": 1.0,
+        "t_hit_median": 3.0,
+        "t_hit_p75": 10.0,
+        "mdd_p25": -1.26305,
+        "mdd_median": -0.4492,
+        "mdd_p75": -0.11059999999999999
+      },
+      {
+        "target_pct": 0.5,
+        "horizon_h": 96,
+        "n_total": 2568,
+        "n_hit": 2377,
+        "p_hit": 0.925623,
+        "t_hit_p25": 1.0,
+        "t_hit_median": 3.0,
+        "t_hit_p75": 11.0,
+        "mdd_p25": -1.3265,
+        "mdd_median": -0.469,
+        "mdd_p75": -0.1162
+      },
+      {
+        "target_pct": 1.0,
+        "horizon_h": 12,
+        "n_total": 2568,
+        "n_hit": 1366,
+        "p_hit": 0.531931,
+        "t_hit_p25": 2.0,
+        "t_hit_median": 4.0,
+        "t_hit_p75": 7.0,
+        "mdd_p25": -0.9619249999999999,
+        "mdd_median": -0.3691,
+        "mdd_p75": -0.08082500000000001
+      },
+      {
+        "target_pct": 1.0,
+        "horizon_h": 24,
+        "n_total": 2568,
+        "n_hit": 1685,
+        "p_hit": 0.656153,
+        "t_hit_p25": 2.0,
+        "t_hit_median": 5.0,
+        "t_hit_p75": 10.0,
+        "mdd_p25": -1.1102,
+        "mdd_median": -0.4738,
+        "mdd_p75": -0.1288
+      },
+      {
+        "target_pct": 1.0,
+        "horizon_h": 36,
+        "n_total": 2568,
+        "n_hit": 1892,
+        "p_hit": 0.73676,
+        "t_hit_p25": 3.0,
+        "t_hit_median": 6.0,
+        "t_hit_p75": 14.0,
+        "mdd_p25": -1.323525,
+        "mdd_median": -0.53575,
+        "mdd_p75": -0.1589
+      },
+      {
+        "target_pct": 1.0,
+        "horizon_h": 48,
+        "n_total": 2568,
+        "n_hit": 1992,
+        "p_hit": 0.775701,
+        "t_hit_p25": 3.0,
+        "t_hit_median": 7.0,
+        "t_hit_p75": 17.0,
+        "mdd_p25": -1.380775,
+        "mdd_median": -0.5540499999999999,
+        "mdd_p75": -0.17185
+      },
+      {
+        "target_pct": 1.0,
+        "horizon_h": 60,
+        "n_total": 2568,
+        "n_hit": 2069,
+        "p_hit": 0.805685,
+        "t_hit_p25": 3.0,
+        "t_hit_median": 7.0,
+        "t_hit_p75": 18.0,
+        "mdd_p25": -1.4866,
+        "mdd_median": -0.5977,
+        "mdd_p75": -0.1834
+      },
+      {
+        "target_pct": 1.0,
+        "horizon_h": 72,
+        "n_total": 2568,
+        "n_hit": 2134,
+        "p_hit": 0.830997,
+        "t_hit_p25": 3.0,
+        "t_hit_median": 7.0,
+        "t_hit_p75": 20.0,
+        "mdd_p25": -1.6127999999999998,
+        "mdd_median": -0.6218,
+        "mdd_p75": -0.19415
+      },
+      {
+        "target_pct": 1.0,
+        "horizon_h": 84,
+        "n_total": 2568,
+        "n_hit": 2192,
+        "p_hit": 0.853583,
+        "t_hit_p25": 3.0,
+        "t_hit_median": 8.0,
+        "t_hit_p75": 23.0,
+        "mdd_p25": -1.71455,
+        "mdd_median": -0.66525,
+        "mdd_p75": -0.205575
+      },
+      {
+        "target_pct": 1.0,
+        "horizon_h": 96,
+        "n_total": 2568,
+        "n_hit": 2229,
+        "p_hit": 0.867991,
+        "t_hit_p25": 3.0,
+        "t_hit_median": 8.0,
+        "t_hit_p75": 24.0,
+        "mdd_p25": -1.8043,
+        "mdd_median": -0.6845,
+        "mdd_p75": -0.2157
+      },
+      {
+        "target_pct": 2.0,
+        "horizon_h": 12,
+        "n_total": 2568,
+        "n_hit": 667,
+        "p_hit": 0.259735,
+        "t_hit_p25": 3.0,
+        "t_hit_median": 5.0,
+        "t_hit_p75": 9.0,
+        "mdd_p25": -0.98455,
+        "mdd_median": -0.4163,
+        "mdd_p75": -0.1054
+      },
+      {
+        "target_pct": 2.0,
+        "horizon_h": 24,
+        "n_total": 2568,
+        "n_hit": 1072,
+        "p_hit": 0.417445,
+        "t_hit_p25": 4.0,
+        "t_hit_median": 9.0,
+        "t_hit_p75": 16.0,
+        "mdd_p25": -1.3003,
+        "mdd_median": -0.5744,
+        "mdd_p75": -0.179225
+      },
+      {
+        "target_pct": 2.0,
+        "horizon_h": 36,
+        "n_total": 2568,
+        "n_hit": 1349,
+        "p_hit": 0.525312,
+        "t_hit_p25": 5.0,
+        "t_hit_median": 13.0,
+        "t_hit_p75": 22.0,
+        "mdd_p25": -1.5137,
+        "mdd_median": -0.6798,
+        "mdd_p75": -0.2238
+      },
+      {
+        "target_pct": 2.0,
+        "horizon_h": 48,
+        "n_total": 2568,
+        "n_hit": 1533,
+        "p_hit": 0.596963,
+        "t_hit_p25": 6.0,
+        "t_hit_median": 15.0,
+        "t_hit_p75": 28.0,
+        "mdd_p25": -1.5877,
+        "mdd_median": -0.754,
+        "mdd_p75": -0.2654
+      },
+      {
+        "target_pct": 2.0,
+        "horizon_h": 60,
+        "n_total": 2568,
+        "n_hit": 1659,
+        "p_hit": 0.646028,
+        "t_hit_p25": 7.0,
+        "t_hit_median": 17.0,
+        "t_hit_p75": 32.0,
+        "mdd_p25": -1.64475,
+        "mdd_median": -0.822,
+        "mdd_p75": -0.28469999999999995
+      },
+      {
+        "target_pct": 2.0,
+        "horizon_h": 72,
+        "n_total": 2568,
+        "n_hit": 1770,
+        "p_hit": 0.689252,
+        "t_hit_p25": 7.0,
+        "t_hit_median": 18.0,
+        "t_hit_p75": 36.0,
+        "mdd_p25": -1.8075,
+        "mdd_median": -0.92235,
+        "mdd_p75": -0.3122
+      },
+      {
+        "target_pct": 2.0,
+        "horizon_h": 84,
+        "n_total": 2568,
+        "n_hit": 1851,
+        "p_hit": 0.720794,
+        "t_hit_p25": 8.0,
+        "t_hit_median": 19.0,
+        "t_hit_p75": 39.0,
+        "mdd_p25": -1.9859499999999999,
+        "mdd_median": -0.9728,
+        "mdd_p75": -0.33314999999999995
+      },
+      {
+        "target_pct": 2.0,
+        "horizon_h": 96,
+        "n_total": 2568,
+        "n_hit": 1926,
+        "p_hit": 0.75,
+        "t_hit_p25": 8.0,
+        "t_hit_median": 21.0,
+        "t_hit_p75": 42.0,
+        "mdd_p25": -2.166475,
+        "mdd_median": -1.0228000000000002,
+        "mdd_p75": -0.34875
+      },
+      {
+        "target_pct": 3.0,
+        "horizon_h": 12,
+        "n_total": 2568,
+        "n_hit": 366,
+        "p_hit": 0.142523,
+        "t_hit_p25": 3.0,
+        "t_hit_median": 6.0,
+        "t_hit_p75": 9.0,
+        "mdd_p25": -0.9551249999999999,
+        "mdd_median": -0.39339999999999997,
+        "mdd_p75": -0.11019999999999999
+      },
+      {
+        "target_pct": 3.0,
+        "horizon_h": 24,
+        "n_total": 2568,
+        "n_hit": 633,
+        "p_hit": 0.246495,
+        "t_hit_p25": 5.0,
+        "t_hit_median": 10.0,
+        "t_hit_p75": 17.0,
+        "mdd_p25": -1.3223,
+        "mdd_median": -0.5524,
+        "mdd_p75": -0.1663
+      },
+      {
+        "target_pct": 3.0,
+        "horizon_h": 36,
+        "n_total": 2568,
+        "n_hit": 895,
+        "p_hit": 0.34852,
+        "t_hit_p25": 7.0,
+        "t_hit_median": 16.0,
+        "t_hit_p75": 26.0,
+        "mdd_p25": -1.58795,
+        "mdd_median": -0.6767,
+        "mdd_p75": -0.21225
+      },
+      {
+        "target_pct": 3.0,
+        "horizon_h": 48,
+        "n_total": 2568,
+        "n_hit": 1108,
+        "p_hit": 0.431464,
+        "t_hit_p25": 9.0,
+        "t_hit_median": 21.0,
+        "t_hit_p75": 33.0,
+        "mdd_p25": -1.7046750000000002,
+        "mdd_median": -0.8016,
+        "mdd_p75": -0.275775
+      },
+      {
+        "target_pct": 3.0,
+        "horizon_h": 60,
+        "n_total": 2568,
+        "n_hit": 1263,
+        "p_hit": 0.491822,
+        "t_hit_p25": 10.0,
+        "t_hit_median": 24.0,
+        "t_hit_p75": 39.0,
+        "mdd_p25": -1.7551,
+        "mdd_median": -0.8854,
+        "mdd_p75": -0.3032
+      },
+      {
+        "target_pct": 3.0,
+        "horizon_h": 72,
+        "n_total": 2568,
+        "n_hit": 1397,
+        "p_hit": 0.544003,
+        "t_hit_p25": 12.0,
+        "t_hit_median": 27.0,
+        "t_hit_p75": 44.0,
+        "mdd_p25": -1.9166,
+        "mdd_median": -0.9677,
+        "mdd_p75": -0.3402
+      },
+      {
+        "target_pct": 3.0,
+        "horizon_h": 84,
+        "n_total": 2568,
+        "n_hit": 1492,
+        "p_hit": 0.580997,
+        "t_hit_p25": 13.0,
+        "t_hit_median": 29.0,
+        "t_hit_p75": 49.0,
+        "mdd_p25": -2.0482,
+        "mdd_median": -0.99885,
+        "mdd_p75": -0.369175
+      },
+      {
+        "target_pct": 3.0,
+        "horizon_h": 96,
+        "n_total": 2568,
+        "n_hit": 1565,
+        "p_hit": 0.609424,
+        "t_hit_p25": 14.0,
+        "t_hit_median": 31.0,
+        "t_hit_p75": 53.0,
+        "mdd_p25": -2.1569,
+        "mdd_median": -1.0572,
+        "mdd_p75": -0.4065
+      },
+      {
+        "target_pct": 5.0,
+        "horizon_h": 12,
+        "n_total": 2568,
+        "n_hit": 148,
+        "p_hit": 0.057632,
+        "t_hit_p25": 5.0,
+        "t_hit_median": 7.0,
+        "t_hit_p75": 10.0,
+        "mdd_p25": -0.8855000000000001,
+        "mdd_median": -0.2914,
+        "mdd_p75": -0.06665
+      },
+      {
+        "target_pct": 5.0,
+        "horizon_h": 24,
+        "n_total": 2568,
+        "n_hit": 297,
+        "p_hit": 0.115654,
+        "t_hit_p25": 7.0,
+        "t_hit_median": 13.0,
+        "t_hit_p75": 18.0,
+        "mdd_p25": -1.3315,
+        "mdd_median": -0.5345,
+        "mdd_p75": -0.1176
+      },
+      {
+        "target_pct": 5.0,
+        "horizon_h": 36,
+        "n_total": 2568,
+        "n_hit": 423,
+        "p_hit": 0.16472,
+        "t_hit_p25": 9.5,
+        "t_hit_median": 18.0,
+        "t_hit_p75": 27.0,
+        "mdd_p25": -1.6797,
+        "mdd_median": -0.6772,
+        "mdd_p75": -0.16985
+      },
+      {
+        "target_pct": 5.0,
+        "horizon_h": 48,
+        "n_total": 2568,
+        "n_hit": 567,
+        "p_hit": 0.220794,
+        "t_hit_p25": 12.0,
+        "t_hit_median": 23.0,
+        "t_hit_p75": 37.0,
+        "mdd_p25": -2.0589500000000003,
+        "mdd_median": -0.8977,
+        "mdd_p75": -0.2625
+      },
+      {
+        "target_pct": 5.0,
+        "horizon_h": 60,
+        "n_total": 2568,
+        "n_hit": 701,
+        "p_hit": 0.272975,
+        "t_hit_p25": 15.0,
+        "t_hit_median": 29.0,
+        "t_hit_p75": 45.0,
+        "mdd_p25": -2.1398,
+        "mdd_median": -1.0531,
+        "mdd_p75": -0.2991
+      },
+      {
+        "target_pct": 5.0,
+        "horizon_h": 72,
+        "n_total": 2568,
+        "n_hit": 807,
+        "p_hit": 0.314252,
+        "t_hit_p25": 17.0,
+        "t_hit_median": 35.0,
+        "t_hit_p75": 52.0,
+        "mdd_p25": -2.2790999999999997,
+        "mdd_median": -1.1694,
+        "mdd_p75": -0.32775
+      },
+      {
+        "target_pct": 5.0,
+        "horizon_h": 84,
+        "n_total": 2568,
+        "n_hit": 943,
+        "p_hit": 0.367212,
+        "t_hit_p25": 19.5,
+        "t_hit_median": 41.0,
+        "t_hit_p75": 61.0,
+        "mdd_p25": -2.4724,
+        "mdd_median": -1.2785,
+        "mdd_p75": -0.38634999999999997
+      },
+      {
+        "target_pct": 5.0,
+        "horizon_h": 96,
+        "n_total": 2568,
+        "n_hit": 1025,
+        "p_hit": 0.399143,
+        "t_hit_p25": 21.0,
+        "t_hit_median": 44.0,
+        "t_hit_p75": 68.0,
+        "mdd_p25": -2.4658,
+        "mdd_median": -1.2602,
+        "mdd_p75": -0.4157
+      }
+    ],
+    "notes": [
+      "Baseline probabilities are empirical from historical label outcomes.",
+      "Similarity predictions are reported separately under prediction_state and similarity_forecast_state."
+    ]
+  },
+  "similarity_forecast_state": {
+    "available": true,
+    "schema": "similarity_forecast_v2_multi",
+    "generated_at_utc": "2026-05-12T07:47:53.678107+00:00",
+    "as_of_utc": "2026-05-12T07:47:46.240032+00:00",
+    "as_of_local": "2026-05-12T09:47:46.240032+02:00",
+    "assets_requested": [
+      "ETH-USDT",
+      "BTC-USDT"
+    ],
+    "assets_generated": [
+      "ETH-USDT",
+      "BTC-USDT"
+    ],
+    "assets_failed": {},
+    "legacy_asset": "ETH-USDT",
+    "forecast_files": {
+      "ETH-USDT": "data/model/similarity_forecast_v2_ETH-USDT.json",
+      "BTC-USDT": "data/model/similarity_forecast_v2_BTC-USDT.json"
+    },
+    "by_asset": {
+      "ETH-USDT": {
+        "available": true,
+        "schema": "similarity_forecast_v2",
+        "generated_at_utc": "2026-05-12T07:47:53.666194+00:00",
+        "as_of_utc": "2026-05-12T07:47:46.240032+00:00",
+        "as_of_local": "2026-05-12T09:47:46.240032+02:00",
+        "asset": "ETH-USDT",
+        "candle_key": "eth_usdt_1h",
+        "settings": {
+          "primary_top_k": 20,
+          "context_top_k": 50,
+          "min_required_numeric_features": 8,
+          "regime_mismatch_penalty": 1.0,
+          "weight_power": 2.0,
+          "current_window_note": "Current feature vector uses available snapshot candles, currently up to the exchange/free-plan limit. Forecast horizons still use historical matured outcomes."
+        },
+        "current_state": {
+          "entry_ts_utc": "1778569200",
+          "entry_close": 2296.94,
+          "n_candles_snapshot": 100,
+          "features": {
+            "ret_6h_pct": -0.6298940082197684,
+            "ret_12h_pct": -1.8607214728539636,
+            "ret_24h_pct": -1.4472233306302487,
+            "ret_48h_pct": -1.3151167536680255,
+            "range_24h_pct": 2.1885639154701466,
+            "range_48h_pct": 3.785906466864613,
+            "atr14_pct": 0.5454966802419686,
+            "dist_from_24h_high_pct": -2.1250010884045705,
+            "dist_from_24h_low_pct": 0.06356282706557578,
+            "dist_from_48h_high_pct": -3.722343639799037,
+            "dist_from_48h_low_pct": 0.06356282706557578,
+            "close_vs_sma_24_pct": -1.2604629602430817,
+            "close_vs_sma_48_pct": -1.5871732217573198,
+            "is_up_24h": "0",
+            "is_up_48h": "0"
+          }
+        },
+        "model_dataset": {
+          "path": "data/model/model_dataset_v1.csv",
+          "n_rows_total": 2658,
+          "n_rows_asset": 2291
+        },
+        "similarity": {
+          "neighbors_found_total": 2291,
+          "primary_neighbors_found": 20,
+          "context_neighbors_found": 50,
+          "skipped_same_timestamp": 0,
+          "skipped_insufficient_features": 0,
+          "best_distance": 0.550873,
+          "worst_primary_distance": 1.019044,
+          "worst_context_distance": 1.245458
+        },
+        "directional_scorecard": {
+          "24h": {
+            "horizon_h": 24,
+            "signal": "mixed",
+            "confidence": "low",
+            "weighted_close_mean": -0.2127,
+            "weighted_close_median": 0.8408,
+            "weighted_max_up_mean": 2.3206,
+            "weighted_max_down_mean": -2.5014,
+            "score": 0.0773
+          },
+          "48h": {
+            "horizon_h": 48,
+            "signal": "mixed",
+            "confidence": "low",
+            "weighted_close_mean": -0.4692,
+            "weighted_close_median": 0.4301,
+            "weighted_max_up_mean": 3.0368,
+            "weighted_max_down_mean": -3.5753,
+            "score": -0.0586
+          },
+          "168h": {
+            "horizon_h": 168,
+            "signal": "bullish",
+            "confidence": "low",
+            "weighted_close_mean": 0.9187,
+            "weighted_close_median": 1.0989,
+            "weighted_max_up_mean": 9.292,
+            "weighted_max_down_mean": -5.6667,
+            "score": 2.0242
+          },
+          "336h": {
+            "horizon_h": 336,
+            "signal": "bullish",
+            "confidence": "low",
+            "weighted_close_mean": 0.279,
+            "weighted_close_median": 0.7774,
+            "weighted_max_up_mean": 12.4331,
+            "weighted_max_down_mean": -7.2899,
+            "score": 2.1822
+          }
+        },
+        "overall_confidence": "medium",
+        "notes": [
+          "v2 uses distance-weighted summaries.",
+          "Closest matches count more via inverse-distance weighting.",
+          "Directional scorecard is based on weighted close change, upside, and downside across each horizon.",
+          "This file is now asset-parameterised. ETH legacy output is retained for downstream compatibility."
+        ]
+      },
+      "BTC-USDT": {
+        "available": true,
+        "schema": "similarity_forecast_v2",
+        "generated_at_utc": "2026-05-12T07:47:53.675524+00:00",
+        "as_of_utc": "2026-05-12T07:47:46.240032+00:00",
+        "as_of_local": "2026-05-12T09:47:46.240032+02:00",
+        "asset": "BTC-USDT",
+        "candle_key": "btc_usdt_1h",
+        "settings": {
+          "primary_top_k": 20,
+          "context_top_k": 50,
+          "min_required_numeric_features": 8,
+          "regime_mismatch_penalty": 1.0,
+          "weight_power": 2.0,
+          "current_window_note": "Current feature vector uses available snapshot candles, currently up to the exchange/free-plan limit. Forecast horizons still use historical matured outcomes."
+        },
+        "current_state": {
+          "entry_ts_utc": "1778569200",
+          "entry_close": 80860.5,
+          "n_candles_snapshot": 100,
+          "features": {
+            "ret_6h_pct": -0.40915008368978634,
+            "ret_12h_pct": -1.3486096047258607,
+            "ret_24h_pct": 0.1467637660697035,
+            "ret_48h_pct": 0.1583001683332812,
+            "range_24h_pct": 2.0706030756673566,
+            "range_48h_pct": 2.6946407702153636,
+            "atr14_pct": 0.44810891333391817,
+            "dist_from_24h_high_pct": -1.5767896562598551,
+            "dist_from_24h_low_pct": 0.4938134194075017,
+            "dist_from_48h_high_pct": -1.9835395526864097,
+            "dist_from_48h_low_pct": 0.7111012175289542,
+            "close_vs_sma_24_pct": -0.5979483240989525,
+            "close_vs_sma_48_pct": -0.4619705647477751,
+            "is_up_24h": "1",
+            "is_up_48h": "1"
+          }
+        },
+        "model_dataset": {
+          "path": "data/model/model_dataset_v1.csv",
+          "n_rows_total": 2658,
+          "n_rows_asset": 367
+        },
+        "similarity": {
+          "neighbors_found_total": 367,
+          "primary_neighbors_found": 20,
+          "context_neighbors_found": 50,
+          "skipped_same_timestamp": 0,
+          "skipped_insufficient_features": 0,
+          "best_distance": 1.36356,
+          "worst_primary_distance": 2.434265,
+          "worst_context_distance": 3.042521
+        },
+        "directional_scorecard": {
+          "24h": {
+            "horizon_h": 24,
+            "signal": "mixed",
+            "confidence": "medium",
+            "weighted_close_mean": 0.2759,
+            "weighted_close_median": 0.1909,
+            "weighted_max_up_mean": 1.723,
+            "weighted_max_down_mean": -1.4116,
+            "score": 0.3846
+          },
+          "48h": {
+            "horizon_h": 48,
+            "signal": "bullish",
+            "confidence": "medium",
+            "weighted_close_mean": 1.2054,
+            "weighted_close_median": 2.0065,
+            "weighted_max_up_mean": 2.9663,
+            "weighted_max_down_mean": -1.5685,
+            "score": 1.2296
+          },
+          "168h": {
+            "horizon_h": 168,
+            "signal": "bullish",
+            "confidence": "low",
+            "weighted_close_mean": 4.0097,
+            "weighted_close_median": 3.971,
+            "weighted_max_up_mean": 6.2926,
+            "weighted_max_down_mean": -2.1823,
+            "score": 3.6516
+          },
+          "336h": {
+            "horizon_h": 336,
+            "signal": "bullish",
+            "confidence": "low",
+            "weighted_close_mean": 6.9345,
+            "weighted_close_median": 4.3365,
+            "weighted_max_up_mean": 9.957,
+            "weighted_max_down_mean": -2.1838,
+            "score": 6.3224
+          }
+        },
+        "overall_confidence": "medium",
+        "notes": [
+          "v2 uses distance-weighted summaries.",
+          "Closest matches count more via inverse-distance weighting.",
+          "Directional scorecard is based on weighted close change, upside, and downside across each horizon.",
+          "This file is now asset-parameterised. ETH legacy output is retained for downstream compatibility."
+        ]
+      }
+    }
+  },
+  "latest_prediction_state": {
+    "available": true,
+    "assets": {
+      "ETH-USDT": {
+        "available": true,
+        "latest_entry_ts_utc": "1778569200",
+        "latest_created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+        "rows": [
+          {
+            "asset": "ETH-USDT",
+            "created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+            "created_at_local": "2026-05-12T09:04:30.660352+02:00",
+            "entry_ts_utc": "1778569200",
+            "entry_close": 2298.12,
+            "horizon_h": 24,
+            "target_ts_utc": "2026-05-13T07:00:00+00:00",
+            "predicted_close_change_pct": 0.2156,
+            "predicted_price": 2303.0759,
+            "prediction_method": "blend_0p7_median_0p3_mean",
+            "confidence": "low",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 0.502204,
+            "weighted_close_mean": -0.2495,
+            "weighted_close_median": 0.415,
+            "weighted_upside_mean": 2.3513,
+            "weighted_downside_mean": -2.6005,
+            "model_version": "similarity_forecast_v2_multi",
+            "status": "pending",
+            "actual_close": null,
+            "actual_close_change_pct": null,
+            "error_abs": null,
+            "error_pct": null,
+            "hit_direction": "",
+            "drift_tag": "",
+            "evaluated_at_utc": ""
+          },
+          {
+            "asset": "ETH-USDT",
+            "created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+            "created_at_local": "2026-05-12T09:04:30.660352+02:00",
+            "entry_ts_utc": "1778569200",
+            "entry_close": 2298.12,
+            "horizon_h": 48,
+            "target_ts_utc": "2026-05-14T07:00:00+00:00",
+            "predicted_close_change_pct": 0.0675,
+            "predicted_price": 2299.6717,
+            "prediction_method": "blend_0p7_median_0p3_mean",
+            "confidence": "low",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 0.502204,
+            "weighted_close_mean": -0.7785,
+            "weighted_close_median": 0.4301,
+            "weighted_upside_mean": 2.8524,
+            "weighted_downside_mean": -3.7145,
+            "model_version": "similarity_forecast_v2_multi",
+            "status": "pending",
+            "actual_close": null,
+            "actual_close_change_pct": null,
+            "error_abs": null,
+            "error_pct": null,
+            "hit_direction": "",
+            "drift_tag": "",
+            "evaluated_at_utc": ""
+          },
+          {
+            "asset": "ETH-USDT",
+            "created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+            "created_at_local": "2026-05-12T09:04:30.660352+02:00",
+            "entry_ts_utc": "1778569200",
+            "entry_close": 2298.12,
+            "horizon_h": 168,
+            "target_ts_utc": "2026-05-19T07:00:00+00:00",
+            "predicted_close_change_pct": 1.069,
+            "predicted_price": 2322.686,
+            "prediction_method": "blend_0p7_median_0p3_mean",
+            "confidence": "low",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 0.502204,
+            "weighted_close_mean": 0.9991,
+            "weighted_close_median": 1.0989,
+            "weighted_upside_mean": 9.4301,
+            "weighted_downside_mean": -5.7167,
+            "model_version": "similarity_forecast_v2_multi",
+            "status": "pending",
+            "actual_close": null,
+            "actual_close_change_pct": null,
+            "error_abs": null,
+            "error_pct": null,
+            "hit_direction": "",
+            "drift_tag": "",
+            "evaluated_at_utc": ""
+          },
+          {
+            "asset": "ETH-USDT",
+            "created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+            "created_at_local": "2026-05-12T09:04:30.660352+02:00",
+            "entry_ts_utc": "1778569200",
+            "entry_close": 2298.12,
+            "horizon_h": 336,
+            "target_ts_utc": "2026-05-26T07:00:00+00:00",
+            "predicted_close_change_pct": 0.8318,
+            "predicted_price": 2317.2369,
+            "prediction_method": "blend_0p7_median_0p3_mean",
+            "confidence": "low",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 0.502204,
+            "weighted_close_mean": 0.9589,
+            "weighted_close_median": 0.7774,
+            "weighted_upside_mean": 12.7154,
+            "weighted_downside_mean": -7.0037,
+            "model_version": "similarity_forecast_v2_multi",
+            "status": "pending",
+            "actual_close": null,
+            "actual_close_change_pct": null,
+            "error_abs": null,
+            "error_pct": null,
+            "hit_direction": "",
+            "drift_tag": "",
+            "evaluated_at_utc": ""
+          }
+        ]
+      },
+      "BTC-USDT": {
+        "available": true,
+        "latest_entry_ts_utc": "1778569200",
+        "latest_created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+        "rows": [
+          {
+            "asset": "BTC-USDT",
+            "created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+            "created_at_local": "2026-05-12T09:04:30.660352+02:00",
+            "entry_ts_utc": "1778569200",
+            "entry_close": 80914.1,
+            "horizon_h": 24,
+            "target_ts_utc": "2026-05-13T07:00:00+00:00",
+            "predicted_close_change_pct": 0.3271,
+            "predicted_price": 81178.77,
+            "prediction_method": "blend_0p7_median_0p3_mean",
+            "confidence": "medium",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 1.357934,
+            "weighted_close_mean": 0.2522,
+            "weighted_close_median": 0.3592,
+            "weighted_upside_mean": 1.7581,
+            "weighted_downside_mean": -1.4454,
+            "model_version": "similarity_forecast_v2_multi",
+            "status": "pending",
+            "actual_close": null,
+            "actual_close_change_pct": null,
+            "error_abs": null,
+            "error_pct": null,
+            "hit_direction": "",
+            "drift_tag": "",
+            "evaluated_at_utc": ""
+          },
+          {
+            "asset": "BTC-USDT",
+            "created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+            "created_at_local": "2026-05-12T09:04:30.660352+02:00",
+            "entry_ts_utc": "1778569200",
+            "entry_close": 80914.1,
+            "horizon_h": 48,
+            "target_ts_utc": "2026-05-14T07:00:00+00:00",
+            "predicted_close_change_pct": 1.7522,
+            "predicted_price": 82331.8445,
+            "prediction_method": "blend_0p7_median_0p3_mean",
+            "confidence": "medium",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 1.357934,
+            "weighted_close_mean": 1.1587,
+            "weighted_close_median": 2.0065,
+            "weighted_upside_mean": 3.0283,
+            "weighted_downside_mean": -1.6373,
+            "model_version": "similarity_forecast_v2_multi",
+            "status": "pending",
+            "actual_close": null,
+            "actual_close_change_pct": null,
+            "error_abs": null,
+            "error_pct": null,
+            "hit_direction": "",
+            "drift_tag": "",
+            "evaluated_at_utc": ""
+          },
+          {
+            "asset": "BTC-USDT",
+            "created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+            "created_at_local": "2026-05-12T09:04:30.660352+02:00",
+            "entry_ts_utc": "1778569200",
+            "entry_close": 80914.1,
+            "horizon_h": 168,
+            "target_ts_utc": "2026-05-19T07:00:00+00:00",
+            "predicted_close_change_pct": 4.1822,
+            "predicted_price": 84298.1057,
+            "prediction_method": "blend_0p7_median_0p3_mean",
+            "confidence": "medium",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 1.357934,
+            "weighted_close_mean": 4.3694,
+            "weighted_close_median": 4.102,
+            "weighted_upside_mean": 6.5922,
+            "weighted_downside_mean": -2.1244,
+            "model_version": "similarity_forecast_v2_multi",
+            "status": "pending",
+            "actual_close": null,
+            "actual_close_change_pct": null,
+            "error_abs": null,
+            "error_pct": null,
+            "hit_direction": "",
+            "drift_tag": "",
+            "evaluated_at_utc": ""
+          },
+          {
+            "asset": "BTC-USDT",
+            "created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+            "created_at_local": "2026-05-12T09:04:30.660352+02:00",
+            "entry_ts_utc": "1778569200",
+            "entry_close": 80914.1,
+            "horizon_h": 336,
+            "target_ts_utc": "2026-05-26T07:00:00+00:00",
+            "predicted_close_change_pct": 6.7546,
+            "predicted_price": 86379.5238,
+            "prediction_method": "blend_0p7_median_0p3_mean",
+            "confidence": "low",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 1.357934,
+            "weighted_close_mean": 7.3132,
+            "weighted_close_median": 6.5152,
+            "weighted_upside_mean": 10.2537,
+            "weighted_downside_mean": -2.1258,
+            "model_version": "similarity_forecast_v2_multi",
+            "status": "pending",
+            "actual_close": null,
+            "actual_close_change_pct": null,
+            "error_abs": null,
+            "error_pct": null,
+            "hit_direction": "",
+            "drift_tag": "",
+            "evaluated_at_utc": ""
+          }
+        ]
+      }
+    }
+  },
+  "prediction_evaluation_state": {
+    "available": true,
+    "n_total": 1997,
+    "by_asset": {
+      "ETH-USDT": {
+        "n_total": 1993,
+        "n_evaluated": 1721,
+        "n_pending": 272,
+        "by_horizon": {
+          "24": {
+            "n_evaluated": 488,
+            "direction_correct": 240,
+            "direction_accuracy_pct": 49.18,
+            "mean_error_abs": 10.463,
+            "mean_error_pct": 0.5243
+          },
+          "48": {
+            "n_evaluated": 474,
+            "direction_correct": 231,
+            "direction_accuracy_pct": 48.73,
+            "mean_error_abs": 18.9514,
+            "mean_error_pct": 0.956
+          },
+          "168": {
+            "n_evaluated": 420,
+            "direction_correct": 182,
+            "direction_accuracy_pct": 43.33,
+            "mean_error_abs": 48.8202,
+            "mean_error_pct": 2.5045
+          },
+          "336": {
+            "n_evaluated": 339,
+            "direction_correct": 150,
+            "direction_accuracy_pct": 44.25,
+            "mean_error_abs": 80.1055,
+            "mean_error_pct": 4.3647
+          }
+        }
+      },
+      "BTC-USDT": {
+        "n_total": 4,
+        "n_evaluated": 0,
+        "n_pending": 4,
+        "by_horizon": {
+          "24": {
+            "n_evaluated": 0
+          },
+          "48": {
+            "n_evaluated": 0
+          },
+          "168": {
+            "n_evaluated": 0
+          },
+          "336": {
+            "n_evaluated": 0
+          }
+        }
+      }
+    }
+  },
+  "prediction_diagnostics": {
+    "prediction_summary": {
+      "schema": "prediction_summary_v1",
+      "generated_at_utc": "2026-05-12T07:41:09.524644+00:00",
+      "path": "data/model/predictions_v1.csv",
+      "exists": true,
+      "total_rows": 1997,
+      "by_asset": {
+        "ETH-USDT": 1993,
+        "BTC-USDT": 4
+      },
+      "by_status": {
+        "evaluated": 1721,
+        "pending": 276
+      },
+      "by_horizon": {
+        "24": 500,
+        "48": 499,
+        "168": 499,
+        "336": 499
+      },
+      "latest_created_at_utc": "2026-05-12T07:04:30.660352+00:00",
+      "latest_entry_ts_utc": "1778569200",
+      "error": null
+    },
+    "model_readiness": {
+      "schema": "model_readiness_v1",
+      "generated_at_utc": "2026-05-12T07:41:09.555712+00:00",
+      "method_note": "Readiness is diagnostic only. It checks whether data/prediction rows exist. It does not yet prove forecast accuracy.",
+      "assets": {
+        "ETH-USDT": {
+          "model_rows": 2291,
+          "prediction_rows": 1993,
+          "horizons": {
+            "24": {
+              "label_rows": 2291,
+              "status": "ready"
+            },
+            "48": {
+              "label_rows": 2291,
+              "status": "ready"
+            },
+            "168": {
+              "label_rows": 2291,
+              "status": "ready"
+            },
+            "336": {
+              "label_rows": 2291,
+              "status": "ready"
+            }
+          },
+          "active_prediction_asset": true
+        },
+        "BTC-USDT": {
+          "model_rows": 367,
+          "prediction_rows": 4,
+          "horizons": {
+            "24": {
+              "label_rows": 367,
+              "status": "ready"
+            },
+            "48": {
+              "label_rows": 367,
+              "status": "ready"
+            },
+            "168": {
+              "label_rows": 367,
+              "status": "ready"
+            },
+            "336": {
+              "label_rows": 367,
+              "status": "ready"
+            }
+          },
+          "active_prediction_asset": true
+        },
+        "ETH-BTC": {
+          "model_rows": 0,
+          "prediction_rows": 0,
+          "horizons": {
+            "24": {
+              "label_rows": 0,
+              "status": "not_ready"
+            },
+            "48": {
+              "label_rows": 0,
+              "status": "not_ready"
+            },
+            "168": {
+              "label_rows": 0,
+              "status": "not_ready"
+            },
+            "336": {
+              "label_rows": 0,
+              "status": "not_ready"
+            }
+          },
+          "active_prediction_asset": false
+        }
+      },
+      "model_dataset": {
+        "exists": true,
+        "rows_excluding_header": 2658,
+        "columns": [
+          "asset",
+          "published_at_utc",
+          "published_at_local",
+          "date_local",
+          "history_file",
+          "entry_ts_utc",
+          "entry_close",
+          "n_candles_snapshot",
+          "ret_6h_pct",
+          "ret_12h_pct",
+          "ret_24h_pct",
+          "ret_48h_pct",
+          "range_24h_pct",
+          "range_48h_pct",
+          "atr14_pct",
+          "dist_from_24h_high_pct",
+          "dist_from_24h_low_pct",
+          "dist_from_48h_high_pct",
+          "dist_from_48h_low_pct",
+          "close_vs_sma_24_pct",
+          "close_vs_sma_48_pct",
+          "is_up_24h",
+          "is_up_48h",
+          "max_up_pct_24",
+          "max_down_pct_24",
+          "close_change_pct_24",
+          "range_pct_24",
+          "max_up_pct_48",
+          "max_down_pct_48",
+          "close_change_pct_48",
+          "range_pct_48",
+          "max_up_pct_168",
+          "max_down_pct_168",
+          "close_change_pct_168",
+          "range_pct_168",
+          "max_up_pct_336",
+          "max_down_pct_336",
+          "close_change_pct_336",
+          "range_pct_336",
+          "t_hit_up_0p5",
+          "t_hit_down_0p5",
+          "mdd_before_hit_up_0p5",
+          "t_hit_up_1",
+          "t_hit_down_1",
+          "mdd_before_hit_up_1",
+          "t_hit_up_2",
+          "t_hit_down_2",
+          "mdd_before_hit_up_2",
+          "t_hit_up_3",
+          "t_hit_down_3",
+          "mdd_before_hit_up_3",
+          "t_hit_up_5",
+          "t_hit_down_5",
+          "mdd_before_hit_up_5"
+        ],
+        "latest_timestamp_guess": "1777356000",
+        "error": null
+      }
+    },
+    "repo_status_brief": {
+      "available": true,
+      "summary": {
+        "hourly_report_available": true,
+        "watched_files_missing_count": 0,
+        "prediction_rows_total": 1997,
+        "prediction_assets": {
+          "ETH-USDT": 1993,
+          "BTC-USDT": 4
+        },
+        "largest_data_file": {
+          "path": "data/model/model_dataset_v1.csv",
+          "size_bytes": 1118476,
+          "size_human": "1.07 MB"
+        }
+      },
+      "missing_watched_files": []
+    },
+    "performance_summary": {
+      "schema": "performance_summary_v1",
+      "generated_at_utc": "2026-05-12T07:47:55.247002+00:00",
+      "source_file": "data/model/predictions_v1.csv",
+      "available": true,
+      "reason": null,
+      "overall": {
+        "evaluated_predictions": 1721,
+        "direction_correct": 803,
+        "direction_accuracy_pct": 46.66,
+        "mean_abs_error": 93.302481,
+        "mean_abs_pct_error": 4.26088,
+        "total_predictions": 1997,
+        "pending_predictions": 276
+      },
+      "by_asset": {
+        "ETH-USDT": {
+          "evaluated_predictions": 1721,
+          "direction_correct": 803,
+          "direction_accuracy_pct": 46.66,
+          "mean_abs_error": 93.302481,
+          "mean_abs_pct_error": 4.26088
+        }
+      },
+      "by_horizon": {
+        "168": {
+          "evaluated_predictions": 420,
+          "direction_correct": 182,
+          "direction_accuracy_pct": 43.33,
+          "mean_abs_error": 116.203547,
+          "mean_abs_pct_error": 5.26606
+        },
+        "24": {
+          "evaluated_predictions": 488,
+          "direction_correct": 240,
+          "direction_accuracy_pct": 49.18,
+          "mean_abs_error": 47.73327,
+          "mean_abs_pct_error": 2.12611
+        },
+        "336": {
+          "evaluated_predictions": 339,
+          "direction_correct": 150,
+          "direction_accuracy_pct": 44.25,
+          "mean_abs_error": 167.75946,
+          "mean_abs_pct_error": 7.9098
+        },
+        "48": {
+          "evaluated_predictions": 474,
+          "direction_correct": 231,
+          "direction_accuracy_pct": 48.73,
+          "mean_abs_error": 66.674657,
+          "mean_abs_pct_error": 2.958366
+        }
+      },
+      "by_asset_horizon": {
+        "ETH-USDT|168": {
+          "evaluated_predictions": 420,
+          "direction_correct": 182,
+          "direction_accuracy_pct": 43.33,
+          "mean_abs_error": 116.203547,
+          "mean_abs_pct_error": 5.26606
+        },
+        "ETH-USDT|24": {
+          "evaluated_predictions": 488,
+          "direction_correct": 240,
+          "direction_accuracy_pct": 49.18,
+          "mean_abs_error": 47.73327,
+          "mean_abs_pct_error": 2.12611
+        },
+        "ETH-USDT|336": {
+          "evaluated_predictions": 339,
+          "direction_correct": 150,
+          "direction_accuracy_pct": 44.25,
+          "mean_abs_error": 167.75946,
+          "mean_abs_pct_error": 7.9098
+        },
+        "ETH-USDT|48": {
+          "evaluated_predictions": 474,
+          "direction_correct": 231,
+          "direction_accuracy_pct": 48.73,
+          "mean_abs_error": 66.674657,
+          "mean_abs_pct_error": 2.958366
+        }
+      }
+    }
+  },
+  "notes": [
+    "ETH-USDT and BTC-USDT are active prediction assets.",
+    "ETH-BTC is currently treated as context, not an active prediction asset.",
+    "Forecast horizons are 24h, 48h, 168h, and 336h.",
+    "Current live candle snapshots may be limited to the exchange/free-plan candle limit; longer-horizon forecasts use historical matured outcomes from similar states."
+  ]
 }
