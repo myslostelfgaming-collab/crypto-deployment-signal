@@ -29,6 +29,7 @@ WATCH_FILES = [
     "data/model/performance_summary_v1.json",
     "data/forecast/baseline_probs_v1.csv",
     "data/forecast/baseline_summary_v1.json",
+    "data/model/actionability_v1.json",
 ]
 
 ASSETS = ["ETH-USDT", "BTC-USDT", "ETH-BTC"]
