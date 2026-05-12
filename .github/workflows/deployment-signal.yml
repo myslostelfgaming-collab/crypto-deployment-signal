@@ -267,7 +267,49 @@ jobs:
 
           print("Repo diagnostics validated.")
           PY
+      - name: Validate diagnostics consistency
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
 
+          repo_status_path = Path("data/diagnostics/repo_status.json")
+          prediction_summary_path = Path("data/diagnostics/prediction_summary.json")
+          model_readiness_path = Path("data/diagnostics/model_readiness.json")
+
+          repo_status = json.loads(repo_status_path.read_text(encoding="utf-8"))
+          prediction_summary = json.loads(prediction_summary_path.read_text(encoding="utf-8"))
+          model_readiness = json.loads(model_readiness_path.read_text(encoding="utf-8"))
+
+          status_assets = repo_status.get("summary", {}).get("prediction_assets", {})
+          summary_assets = prediction_summary.get("by_asset", {})
+
+          if status_assets != summary_assets:
+              raise SystemExit(
+                  "Diagnostics mismatch: repo_status prediction_assets "
+                  f"{status_assets} != prediction_summary by_asset {summary_assets}"
+              )
+
+          readiness_assets = model_readiness.get("assets", {})
+          required_assets = ["ETH-USDT", "BTC-USDT"]
+
+          for asset in required_assets:
+              if asset not in summary_assets:
+                  raise SystemExit(f"Missing {asset} in prediction_summary by_asset: {summary_assets}")
+
+              readiness_rows = readiness_assets.get(asset, {}).get("prediction_rows")
+              summary_rows = summary_assets.get(asset)
+
+              if readiness_rows != summary_rows:
+                  raise SystemExit(
+                      f"Diagnostics mismatch for {asset}: "
+                      f"model_readiness prediction_rows={readiness_rows}, "
+                      f"prediction_summary rows={summary_rows}"
+                  )
+
+          print("Diagnostics consistency validated.")
+          print("Prediction assets:", summary_assets)
+          PY
       # -----------------------------
       # Commit outputs
       # -----------------------------
