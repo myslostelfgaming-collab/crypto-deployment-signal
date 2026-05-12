@@ -147,11 +147,43 @@ jobs:
           print("Similarity forecast assets validated:", sorted(generated))
           PY
 
-      - name: Build predictions v1
+            - name: Build predictions v1
         run: |
           python scripts/build_predictions_v1.py
           test -s data/model/predictions_v1.csv
           ls -l data/model/predictions_v1.csv
+
+      - name: Validate prediction assets
+        run: |
+          python - <<'PY'
+          import csv
+          from pathlib import Path
+
+          path = Path("data/model/predictions_v1.csv")
+
+          with path.open("r", encoding="utf-8", newline="") as f:
+              reader = csv.DictReader(f)
+              rows = list(reader)
+
+          assets = {}
+          pending_assets = {}
+
+          for row in rows:
+              asset = row.get("asset") or "UNKNOWN"
+              assets[asset] = assets.get(asset, 0) + 1
+
+              if (row.get("status") or "").strip().lower() != "evaluated":
+                  pending_assets[asset] = pending_assets.get(asset, 0) + 1
+
+          required = {"ETH-USDT", "BTC-USDT"}
+          missing = sorted(required - set(assets))
+
+          if missing:
+              raise SystemExit(f"Missing prediction assets: {missing}; found={assets}")
+
+          print("Prediction assets validated:", assets)
+          print("Pending prediction assets:", pending_assets)
+          PY
 
       - name: Evaluate predictions v1
         run: |
