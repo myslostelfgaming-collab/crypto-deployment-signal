@@ -1,17 +1,29 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import csv
 import json
 import math
 import os
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
+
 
 MODEL_DATASET_PATH = os.path.join("data", "model", "model_dataset_v1.csv")
 HOURLY_SIGNAL_PATH = os.path.join("data", "hourly_signal.json")
-OUT_PATH = os.path.join("data", "model", "similarity_forecast_v2.json")
 
-ASSET = "ETH-USDT"
-CANDLE_KEY = "eth_usdt_1h"
+# Legacy output path retained so build_predictions_v1.py does not break yet.
+LEGACY_OUT_PATH = os.path.join("data", "model", "similarity_forecast_v2.json")
+
+# New multi-asset outputs.
+MULTI_OUT_PATH = os.path.join("data", "model", "similarity_forecast_v2_multi.json")
+ASSET_OUT_TEMPLATE = os.path.join("data", "model", "similarity_forecast_v2_{asset_safe}.json")
+
+ASSET_CANDLE_KEYS = {
+    "ETH-USDT": "eth_usdt_1h",
+    "BTC-USDT": "btc_usdt_1h",
+}
+
+LEGACY_ASSET = "ETH-USDT"
 
 FEATURE_COLS = [
     "ret_6h_pct",
@@ -37,17 +49,30 @@ BINARY_COLS = [
 PRIMARY_TOP_K = 20
 CONTEXT_TOP_K = 50
 MIN_REQUIRED_NUMERIC_FEATURES = 8
-
 REGIME_MISMATCH_PENALTY = 1.0
 WEIGHT_EPS = 1e-6
-WEIGHT_POWER = 2.0  # weight = 1 / (distance^power + eps)
+WEIGHT_POWER = 2.0
 
 HORIZONS = [24, 48, 168, 336]
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def asset_safe_name(asset: str) -> str:
+    return asset.replace("/", "-").replace(":", "-").replace("_", "-")
 
 
 def load_json(path: str) -> dict:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def write_json(path: str, payload: dict) -> None:
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2)
 
 
 def safe_float(x) -> Optional[float]:
@@ -68,9 +93,11 @@ def mean(values: List[float]) -> Optional[float]:
 def stddev(values: List[float]) -> Optional[float]:
     if not values:
         return None
+
     mu = mean(values)
     if mu is None:
         return None
+
     var = sum((x - mu) ** 2 for x in values) / len(values)
     return math.sqrt(var)
 
@@ -78,14 +105,18 @@ def stddev(values: List[float]) -> Optional[float]:
 def percentile(values: List[float], p: float) -> Optional[float]:
     if not values:
         return None
+
     xs = sorted(values)
     if len(xs) == 1:
         return xs[0]
+
     idx = (len(xs) - 1) * p
     lo = int(math.floor(idx))
     hi = int(math.ceil(idx))
+
     if lo == hi:
         return xs[lo]
+
     w = idx - lo
     return xs[lo] * (1 - w) + xs[hi] * w
 
@@ -97,21 +128,26 @@ def median(values: List[float]) -> Optional[float]:
 def weighted_mean(values: List[float], weights: List[float]) -> Optional[float]:
     if not values or not weights or len(values) != len(weights):
         return None
+
     wsum = sum(weights)
     if wsum == 0:
         return None
+
     return sum(v * w for v, w in zip(values, weights)) / wsum
 
 
 def weighted_std(values: List[float], weights: List[float]) -> Optional[float]:
     if not values or not weights or len(values) != len(weights):
         return None
+
     mu = weighted_mean(values, weights)
     if mu is None:
         return None
+
     wsum = sum(weights)
     if wsum == 0:
         return None
+
     var = sum(w * ((v - mu) ** 2) for v, w in zip(values, weights)) / wsum
     return math.sqrt(var)
 
@@ -127,10 +163,12 @@ def weighted_quantile(values: List[float], weights: List[float], q: float) -> Op
 
     threshold = total_w * q
     running = 0.0
+
     for value, weight in pairs:
         running += weight
         if running >= threshold:
             return value
+
     return pairs[-1][0]
 
 
@@ -152,15 +190,18 @@ def extract_asset_candles(signal_obj: dict, candle_key: str) -> List[List[float]
     for c in candles:
         if not isinstance(c, list) or len(c) < 6:
             continue
+
         try:
-            out.append([
-                int(c[0]),
-                float(c[1]),  # open
-                float(c[2]),  # close
-                float(c[3]),  # high
-                float(c[4]),  # low
-                float(c[5]),  # volume
-            ])
+            out.append(
+                [
+                    int(c[0]),
+                    float(c[1]),  # open
+                    float(c[2]),  # close
+                    float(c[3]),  # high
+                    float(c[4]),  # low
+                    float(c[5]),  # volume
+                ]
+            )
         except Exception:
             continue
 
@@ -184,6 +225,7 @@ def calc_return_feature(candles: List[List[float]], lookback_h: int) -> Optional
     w = window_last(candles, lookback_h + 1)
     if not w:
         return None
+
     start_close = w[0][2]
     end_close = w[-1][2]
     return pct_change(end_close, start_close)
@@ -193,11 +235,14 @@ def calc_range_pct(candles: List[List[float]], lookback_h: int) -> Optional[floa
     w = window_last(candles, lookback_h)
     if not w:
         return None
+
     highs = [c[3] for c in w]
     lows = [c[4] for c in w]
     entry_close = w[-1][2]
+
     if entry_close == 0:
         return None
+
     return ((max(highs) - min(lows)) / entry_close) * 100.0
 
 
@@ -217,6 +262,7 @@ def calc_dist_from_high_low(candles: List[List[float]], lookback_h: int) -> Tupl
 
     dist_from_high = ((close - high) / close) * 100.0
     dist_from_low = ((close - low) / close) * 100.0
+
     return dist_from_high, dist_from_low
 
 
@@ -224,6 +270,7 @@ def calc_sma(candles: List[List[float]], lookback_h: int) -> Optional[float]:
     w = window_last(candles, lookback_h)
     if not w:
         return None
+
     closes = [c[2] for c in w]
     return sum(closes) / len(closes)
 
@@ -232,6 +279,7 @@ def calc_close_vs_sma(candles: List[List[float]], lookback_h: int) -> Optional[f
     sma = calc_sma(candles, lookback_h)
     if sma is None or sma == 0:
         return None
+
     close = candles[-1][2]
     return pct_change(close, sma)
 
@@ -241,6 +289,7 @@ def calc_wilder_atr_pct(candles: List[List[float]], period: int = 14) -> Optiona
         return None
 
     trs = []
+
     for i in range(1, len(candles)):
         high = candles[i][3]
         low = candles[i][4]
@@ -252,6 +301,7 @@ def calc_wilder_atr_pct(candles: List[List[float]], period: int = 14) -> Optiona
         return None
 
     atr = sum(trs[:period]) / period
+
     for j in range(period, len(trs)):
         atr = ((atr * (period - 1)) + trs[j]) / period
 
@@ -264,6 +314,7 @@ def calc_wilder_atr_pct(candles: List[List[float]], period: int = 14) -> Optiona
 
 def build_current_feature_vector(signal_obj: dict, asset: str, candle_key: str) -> dict:
     candles = extract_asset_candles(signal_obj, candle_key)
+
     if not candles:
         raise ValueError(f"No candles found for {asset} ({candle_key})")
 
@@ -277,6 +328,7 @@ def build_current_feature_vector(signal_obj: dict, asset: str, candle_key: str) 
 
     range_24h = calc_range_pct(candles, 24)
     range_48h = calc_range_pct(candles, 48)
+
     atr14_pct = calc_wilder_atr_pct(candles, 14)
 
     dist_24h_high, dist_24h_low = calc_dist_from_high_low(candles, 24)
@@ -310,16 +362,22 @@ def build_current_feature_vector(signal_obj: dict, asset: str, candle_key: str) 
 
 def compute_feature_stats(rows: List[dict]) -> Dict[str, Dict[str, float]]:
     stats = {}
+
     for col in FEATURE_COLS:
         vals = [safe_float(r.get(col)) for r in rows]
         vals = [v for v in vals if v is not None]
+
         mu = mean(vals)
         sd = stddev(vals)
+
         if mu is None or sd is None:
             continue
+
         if sd == 0:
             sd = 1.0
+
         stats[col] = {"mean": mu, "std": sd}
+
     return stats
 
 
@@ -330,13 +388,16 @@ def similarity_distance(current: dict, row: dict, feat_stats: Dict[str, Dict[str
     for col in FEATURE_COLS:
         cur = current.get(col)
         past = safe_float(row.get(col))
+
         if cur is None or past is None or col not in feat_stats:
             continue
 
         mu = feat_stats[col]["mean"]
         sd = feat_stats[col]["std"]
+
         z_cur = (cur - mu) / sd
         z_past = (past - mu) / sd
+
         sq += (z_cur - z_past) ** 2
         used_numeric += 1
 
@@ -344,9 +405,11 @@ def similarity_distance(current: dict, row: dict, feat_stats: Dict[str, Dict[str
         return None, used_numeric
 
     bin_penalty = 0.0
+
     for col in BINARY_COLS:
         cur = str(current.get(col, ""))
         past = str(row.get(col, ""))
+
         if cur != "" and past != "" and cur != past:
             bin_penalty += REGIME_MISMATCH_PENALTY
 
@@ -365,8 +428,10 @@ def summarize_weighted(rows: List[dict], field: str) -> dict:
     for r in rows:
         v = safe_float(r.get(field))
         d = safe_float(r.get("_distance"))
+
         if v is None or d is None:
             continue
+
         vals.append(v)
         weights.append(distance_to_weight(d))
 
@@ -408,6 +473,7 @@ def build_horizon_score(rows: List[dict], horizon: int) -> dict:
             continue
 
         w = distance_to_weight(d)
+
         close_vals.append(close_v)
         up_vals.append(up_v)
         down_vals.append(down_v)
@@ -430,21 +496,20 @@ def build_horizon_score(rows: List[dict], horizon: int) -> dict:
     w_up_mean = weighted_mean(up_vals, weights)
     w_down_mean = weighted_mean(down_vals, weights)
 
-    # Composite score
-    # positive close helps
-    # upside potential helps a bit
-    # downside hurts
     score = 0.0
+
     if w_close_mean is not None:
         score += 0.6 * w_close_mean
+
     if w_up_mean is not None:
         score += 0.25 * w_up_mean
-    if w_down_mean is not None:
-        score += 0.15 * w_down_mean  # down is negative, so this subtracts
 
-    # Confidence from consistency
+    if w_down_mean is not None:
+        score += 0.15 * w_down_mean
+
     close_std = weighted_std(close_vals, weights)
     agreement = 0.0
+
     if w_close_mean is not None and w_close_median is not None:
         agreement = abs(w_close_mean - w_close_median)
 
@@ -478,39 +543,45 @@ def build_horizon_score(rows: List[dict], horizon: int) -> dict:
 
 def top_neighbors_payload(neighbors: List[dict], top_n: int = 10) -> List[dict]:
     out = []
+
     for r in neighbors[:top_n]:
-        out.append({
-            "asset": r.get("asset"),
-            "entry_ts_utc": r.get("entry_ts_utc"),
-            "published_at_utc": r.get("published_at_utc"),
-            "similarity_distance": round(float(r["_distance"]), 6),
-            "weight": round(distance_to_weight(float(r["_distance"])), 6),
-            "ret_24h_pct": safe_float(r.get("ret_24h_pct")),
-            "ret_48h_pct": safe_float(r.get("ret_48h_pct")),
-            "range_24h_pct": safe_float(r.get("range_24h_pct")),
-            "atr14_pct": safe_float(r.get("atr14_pct")),
-            "close_change_pct_24": safe_float(r.get("close_change_pct_24")),
-            "close_change_pct_48": safe_float(r.get("close_change_pct_48")),
-            "close_change_pct_168": safe_float(r.get("close_change_pct_168")),
-            "close_change_pct_336": safe_float(r.get("close_change_pct_336")),
-            "max_up_pct_24": safe_float(r.get("max_up_pct_24")),
-            "max_up_pct_48": safe_float(r.get("max_up_pct_48")),
-            "max_up_pct_168": safe_float(r.get("max_up_pct_168")),
-            "max_up_pct_336": safe_float(r.get("max_up_pct_336")),
-            "max_down_pct_24": safe_float(r.get("max_down_pct_24")),
-            "max_down_pct_48": safe_float(r.get("max_down_pct_48")),
-            "max_down_pct_168": safe_float(r.get("max_down_pct_168")),
-            "max_down_pct_336": safe_float(r.get("max_down_pct_336")),
-        })
+        out.append(
+            {
+                "asset": r.get("asset"),
+                "entry_ts_utc": r.get("entry_ts_utc"),
+                "published_at_utc": r.get("published_at_utc"),
+                "similarity_distance": round(float(r["_distance"]), 6),
+                "weight": round(distance_to_weight(float(r["_distance"])), 6),
+                "ret_24h_pct": safe_float(r.get("ret_24h_pct")),
+                "ret_48h_pct": safe_float(r.get("ret_48h_pct")),
+                "range_24h_pct": safe_float(r.get("range_24h_pct")),
+                "atr14_pct": safe_float(r.get("atr14_pct")),
+                "close_change_pct_24": safe_float(r.get("close_change_pct_24")),
+                "close_change_pct_48": safe_float(r.get("close_change_pct_48")),
+                "close_change_pct_168": safe_float(r.get("close_change_pct_168")),
+                "close_change_pct_336": safe_float(r.get("close_change_pct_336")),
+                "max_up_pct_24": safe_float(r.get("max_up_pct_24")),
+                "max_up_pct_48": safe_float(r.get("max_up_pct_48")),
+                "max_up_pct_168": safe_float(r.get("max_up_pct_168")),
+                "max_up_pct_336": safe_float(r.get("max_up_pct_336")),
+                "max_down_pct_24": safe_float(r.get("max_down_pct_24")),
+                "max_down_pct_48": safe_float(r.get("max_down_pct_48")),
+                "max_down_pct_168": safe_float(r.get("max_down_pct_168")),
+                "max_down_pct_336": safe_float(r.get("max_down_pct_336")),
+            }
+        )
+
     return out
 
 
 def build_target_summary(rows: List[dict]) -> dict:
     out = {}
+
     for horizon in HORIZONS:
         for prefix in ["max_up_pct", "max_down_pct", "close_change_pct"]:
             field = f"{prefix}_{horizon}"
             out[field] = summarize_weighted(rows, field)
+
     return out
 
 
@@ -525,31 +596,23 @@ def overall_confidence(primary_rows: List[dict], scorecard: Dict[str, dict]) -> 
         return "low"
 
     mean_distance = mean(distances)
+
     strong_horizons = sum(1 for v in scorecard.values() if v.get("confidence") == "high")
     non_mixed = sum(1 for v in scorecard.values() if v.get("signal") != "mixed")
 
     if mean_distance is not None and mean_distance < 1.6 and strong_horizons >= 2 and non_mixed >= 2:
         return "high"
+
     if mean_distance is not None and mean_distance < 2.2 and non_mixed >= 1:
         return "medium"
+
     return "low"
 
 
-def main():
-    if not os.path.isfile(MODEL_DATASET_PATH):
-        print(f"Missing model dataset: {MODEL_DATASET_PATH}")
-        return
+def build_asset_forecast(signal_obj: dict, model_rows: List[dict], asset: str, candle_key: str) -> dict:
+    current = build_current_feature_vector(signal_obj, asset, candle_key)
 
-    if not os.path.isfile(HOURLY_SIGNAL_PATH):
-        print(f"Missing hourly signal: {HOURLY_SIGNAL_PATH}")
-        return
-
-    signal_root = load_json(HOURLY_SIGNAL_PATH)
-    signal_obj = snapshot_signal(signal_root)
-    current = build_current_feature_vector(signal_obj, ASSET, CANDLE_KEY)
-
-    model_rows = read_model_rows(MODEL_DATASET_PATH)
-    asset_rows = [r for r in model_rows if r.get("asset") == ASSET]
+    asset_rows = [r for r in model_rows if r.get("asset") == asset]
     feat_stats = compute_feature_stats(asset_rows)
 
     scored = []
@@ -562,6 +625,7 @@ def main():
             continue
 
         dist, used = similarity_distance(current, row, feat_stats)
+
         if dist is None:
             skipped_insufficient += 1
             continue
@@ -588,21 +652,27 @@ def main():
 
     payload = {
         "schema": "similarity_forecast_v2",
+        "generated_at_utc": utc_now(),
         "as_of_utc": signal_obj.get("published_at_utc"),
         "as_of_local": signal_obj.get("published_at_local"),
-        "asset": ASSET,
+        "asset": asset,
+        "candle_key": candle_key,
         "settings": {
             "primary_top_k": PRIMARY_TOP_K,
             "context_top_k": CONTEXT_TOP_K,
             "min_required_numeric_features": MIN_REQUIRED_NUMERIC_FEATURES,
             "regime_mismatch_penalty": REGIME_MISMATCH_PENALTY,
             "weight_power": WEIGHT_POWER,
+            "current_window_note": "Current feature vector uses available snapshot candles, currently up to the exchange/free-plan limit. Forecast horizons still use historical matured outcomes.",
         },
         "current_state": {
             "entry_ts_utc": current["entry_ts_utc"],
             "entry_close": current["entry_close"],
             "n_candles_snapshot": current["n_candles_snapshot"],
-            "features": {k: current.get(k) for k in FEATURE_COLS + BINARY_COLS},
+            "features": {
+                k: current.get(k)
+                for k in FEATURE_COLS + BINARY_COLS
+            },
         },
         "model_dataset": {
             "path": MODEL_DATASET_PATH,
@@ -629,25 +699,102 @@ def main():
             "v2 uses distance-weighted summaries.",
             "Closest matches count more via inverse-distance weighting.",
             "Directional scorecard is based on weighted close change, upside, and downside across each horizon.",
+            "This file is now asset-parameterised. ETH legacy output is retained for downstream compatibility.",
         ],
     }
 
-    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+    return payload
 
-    print(f"Similarity forecast written to: {OUT_PATH}")
-    print(f"Model rows total: {len(model_rows)}")
-    print(f"Asset rows considered: {len(asset_rows)}")
-    print(f"Neighbors found total: {len(scored)}")
-    print(f"Primary neighbors: {len(primary_neighbors)}")
-    print(f"Context neighbors: {len(context_neighbors)}")
-    if primary_neighbors:
-        print(f"Best distance: {round(primary_neighbors[0]['_distance'], 6)}")
-        print(f"Worst primary distance: {round(primary_neighbors[-1]['_distance'], 6)}")
-    if context_neighbors:
-        print(f"Worst context distance: {round(context_neighbors[-1]['_distance'], 6)}")
-    print(f"Overall confidence: {overall}")
+
+def build_error_payload(asset: str, candle_key: str, error: Exception) -> dict:
+    return {
+        "schema": "similarity_forecast_v2",
+        "generated_at_utc": utc_now(),
+        "asset": asset,
+        "candle_key": candle_key,
+        "available": False,
+        "error": str(error),
+    }
+
+
+def main() -> None:
+    if not os.path.isfile(MODEL_DATASET_PATH):
+        raise FileNotFoundError(f"Missing model dataset: {MODEL_DATASET_PATH}")
+
+    if not os.path.isfile(HOURLY_SIGNAL_PATH):
+        raise FileNotFoundError(f"Missing hourly signal: {HOURLY_SIGNAL_PATH}")
+
+    signal_root = load_json(HOURLY_SIGNAL_PATH)
+    signal_obj = snapshot_signal(signal_root)
+
+    model_rows = read_model_rows(MODEL_DATASET_PATH)
+
+    forecasts_by_asset = {}
+    errors_by_asset = {}
+
+    for asset, candle_key in ASSET_CANDLE_KEYS.items():
+        try:
+            forecast = build_asset_forecast(signal_obj, model_rows, asset, candle_key)
+            forecasts_by_asset[asset] = forecast
+
+            asset_path = ASSET_OUT_TEMPLATE.format(asset_safe=asset_safe_name(asset))
+            write_json(asset_path, forecast)
+
+            print(f"Similarity forecast written for {asset}: {asset_path}")
+            print(f"  rows_asset={forecast['model_dataset']['n_rows_asset']}")
+            print(f"  neighbors={forecast['similarity']['neighbors_found_total']}")
+            print(f"  best_distance={forecast['similarity']['best_distance']}")
+            print(f"  overall_confidence={forecast['overall_confidence']}")
+
+        except Exception as e:
+            errors_by_asset[asset] = str(e)
+            error_payload = build_error_payload(asset, candle_key, e)
+
+            asset_path = ASSET_OUT_TEMPLATE.format(asset_safe=asset_safe_name(asset))
+            write_json(asset_path, error_payload)
+
+            print(f"ERROR building similarity forecast for {asset}: {e}")
+
+    if not forecasts_by_asset:
+        raise RuntimeError("No asset forecasts were generated.")
+
+    if LEGACY_ASSET not in forecasts_by_asset:
+        raise RuntimeError(
+            f"Legacy asset {LEGACY_ASSET} forecast was not generated. "
+            f"Cannot safely maintain {LEGACY_OUT_PATH}."
+        )
+
+    # Preserve existing downstream contract for build_predictions_v1.py.
+    write_json(LEGACY_OUT_PATH, forecasts_by_asset[LEGACY_ASSET])
+
+    multi_payload = {
+        "schema": "similarity_forecast_v2_multi",
+        "generated_at_utc": utc_now(),
+        "as_of_utc": signal_obj.get("published_at_utc"),
+        "as_of_local": signal_obj.get("published_at_local"),
+        "model_dataset_path": MODEL_DATASET_PATH,
+        "hourly_signal_path": HOURLY_SIGNAL_PATH,
+        "assets_requested": list(ASSET_CANDLE_KEYS.keys()),
+        "assets_generated": list(forecasts_by_asset.keys()),
+        "assets_failed": errors_by_asset,
+        "legacy_asset": LEGACY_ASSET,
+        "legacy_output_path": LEGACY_OUT_PATH,
+        "forecast_files": {
+            asset: ASSET_OUT_TEMPLATE.format(asset_safe=asset_safe_name(asset))
+            for asset in ASSET_CANDLE_KEYS
+        },
+        "forecasts": forecasts_by_asset,
+    }
+
+    write_json(MULTI_OUT_PATH, multi_payload)
+
+    print("")
+    print("Similarity forecast v2 multi-asset build complete.")
+    print(f"Legacy ETH output: {LEGACY_OUT_PATH}")
+    print(f"Multi output: {MULTI_OUT_PATH}")
+    print(f"Assets generated: {list(forecasts_by_asset.keys())}")
+    if errors_by_asset:
+        print(f"Assets failed: {errors_by_asset}")
 
 
 if __name__ == "__main__":
