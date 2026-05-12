@@ -64,7 +64,8 @@ jobs:
 
       # -----------------------------
       # Labels v1 legacy/support layer
-      # Still soft because active model uses labels v2
+      # Intentionally soft for now.
+      # Active model pipeline uses labels v2.
       # -----------------------------
       - name: Build labels v1
         run: |
@@ -85,7 +86,7 @@ jobs:
 
       # -----------------------------
       # Labels v2 / active model pipeline
-      # Hard fail if outputs are missing
+      # Hard fail if active outputs are missing.
       # -----------------------------
       - name: Build labels v2
         run: |
