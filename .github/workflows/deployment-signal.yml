@@ -220,7 +220,31 @@ jobs:
           python scripts/build_hourly_report_v1.py
           test -s data/hourly_report.json
           ls -l data/hourly_report.json
+      - name: Validate hourly report v2
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
 
+          path = Path("data/hourly_report.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+
+          if payload.get("schema") != "hourly_report_v2":
+              raise SystemExit(f"Expected hourly_report_v2, got {payload.get('schema')}")
+
+          latest = payload.get("latest_prediction_state", {}).get("assets", {})
+          required = {"ETH-USDT", "BTC-USDT"}
+          missing = sorted(required - set(latest.keys()))
+
+          if missing:
+              raise SystemExit(f"hourly_report missing prediction assets: {missing}")
+
+          for asset in required:
+              if not latest.get(asset, {}).get("available"):
+                  raise SystemExit(f"hourly_report asset not available: {asset}")
+
+          print("Hourly report v2 validated.")
+          PY
       # -----------------------------
       # AI handoff
       # -----------------------------
@@ -229,7 +253,39 @@ jobs:
           python scripts/build_ai_handoff_v1.py
           test -s data/ai_handoff_v1.json
           ls -l data/ai_handoff_v1.json
+      - name: Validate AI handoff v2
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
 
+          path = Path("data/ai_handoff_v1.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+
+          if payload.get("schema") != "ai_handoff_v2":
+              raise SystemExit(f"Expected ai_handoff_v2, got {payload.get('schema')}")
+
+          latest = payload.get("latest_prediction_state", {}).get("assets", {})
+          required = {"ETH-USDT", "BTC-USDT"}
+          missing = sorted(required - set(latest.keys()))
+
+          if missing:
+              raise SystemExit(f"ai_handoff missing prediction assets: {missing}")
+
+          for asset in required:
+              if not latest.get(asset, {}).get("available"):
+                  raise SystemExit(f"ai_handoff asset not available: {asset}")
+
+          similarity_assets = set(
+              payload.get("similarity_forecast_state", {}).get("assets_generated", [])
+          )
+
+          missing_similarity = sorted(required - similarity_assets)
+          if missing_similarity:
+              raise SystemExit(f"ai_handoff missing similarity assets: {missing_similarity}")
+
+          print("AI handoff v2 validated.")
+          PY
       # -----------------------------
       # Diagnostics
       # -----------------------------
