@@ -1,7 +1,7 @@
 {
   "schema": "ai_handoff_v1",
   "meta": {
-    "generated_at_utc": "2026-05-12T06:16:46.433030+00:00",
+    "generated_at_utc": "2026-05-12T06:24:08.585737+00:00",
     "source_files": {
       "hourly_report": "data/hourly_report.json",
       "similarity_forecast_v2": "data/model/similarity_forecast_v2.json",
@@ -12,27 +12,27 @@
     "available": true,
     "date": "2026-05-12",
     "timezone": "Africa/Johannesburg",
-    "published_at_utc": "2026-05-12T06:16:36.802241+00:00",
-    "published_at_local": "2026-05-12T08:16:36.802241+02:00",
+    "published_at_utc": "2026-05-12T06:23:58.946637+00:00",
+    "published_at_local": "2026-05-12T08:23:58.946637+02:00",
     "eth_usdt": {
       "high": 2345.75,
       "low": 2295.54,
       "open": 2333.65,
-      "close": 2312.4,
+      "close": 2312.62,
       "gap_pct": 2.15
     },
     "btc_usdt": {
       "high": 82135.5,
       "low": 80461.2,
       "open": 80829.2,
-      "close": 81269.7,
+      "close": 81260.4,
       "gap_pct": 2.07
     },
     "eth_btc": {
       "high": 0.02889,
       "low": 0.02844,
       "open": 0.02887,
-      "close": 0.02845,
+      "close": 0.02846,
       "gap_pct": 1.56
     },
     "integrity": {
@@ -71,7 +71,7 @@
   "baseline_forecast_state": {
     "available": true,
     "schema": "forecast_baseline_v1",
-    "as_of_utc": "2026-05-12T06:16:36.802241+00:00",
+    "as_of_utc": "2026-05-12T06:23:58.946637+00:00",
     "source": {
       "baseline_summary": "data/forecast/baseline_summary_v1.json",
       "labels": "data/labels/labels_v1.csv",
@@ -217,34 +217,35 @@
   "similarity_forecast_state": {
     "available": true,
     "schema": "similarity_forecast_v2",
-    "as_of_utc": "2026-05-12T06:16:36.802241+00:00",
-    "as_of_local": "2026-05-12T08:16:36.802241+02:00",
+    "as_of_utc": "2026-05-12T06:23:58.946637+00:00",
+    "as_of_local": "2026-05-12T08:23:58.946637+02:00",
     "asset": "ETH-USDT",
     "settings": {
       "primary_top_k": 20,
       "context_top_k": 50,
       "min_required_numeric_features": 8,
       "regime_mismatch_penalty": 1.0,
-      "weight_power": 2.0
+      "weight_power": 2.0,
+      "current_window_note": "Current feature vector uses available snapshot candles, currently up to the exchange/free-plan limit. Forecast horizons still use historical matured outcomes."
     },
     "current_state": {
       "entry_ts_utc": "1778565600",
-      "entry_close": 2312.4,
+      "entry_close": 2312.62,
       "n_candles_snapshot": 100,
       "features": {
-        "ret_6h_pct": -0.9033717880590332,
-        "ret_12h_pct": -0.9856899401392462,
-        "ret_24h_pct": -0.9105907055471043,
-        "ret_48h_pct": -0.732358572372994,
-        "range_24h_pct": 2.1713371389033056,
-        "range_48h_pct": 3.75800034596091,
-        "atr14_pct": 0.528570666923427,
-        "dist_from_24h_high_pct": -1.4422245286282611,
-        "dist_from_24h_low_pct": 0.7291126102750444,
-        "dist_from_48h_high_pct": -3.028887735685866,
-        "dist_from_48h_low_pct": 0.7291126102750444,
-        "close_vs_sma_24_pct": -0.6709742128908152,
-        "close_vs_sma_48_pct": -0.9593439263234074,
+        "ret_6h_pct": -0.8939438092462815,
+        "ret_12h_pct": -0.9762697930136841,
+        "ret_24h_pct": -0.9011634135367428,
+        "ret_48h_pct": -0.7229143234912875,
+        "range_24h_pct": 2.1711305791699473,
+        "range_48h_pct": 3.7576428466414757,
+        "atr14_pct": 0.5328753702576127,
+        "dist_from_24h_high_pct": -1.4325743096574495,
+        "dist_from_24h_low_pct": 0.7385562695124979,
+        "dist_from_48h_high_pct": -3.019086577128978,
+        "dist_from_48h_low_pct": 0.7385562695124979,
+        "close_vs_sma_24_pct": -0.6619152713373047,
+        "close_vs_sma_48_pct": -0.9501157128152148,
         "is_up_24h": "0",
         "is_up_48h": "0"
       }
@@ -255,50 +256,50 @@
       "context_neighbors_found": 50,
       "skipped_same_timestamp": 0,
       "skipped_insufficient_features": 0,
-      "best_distance": 0.434375,
-      "worst_primary_distance": 0.768819,
-      "worst_context_distance": 1.007199
+      "best_distance": 0.433417,
+      "worst_primary_distance": 0.759286,
+      "worst_context_distance": 1.004548
     },
     "directional_scorecard": {
       "24h": {
         "horizon_h": 24,
         "signal": "bullish",
         "confidence": "medium",
-        "weighted_close_mean": 1.1857,
+        "weighted_close_mean": 1.1967,
         "weighted_close_median": 1.4382,
-        "weighted_max_up_mean": 2.5199,
-        "weighted_max_down_mean": -1.8176,
-        "score": 1.0687
+        "weighted_max_up_mean": 2.5148,
+        "weighted_max_down_mean": -1.7965,
+        "score": 1.0772
       },
       "48h": {
         "horizon_h": 48,
         "signal": "mixed",
-        "confidence": "low",
-        "weighted_close_mean": -0.2079,
+        "confidence": "medium",
+        "weighted_close_mean": -0.1924,
         "weighted_close_median": 0.4301,
-        "weighted_max_up_mean": 2.9149,
-        "weighted_max_down_mean": -2.5584,
-        "score": 0.2202
+        "weighted_max_up_mean": 2.9119,
+        "weighted_max_down_mean": -2.5317,
+        "score": 0.2328
       },
       "168h": {
         "horizon_h": 168,
         "signal": "mixed",
         "confidence": "low",
-        "weighted_close_mean": -0.9045,
+        "weighted_close_mean": -0.9761,
         "weighted_close_median": 1.9235,
-        "weighted_max_up_mean": 6.9906,
-        "weighted_max_down_mean": -6.0982,
-        "score": 0.2902
+        "weighted_max_up_mean": 6.929,
+        "weighted_max_down_mean": -6.1227,
+        "score": 0.2282
       },
       "336h": {
         "horizon_h": 336,
         "signal": "bullish",
         "confidence": "low",
-        "weighted_close_mean": -0.418,
+        "weighted_close_mean": -0.5189,
         "weighted_close_median": 5.6842,
-        "weighted_max_up_mean": 10.7211,
-        "weighted_max_down_mean": -8.4327,
-        "score": 1.1646
+        "weighted_max_up_mean": 10.6519,
+        "weighted_max_down_mean": -8.4904,
+        "score": 1.0781
       }
     },
     "overall_confidence": "medium",
@@ -309,11 +310,11 @@
         "median": 1.9519,
         "p25": 0.8331,
         "p75": 4.3532,
-        "weighted_mean": 2.5199,
+        "weighted_mean": 2.5148,
         "weighted_median": 2.1952,
         "weighted_p25": 0.8335,
         "weighted_p75": 4.0738,
-        "weighted_std": 1.8813,
+        "weighted_std": 1.8735,
         "min": 0.2152,
         "max": 5.9088
       },
@@ -323,11 +324,11 @@
         "median": -1.0036,
         "p25": -2.1615,
         "p75": -0.5396,
-        "weighted_mean": -1.8176,
+        "weighted_mean": -1.7965,
         "weighted_median": -0.9328,
         "weighted_p25": -1.2184,
         "weighted_p75": -0.3894,
-        "weighted_std": 1.9951,
+        "weighted_std": 1.9842,
         "min": -5.6068,
         "max": 0.0082
       },
@@ -337,11 +338,11 @@
         "median": 1.4089,
         "p25": -0.106,
         "p75": 3.6551,
-        "weighted_mean": 1.1857,
+        "weighted_mean": 1.1967,
         "weighted_median": 1.4382,
         "weighted_p25": 0.2498,
         "weighted_p75": 3.3462,
-        "weighted_std": 2.9439,
+        "weighted_std": 2.9205,
         "min": -4.2998,
         "max": 5.5237
       },
@@ -351,11 +352,11 @@
         "median": 2.543,
         "p25": 1.3158,
         "p75": 4.5586,
-        "weighted_mean": 2.9149,
+        "weighted_mean": 2.9119,
         "weighted_median": 2.5937,
         "weighted_p25": 1.4766,
         "weighted_p75": 4.0738,
-        "weighted_std": 1.9698,
+        "weighted_std": 1.9564,
         "min": 0.2152,
         "max": 6.3827
       },
@@ -365,11 +366,11 @@
         "median": -1.1466,
         "p25": -3.7261,
         "p75": -0.8645,
-        "weighted_mean": -2.5584,
+        "weighted_mean": -2.5317,
         "weighted_median": -1.0394,
         "weighted_p25": -3.3046,
         "weighted_p75": -0.8197,
-        "weighted_std": 2.8087,
+        "weighted_std": 2.7894,
         "min": -8.0098,
         "max": -0.2957
       },
@@ -379,11 +380,11 @@
         "median": 0.2583,
         "p25": -1.4072,
         "p75": 2.3001,
-        "weighted_mean": -0.2079,
+        "weighted_mean": -0.1924,
         "weighted_median": 0.4301,
-        "weighted_p25": -2.3952,
+        "weighted_p25": -1.0779,
         "weighted_p75": 2.2807,
-        "weighted_std": 3.0159,
+        "weighted_std": 2.995,
         "min": -6.2053,
         "max": 3.996
       },
@@ -393,11 +394,11 @@
         "median": 4.5505,
         "p25": 3.4468,
         "p75": 11.1749,
-        "weighted_mean": 6.9906,
+        "weighted_mean": 6.929,
         "weighted_median": 4.6665,
-        "weighted_p25": 3.6301,
+        "weighted_p25": 2.8971,
         "weighted_p75": 10.4796,
-        "weighted_std": 4.2592,
+        "weighted_std": 4.2521,
         "min": 2.121,
         "max": 13.6558
       },
@@ -407,11 +408,11 @@
         "median": -4.9808,
         "p25": -11.8625,
         "p75": -1.1189,
-        "weighted_mean": -6.0982,
+        "weighted_mean": -6.1227,
         "weighted_median": -2.5194,
         "weighted_p25": -11.8418,
         "weighted_p75": -1.0394,
-        "weighted_std": 5.6819,
+        "weighted_std": 5.6964,
         "min": -23.6025,
         "max": -0.803
       },
@@ -421,11 +422,11 @@
         "median": 0.7407,
         "p25": -8.69,
         "p75": 4.2154,
-        "weighted_mean": -0.9045,
+        "weighted_mean": -0.9761,
         "weighted_median": 1.9235,
         "weighted_p25": -8.6342,
         "weighted_p75": 2.9534,
-        "weighted_std": 7.5444,
+        "weighted_std": 7.5533,
         "min": -22.0247,
         "max": 8.6339
       },
@@ -435,11 +436,11 @@
         "median": 11.8889,
         "p25": 3.4468,
         "p75": 15.0581,
-        "weighted_mean": 10.7211,
+        "weighted_mean": 10.6519,
         "weighted_median": 11.6931,
-        "weighted_p25": 3.6301,
+        "weighted_p25": 2.8971,
         "weighted_p75": 13.37,
-        "weighted_std": 6.3381,
+        "weighted_std": 6.3423,
         "min": 2.121,
         "max": 20.5413
       },
@@ -449,11 +450,11 @@
         "median": -4.9808,
         "p25": -18.2215,
         "p75": -1.1189,
-        "weighted_mean": -8.4327,
+        "weighted_mean": -8.4904,
         "weighted_median": -2.5194,
         "weighted_p25": -18.0862,
         "weighted_p75": -1.0394,
-        "weighted_std": 9.5451,
+        "weighted_std": 9.5756,
         "min": -40.4848,
         "max": -0.803
       },
@@ -463,11 +464,11 @@
         "median": 3.483,
         "p25": -16.4397,
         "p75": 8.4905,
-        "weighted_mean": -0.418,
+        "weighted_mean": -0.5189,
         "weighted_median": 5.6842,
         "weighted_p25": -16.4212,
         "weighted_p75": 6.8736,
-        "weighted_std": 12.1829,
+        "weighted_std": 12.2174,
         "min": -28.1808,
         "max": 14.0077
       }
@@ -475,7 +476,8 @@
     "notes": [
       "v2 uses distance-weighted summaries.",
       "Closest matches count more via inverse-distance weighting.",
-      "Directional scorecard is based on weighted close change, upside, and downside across each horizon."
+      "Directional scorecard is based on weighted close change, upside, and downside across each horizon.",
+      "This file is now asset-parameterised. ETH legacy output is retained for downstream compatibility."
     ]
   },
   "latest_prediction_state": {
