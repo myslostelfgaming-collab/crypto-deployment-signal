@@ -21,6 +21,7 @@ ACTIONABILITY_PATH = os.path.join("data", "model", "actionability_v1.json")
 
 REPO_STATUS_PATH = os.path.join("data", "diagnostics", "repo_status.json")
 MODEL_READINESS_PATH = os.path.join("data", "diagnostics", "model_readiness.json")
+MODEL_READINESS_V2_PATH = os.path.join("data", "diagnostics", "model_readiness_v2.json")
 PREDICTION_SUMMARY_PATH = os.path.join("data", "diagnostics", "prediction_summary.json")
 
 OUT_PATH = os.path.join("data", "hourly_report.json")
@@ -319,12 +320,14 @@ def prediction_evaluation_summary(rows: List[Dict[str, str]]) -> Dict[str, Any]:
 def build_prediction_status_block(
     prediction_summary: Optional[dict],
     model_readiness: Optional[dict],
+    model_readiness_v2: Optional[dict],
     repo_status: Optional[dict],
     performance_summary: Optional[dict],
 ) -> Dict[str, Any]:
     return {
         "prediction_summary": prediction_summary or {"available": False},
         "model_readiness": model_readiness or {"available": False},
+        "model_readiness_v2": model_readiness_v2 or {"available": False},
         "repo_status_brief": {
             "available": bool(repo_status),
             "summary": (repo_status or {}).get("summary"),
@@ -362,6 +365,7 @@ def main() -> None:
 
     repo_status = load_json(REPO_STATUS_PATH)
     model_readiness = load_json(MODEL_READINESS_PATH)
+    model_readiness_v2 = load_json(MODEL_READINESS_V2_PATH)
     prediction_summary = load_json(PREDICTION_SUMMARY_PATH)
     performance_summary = load_json(PERFORMANCE_SUMMARY_PATH)
 
@@ -377,7 +381,7 @@ def main() -> None:
         "signal": signal,
         "forecast": forecast,
 
-        # New Task 5 / Task 6 reporting blocks.
+        # New Task 5 / Task 6 / Task 7 reporting blocks.
         "market_state": {
             "date": signal.get("date"),
             "timezone": signal.get("timezone"),
@@ -392,10 +396,13 @@ def main() -> None:
         "similarity_forecast_state": similarity_state,
         "latest_prediction_state": latest_prediction_state,
         "actionability_state": actionability_state or {"available": False},
+        "readiness_state": model_readiness_v2 or {"available": False},
+        "legacy_readiness_state": model_readiness or {"available": False},
         "prediction_evaluation_state": prediction_eval_state,
         "prediction_diagnostics": build_prediction_status_block(
             prediction_summary=prediction_summary,
             model_readiness=model_readiness,
+            model_readiness_v2=model_readiness_v2,
             repo_status=repo_status,
             performance_summary=performance_summary,
         ),
@@ -404,6 +411,7 @@ def main() -> None:
             "ETH-BTC is currently treated as context, not an active prediction asset.",
             "Forecast horizons are 24h, 48h, 168h, and 336h.",
             "Actionability is a calibration layer and should be read separately from the raw prediction values.",
+            "Readiness v2 is stricter than the legacy readiness file and includes evaluation maturity, similarity quality, actionability, and BTC early-history caution.",
             "Current live candle snapshots may be limited to the exchange/free-plan candle limit; longer-horizon forecasts use historical matured outcomes from similar states.",
         ],
     }
@@ -418,6 +426,9 @@ def main() -> None:
 
     if actionability_state:
         print(f"Actionability schema: {actionability_state.get('schema')}")
+
+    if model_readiness_v2:
+        print(f"Readiness schema: {model_readiness_v2.get('schema')}")
 
     for asset, state in latest_prediction_state.get("assets", {}).items():
         print(f"{asset}: latest predictions available={state.get('available')}, rows={len(state.get('rows', []))}")
