@@ -1,4 +1,4 @@
-name: Deployment Signal (Hourly)
+7name: Deployment Signal (Hourly)
 
 on:
   schedule:
@@ -149,7 +149,13 @@ jobs:
         run: |
           python scripts/build_ai_handoff_v1.py
           ls -l data/ai_handoff_v1.json || true
-
+      # -----------------------------
+      # Diagnostics
+      # -----------------------------
+      - name: Build repo diagnostics
+        run: |
+          python scripts/build_repo_diagnostics.py
+          ls -R data/diagnostics || true
       # -----------------------------
       # Commit outputs
       # -----------------------------
