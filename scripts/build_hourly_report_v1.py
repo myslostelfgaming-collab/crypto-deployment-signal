@@ -17,6 +17,7 @@ SIMILARITY_MULTI_PATH = os.path.join("data", "model", "similarity_forecast_v2_mu
 SIMILARITY_LEGACY_PATH = os.path.join("data", "model", "similarity_forecast_v2.json")
 PREDICTIONS_PATH = os.path.join("data", "model", "predictions_v1.csv")
 PERFORMANCE_SUMMARY_PATH = os.path.join("data", "model", "performance_summary_v1.json")
+ACTIONABILITY_PATH = os.path.join("data", "model", "actionability_v1.json")
 
 REPO_STATUS_PATH = os.path.join("data", "diagnostics", "repo_status.json")
 MODEL_READINESS_PATH = os.path.join("data", "diagnostics", "model_readiness.json")
@@ -357,6 +358,7 @@ def main() -> None:
     similarity_state = load_similarity_forecasts()
     latest_prediction_state = latest_predictions_by_asset(prediction_rows)
     prediction_eval_state = prediction_evaluation_summary(prediction_rows)
+    actionability_state = load_json(ACTIONABILITY_PATH)
 
     repo_status = load_json(REPO_STATUS_PATH)
     model_readiness = load_json(MODEL_READINESS_PATH)
@@ -375,7 +377,7 @@ def main() -> None:
         "signal": signal,
         "forecast": forecast,
 
-        # New Task 5 reporting blocks.
+        # New Task 5 / Task 6 reporting blocks.
         "market_state": {
             "date": signal.get("date"),
             "timezone": signal.get("timezone"),
@@ -389,6 +391,7 @@ def main() -> None:
         "baseline_forecast_state": forecast or {"available": False},
         "similarity_forecast_state": similarity_state,
         "latest_prediction_state": latest_prediction_state,
+        "actionability_state": actionability_state or {"available": False},
         "prediction_evaluation_state": prediction_eval_state,
         "prediction_diagnostics": build_prediction_status_block(
             prediction_summary=prediction_summary,
@@ -400,6 +403,7 @@ def main() -> None:
             "ETH-USDT and BTC-USDT are active prediction assets.",
             "ETH-BTC is currently treated as context, not an active prediction asset.",
             "Forecast horizons are 24h, 48h, 168h, and 336h.",
+            "Actionability is a calibration layer and should be read separately from the raw prediction values.",
             "Current live candle snapshots may be limited to the exchange/free-plan candle limit; longer-horizon forecasts use historical matured outcomes from similar states.",
         ],
     }
@@ -411,6 +415,9 @@ def main() -> None:
     print(f"Wrote: {OUT_PATH}")
     print(f"Schema: {report['schema']}")
     print(f"Active prediction assets: {ACTIVE_PREDICTION_ASSETS}")
+
+    if actionability_state:
+        print(f"Actionability schema: {actionability_state.get('schema')}")
 
     for asset, state in latest_prediction_state.get("assets", {}).items():
         print(f"{asset}: latest predictions available={state.get('available')}, rows={len(state.get('rows', []))}")
