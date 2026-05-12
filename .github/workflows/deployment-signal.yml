@@ -239,7 +239,54 @@ jobs:
 
           print("Actionability v1 validated.")
           PY
+      - name: Build model readiness v2
+        run: |
+          python scripts/build_model_readiness_v2.py
+          test -s data/diagnostics/model_readiness_v2.json
+          ls -l data/diagnostics/model_readiness_v2.json
 
+      - name: Validate model readiness v2
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("data/diagnostics/model_readiness_v2.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+
+          if payload.get("schema") != "model_readiness_v2":
+              raise SystemExit(f"Expected model_readiness_v2, got {payload.get('schema')}")
+
+          by_asset = payload.get("by_asset", {})
+          required = {"ETH-USDT", "BTC-USDT"}
+          missing = sorted(required - set(by_asset.keys()))
+
+          if missing:
+              raise SystemExit(f"Missing readiness assets: {missing}")
+
+          for asset in required:
+              block = by_asset.get(asset, {})
+              horizons = block.get("horizons", {})
+
+              expected_horizons = {"24", "48", "168", "336"}
+              found_horizons = set(horizons.keys())
+
+              if found_horizons != expected_horizons:
+                  raise SystemExit(
+                      f"{asset} readiness horizons mismatch: "
+                      f"found={sorted(found_horizons)}, expected={sorted(expected_horizons)}"
+                  )
+
+              summary = block.get("summary", {})
+              if summary.get("overall_readiness") not in {"READY", "LIMITED", "EARLY", "NOT_READY"}:
+                  raise SystemExit(f"Invalid overall readiness for {asset}: {summary}")
+
+              for h_key, h in horizons.items():
+                  if h.get("readiness") not in {"READY", "LIMITED", "EARLY", "NOT_READY"}:
+                      raise SystemExit(f"Invalid readiness for {asset} {h_key}: {h}")
+
+          print("Model readiness v2 validated.")
+          PY
       # -----------------------------
       # Baseline forecast
       # -----------------------------
