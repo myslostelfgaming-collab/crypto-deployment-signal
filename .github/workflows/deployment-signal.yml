@@ -86,7 +86,6 @@ jobs:
 
       # -----------------------------
       # Labels v2 / active model pipeline
-      # Hard fail if active outputs are missing.
       # -----------------------------
       - name: Build labels v2
         run: |
@@ -196,6 +195,7 @@ jobs:
           python scripts/build_performance_summary_v1.py
           test -s data/model/performance_summary_v1.json
           ls -l data/model/performance_summary_v1.json
+
       - name: Build actionability v1
         run: |
           python scripts/build_actionability_v1.py
@@ -239,6 +239,7 @@ jobs:
 
           print("Actionability v1 validated.")
           PY
+
       # -----------------------------
       # Baseline forecast
       # -----------------------------
@@ -262,6 +263,7 @@ jobs:
           python scripts/build_hourly_report_v1.py
           test -s data/hourly_report.json
           ls -l data/hourly_report.json
+
       - name: Validate hourly report v2
         run: |
           python - <<'PY'
@@ -285,8 +287,23 @@ jobs:
               if not latest.get(asset, {}).get("available"):
                   raise SystemExit(f"hourly_report asset not available: {asset}")
 
+          actionability = payload.get("actionability_state", {})
+          if actionability.get("schema") != "actionability_v1":
+              raise SystemExit(
+                  f"hourly_report missing actionability_v1 block, got {actionability.get('schema')}"
+              )
+
+          action_assets = set((actionability.get("by_asset") or {}).keys())
+          missing_action_assets = sorted(required - action_assets)
+
+          if missing_action_assets:
+              raise SystemExit(
+                  f"hourly_report actionability missing assets: {missing_action_assets}"
+              )
+
           print("Hourly report v2 validated.")
           PY
+
       # -----------------------------
       # AI handoff
       # -----------------------------
@@ -295,6 +312,7 @@ jobs:
           python scripts/build_ai_handoff_v1.py
           test -s data/ai_handoff_v1.json
           ls -l data/ai_handoff_v1.json
+
       - name: Validate AI handoff v2
         run: |
           python - <<'PY'
@@ -326,8 +344,23 @@ jobs:
           if missing_similarity:
               raise SystemExit(f"ai_handoff missing similarity assets: {missing_similarity}")
 
+          actionability = payload.get("actionability_state", {})
+          if actionability.get("schema") != "actionability_v1":
+              raise SystemExit(
+                  f"ai_handoff missing actionability_v1 block, got {actionability.get('schema')}"
+              )
+
+          action_assets = set((actionability.get("by_asset") or {}).keys())
+          missing_action_assets = sorted(required - action_assets)
+
+          if missing_action_assets:
+              raise SystemExit(
+                  f"ai_handoff actionability missing assets: {missing_action_assets}"
+              )
+
           print("AI handoff v2 validated.")
           PY
+
       # -----------------------------
       # Diagnostics
       # -----------------------------
@@ -365,6 +398,7 @@ jobs:
 
           print("Repo diagnostics validated.")
           PY
+
       - name: Validate diagnostics consistency
         run: |
           python - <<'PY'
@@ -408,6 +442,7 @@ jobs:
           print("Diagnostics consistency validated.")
           print("Prediction assets:", summary_assets)
           PY
+
       # -----------------------------
       # Commit outputs
       # -----------------------------
@@ -418,6 +453,7 @@ jobs:
           test -s data/hourly_report.json
           test -s data/ai_handoff_v1.json
           test -s data/diagnostics/repo_status.json
+          test -s data/model/actionability_v1.json
           test -s data/model/similarity_forecast_v2_multi.json
           test -s data/model/similarity_forecast_v2_ETH-USDT.json
           test -s data/model/similarity_forecast_v2_BTC-USDT.json
