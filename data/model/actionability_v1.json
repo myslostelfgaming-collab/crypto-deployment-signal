@@ -1,6 +1,6 @@
 {
   "schema": "actionability_v1",
-  "generated_at_utc": "2026-07-07T22:19:31.917980+00:00",
+  "generated_at_utc": "2026-07-08T00:08:56.911090+00:00",
   "source_files": {
     "predictions_v1": "data/model/predictions_v1.csv",
     "similarity_forecast_v2_multi": "data/model/similarity_forecast_v2_multi.json",
@@ -30,27 +30,28 @@
   "by_asset": {
     "ETH-USDT": {
       "available": true,
-      "latest_entry_ts_utc": "1783461600",
+      "latest_entry_ts_utc": "1783468800",
       "summary": {
         "available": true,
-        "overall_posture": "WATCHLIST",
+        "overall_posture": "MODEL_SUPPORTIVE",
         "action_counts": {
-          "CAUTION": 4
+          "ACTIONABLE": 2,
+          "CAUTION": 2
         },
         "direction_counts": {
           "up": 2,
           "down": 2
         },
         "strongest_horizon": {
-          "horizon_h": 48,
-          "actionability": "CAUTION",
-          "score": 6.5,
-          "predicted_close_change_pct": 0.5196,
-          "confidence": "medium",
+          "horizon_h": 24,
+          "actionability": "ACTIONABLE",
+          "score": 7.0,
+          "predicted_close_change_pct": 0.3399,
+          "confidence": "high",
           "analogue_quality": "strong"
         },
         "notes": [
-          "There is some model support, but the signal should be treated cautiously."
+          "At least two horizons are actionable under the current calibration rules."
         ]
       },
       "horizons": [
@@ -58,37 +59,37 @@
           "asset": "ETH-USDT",
           "horizon_h": 24,
           "status": "pending",
-          "entry_ts_utc": "1783461600",
-          "target_ts_utc": "2026-07-08T22:00:00+00:00",
-          "predicted_close_change_pct": 0.3046,
-          "predicted_price": 1782.1412,
+          "entry_ts_utc": "1783468800",
+          "target_ts_utc": "2026-07-09T00:00:00+00:00",
+          "predicted_close_change_pct": 0.3399,
+          "predicted_price": 1780.4507,
           "direction": "up",
-          "confidence": "medium",
+          "confidence": "high",
           "analogue_quality": "strong",
           "neighbors_used": 20,
-          "best_distance": 0.728054,
-          "evaluated_predictions": 943,
-          "direction_accuracy_pct": 48.57,
-          "score": 6.0,
+          "best_distance": 0.548602,
+          "evaluated_predictions": 944,
+          "direction_accuracy_pct": 48.62,
+          "score": 7.0,
           "score_components": {
-            "confidence": 1.0,
+            "confidence": 2.0,
             "analogue_quality": 2.0,
             "best_distance": 2.0,
             "neighbors_used": 1.0,
             "prediction_magnitude": 0.0,
             "performance_history": 0.0
           },
-          "raw_actionability": "CAUTION",
-          "actionability": "CAUTION",
+          "raw_actionability": "ACTIONABLE",
+          "actionability": "ACTIONABLE",
           "hard_blocks": [],
           "caution_flags": [],
-          "interpretation": "Caution signal: predicted 0.30% up, but confirmation is not strong enough.",
+          "interpretation": "Actionable model signal: predicted 0.34% up, with high confidence and strong analogue quality.",
           "readiness_context": {
-            "model_rows": 2783,
-            "prediction_rows": 3797,
+            "model_rows": 2785,
+            "prediction_rows": 3801,
             "active_prediction_asset": true,
             "horizon_readiness": {
-              "label_rows": 2783,
+              "label_rows": 2785,
               "status": "ready"
             }
           }
@@ -97,37 +98,37 @@
           "asset": "ETH-USDT",
           "horizon_h": 48,
           "status": "pending",
-          "entry_ts_utc": "1783461600",
-          "target_ts_utc": "2026-07-09T22:00:00+00:00",
-          "predicted_close_change_pct": 0.5196,
-          "predicted_price": 1785.9615,
+          "entry_ts_utc": "1783468800",
+          "target_ts_utc": "2026-07-10T00:00:00+00:00",
+          "predicted_close_change_pct": 0.3379,
+          "predicted_price": 1780.4156,
           "direction": "up",
-          "confidence": "medium",
+          "confidence": "high",
           "analogue_quality": "strong",
           "neighbors_used": 20,
-          "best_distance": 0.728054,
-          "evaluated_predictions": 935,
-          "direction_accuracy_pct": 47.17,
-          "score": 6.5,
+          "best_distance": 0.548602,
+          "evaluated_predictions": 936,
+          "direction_accuracy_pct": 47.22,
+          "score": 7.0,
           "score_components": {
-            "confidence": 1.0,
+            "confidence": 2.0,
             "analogue_quality": 2.0,
             "best_distance": 2.0,
             "neighbors_used": 1.0,
-            "prediction_magnitude": 0.5,
+            "prediction_magnitude": 0.0,
             "performance_history": 0.0
           },
-          "raw_actionability": "CAUTION",
-          "actionability": "CAUTION",
+          "raw_actionability": "ACTIONABLE",
+          "actionability": "ACTIONABLE",
           "hard_blocks": [],
           "caution_flags": [],
-          "interpretation": "Caution signal: predicted 0.52% up, but confirmation is not strong enough.",
+          "interpretation": "Actionable model signal: predicted 0.34% up, with high confidence and strong analogue quality.",
           "readiness_context": {
-            "model_rows": 2783,
-            "prediction_rows": 3797,
+            "model_rows": 2785,
+            "prediction_rows": 3801,
             "active_prediction_asset": true,
             "horizon_readiness": {
-              "label_rows": 2783,
+              "label_rows": 2785,
               "status": "ready"
             }
           }
@@ -136,17 +137,17 @@
           "asset": "ETH-USDT",
           "horizon_h": 168,
           "status": "pending",
-          "entry_ts_utc": "1783461600",
-          "target_ts_utc": "2026-07-14T22:00:00+00:00",
-          "predicted_close_change_pct": -1.3888,
-          "predicted_price": 1752.0546,
+          "entry_ts_utc": "1783468800",
+          "target_ts_utc": "2026-07-15T00:00:00+00:00",
+          "predicted_close_change_pct": -1.4821,
+          "predicted_price": 1748.1211,
           "direction": "down",
           "confidence": "low",
           "analogue_quality": "strong",
           "neighbors_used": 20,
-          "best_distance": 0.728054,
-          "evaluated_predictions": 890,
-          "direction_accuracy_pct": 42.92,
+          "best_distance": 0.548602,
+          "evaluated_predictions": 891,
+          "direction_accuracy_pct": 42.99,
           "score": 5.5,
           "score_components": {
             "confidence": 0.0,
@@ -162,13 +163,13 @@
           "caution_flags": [
             "weak_recent_directional_accuracy"
           ],
-          "interpretation": "Caution signal: predicted -1.39% down, but capped by weak_recent_directional_accuracy.",
+          "interpretation": "Caution signal: predicted -1.48% down, but capped by weak_recent_directional_accuracy.",
           "readiness_context": {
-            "model_rows": 2783,
-            "prediction_rows": 3797,
+            "model_rows": 2785,
+            "prediction_rows": 3801,
             "active_prediction_asset": true,
             "horizon_readiness": {
-              "label_rows": 2783,
+              "label_rows": 2785,
               "status": "ready"
             }
           }
@@ -177,17 +178,17 @@
           "asset": "ETH-USDT",
           "horizon_h": 336,
           "status": "pending",
-          "entry_ts_utc": "1783461600",
-          "target_ts_utc": "2026-07-21T22:00:00+00:00",
-          "predicted_close_change_pct": -8.3795,
-          "predicted_price": 1627.8484,
+          "entry_ts_utc": "1783468800",
+          "target_ts_utc": "2026-07-22T00:00:00+00:00",
+          "predicted_close_change_pct": -8.8157,
+          "predicted_price": 1617.993,
           "direction": "down",
           "confidence": "low",
           "analogue_quality": "strong",
           "neighbors_used": 20,
-          "best_distance": 0.728054,
-          "evaluated_predictions": 833,
-          "direction_accuracy_pct": 44.78,
+          "best_distance": 0.548602,
+          "evaluated_predictions": 834,
+          "direction_accuracy_pct": 44.84,
           "score": 6.0,
           "score_components": {
             "confidence": 0.0,
@@ -203,13 +204,13 @@
           "caution_flags": [
             "weak_recent_directional_accuracy"
           ],
-          "interpretation": "Caution signal: predicted -8.38% down, but capped by weak_recent_directional_accuracy.",
+          "interpretation": "Caution signal: predicted -8.82% down, but capped by weak_recent_directional_accuracy.",
           "readiness_context": {
-            "model_rows": 2783,
-            "prediction_rows": 3797,
+            "model_rows": 2785,
+            "prediction_rows": 3801,
             "active_prediction_asset": true,
             "horizon_readiness": {
-              "label_rows": 2783,
+              "label_rows": 2785,
               "status": "ready"
             }
           }
@@ -218,7 +219,7 @@
     },
     "BTC-USDT": {
       "available": true,
-      "latest_entry_ts_utc": "1783461600",
+      "latest_entry_ts_utc": "1783468800",
       "summary": {
         "available": true,
         "overall_posture": "WATCHLIST",
@@ -233,7 +234,7 @@
           "horizon_h": 48,
           "actionability": "CAUTION",
           "score": 5.5,
-          "predicted_close_change_pct": 0.968,
+          "predicted_close_change_pct": 0.6834,
           "confidence": "high",
           "analogue_quality": "medium"
         },
@@ -247,17 +248,17 @@
           "asset": "BTC-USDT",
           "horizon_h": 24,
           "status": "pending",
-          "entry_ts_utc": "1783461600",
-          "target_ts_utc": "2026-07-08T22:00:00+00:00",
-          "predicted_close_change_pct": 0.7654,
-          "predicted_price": 63983.6987,
+          "entry_ts_utc": "1783468800",
+          "target_ts_utc": "2026-07-09T00:00:00+00:00",
+          "predicted_close_change_pct": 0.6405,
+          "predicted_price": 63853.6609,
           "direction": "up",
           "confidence": "high",
           "analogue_quality": "medium",
           "neighbors_used": 20,
-          "best_distance": 2.093289,
-          "evaluated_predictions": 445,
-          "direction_accuracy_pct": 49.44,
+          "best_distance": 2.001919,
+          "evaluated_predictions": 446,
+          "direction_accuracy_pct": 49.55,
           "score": 5.5,
           "score_components": {
             "confidence": 2.0,
@@ -271,13 +272,13 @@
           "actionability": "CAUTION",
           "hard_blocks": [],
           "caution_flags": [],
-          "interpretation": "Caution signal: predicted 0.77% up, but confirmation is not strong enough.",
+          "interpretation": "Caution signal: predicted 0.64% up, but confirmation is not strong enough.",
           "readiness_context": {
-            "model_rows": 859,
-            "prediction_rows": 1808,
+            "model_rows": 861,
+            "prediction_rows": 1812,
             "active_prediction_asset": true,
             "horizon_readiness": {
-              "label_rows": 859,
+              "label_rows": 861,
               "status": "ready"
             }
           }
@@ -286,17 +287,17 @@
           "asset": "BTC-USDT",
           "horizon_h": 48,
           "status": "pending",
-          "entry_ts_utc": "1783461600",
-          "target_ts_utc": "2026-07-09T22:00:00+00:00",
-          "predicted_close_change_pct": 0.968,
-          "predicted_price": 64112.3387,
+          "entry_ts_utc": "1783468800",
+          "target_ts_utc": "2026-07-10T00:00:00+00:00",
+          "predicted_close_change_pct": 0.6834,
+          "predicted_price": 63880.9052,
           "direction": "up",
           "confidence": "high",
           "analogue_quality": "medium",
           "neighbors_used": 20,
-          "best_distance": 2.093289,
-          "evaluated_predictions": 438,
-          "direction_accuracy_pct": 42.47,
+          "best_distance": 2.001919,
+          "evaluated_predictions": 439,
+          "direction_accuracy_pct": 42.6,
           "score": 5.5,
           "score_components": {
             "confidence": 2.0,
@@ -312,13 +313,13 @@
           "caution_flags": [
             "weak_recent_directional_accuracy"
           ],
-          "interpretation": "Caution signal: predicted 0.97% up, but capped by weak_recent_directional_accuracy.",
+          "interpretation": "Caution signal: predicted 0.68% up, but capped by weak_recent_directional_accuracy.",
           "readiness_context": {
-            "model_rows": 859,
-            "prediction_rows": 1808,
+            "model_rows": 861,
+            "prediction_rows": 1812,
             "active_prediction_asset": true,
             "horizon_readiness": {
-              "label_rows": 859,
+              "label_rows": 861,
               "status": "ready"
             }
           }
@@ -327,17 +328,17 @@
           "asset": "BTC-USDT",
           "horizon_h": 168,
           "status": "pending",
-          "entry_ts_utc": "1783461600",
-          "target_ts_utc": "2026-07-14T22:00:00+00:00",
-          "predicted_close_change_pct": 0.3721,
-          "predicted_price": 63733.9622,
+          "entry_ts_utc": "1783468800",
+          "target_ts_utc": "2026-07-15T00:00:00+00:00",
+          "predicted_close_change_pct": 0.623,
+          "predicted_price": 63842.6021,
           "direction": "up",
           "confidence": "low",
           "analogue_quality": "medium",
           "neighbors_used": 20,
-          "best_distance": 2.093289,
-          "evaluated_predictions": 393,
-          "direction_accuracy_pct": 33.84,
+          "best_distance": 2.001919,
+          "evaluated_predictions": 394,
+          "direction_accuracy_pct": 34.01,
           "score": 3.0,
           "score_components": {
             "confidence": 0.0,
@@ -353,13 +354,13 @@
           "caution_flags": [
             "weak_recent_directional_accuracy"
           ],
-          "interpretation": "Not actionable: predicted 0.37% up, but confidence/quality/history are insufficient.",
+          "interpretation": "Not actionable: predicted 0.62% up, but confidence/quality/history are insufficient.",
           "readiness_context": {
-            "model_rows": 859,
-            "prediction_rows": 1808,
+            "model_rows": 861,
+            "prediction_rows": 1812,
             "active_prediction_asset": true,
             "horizon_readiness": {
-              "label_rows": 859,
+              "label_rows": 861,
               "status": "ready"
             }
           }
@@ -368,17 +369,17 @@
           "asset": "BTC-USDT",
           "horizon_h": 336,
           "status": "pending",
-          "entry_ts_utc": "1783461600",
-          "target_ts_utc": "2026-07-21T22:00:00+00:00",
-          "predicted_close_change_pct": 2.946,
-          "predicted_price": 65368.3549,
+          "entry_ts_utc": "1783468800",
+          "target_ts_utc": "2026-07-22T00:00:00+00:00",
+          "predicted_close_change_pct": 2.6685,
+          "predicted_price": 65140.3785,
           "direction": "up",
           "confidence": "low",
           "analogue_quality": "medium",
           "neighbors_used": 20,
-          "best_distance": 2.093289,
-          "evaluated_predictions": 336,
-          "direction_accuracy_pct": 28.57,
+          "best_distance": 2.001919,
+          "evaluated_predictions": 337,
+          "direction_accuracy_pct": 28.78,
           "score": 4.0,
           "score_components": {
             "confidence": 0.0,
@@ -394,13 +395,13 @@
           "caution_flags": [
             "weak_recent_directional_accuracy"
           ],
-          "interpretation": "Caution signal: predicted 2.95% up, but capped by weak_recent_directional_accuracy.",
+          "interpretation": "Caution signal: predicted 2.67% up, but capped by weak_recent_directional_accuracy.",
           "readiness_context": {
-            "model_rows": 859,
-            "prediction_rows": 1808,
+            "model_rows": 861,
+            "prediction_rows": 1812,
             "active_prediction_asset": true,
             "horizon_readiness": {
-              "label_rows": 859,
+              "label_rows": 861,
               "status": "ready"
             }
           }
