@@ -18,6 +18,7 @@ REPO_STATUS_PATH = os.path.join("data", "diagnostics", "repo_status.json")
 MODEL_READINESS_PATH = os.path.join("data", "diagnostics", "model_readiness.json")
 MODEL_READINESS_V2_PATH = os.path.join("data", "diagnostics", "model_readiness_v2.json")
 PREDICTION_SUMMARY_PATH = os.path.join("data", "diagnostics", "prediction_summary.json")
+PREDICTION_AUDIT_PATH = os.path.join("data", "diagnostics", "prediction_audit_v2.json")
 
 OUT_PATH = os.path.join("data", "ai_handoff_v1.json")
 
@@ -164,6 +165,66 @@ def compact_similarity_forecasts() -> Dict[str, Any]:
     return {"available": False}
 
 
+
+def compact_prediction_audit(audit: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    if not audit:
+        return {"available": False}
+
+    def compact_metrics(block: Any) -> Dict[str, Any]:
+        if not isinstance(block, dict):
+            return {}
+        return {
+            "binary_direction_rows": block.get("binary_direction_rows"),
+            "direction_accuracy_pct": block.get("direction_accuracy_pct"),
+            "balanced_accuracy_pct": block.get("balanced_accuracy_pct"),
+            "actual_up_rate_pct": block.get("actual_up_rate_pct"),
+            "majority_class_baseline_pct": block.get("majority_class_baseline_pct"),
+            "inverse_model_accuracy_pct": block.get("inverse_model_accuracy_pct"),
+            "edge_vs_majority_baseline_pp": block.get("edge_vs_majority_baseline_pp"),
+        }
+
+    conviction = audit.get("conviction_thresholds_overall", {})
+    selected_conviction = {
+        key: conviction.get(key)
+        for key in ["0.00", "0.50", "1.00", "2.00", "3.00"]
+        if key in conviction
+    }
+
+    by_horizon = {
+        str(k): compact_metrics(v)
+        for k, v in (audit.get("by_horizon") or {}).items()
+    }
+    by_asset_horizon = {
+        str(k): compact_metrics(v)
+        for k, v in (audit.get("by_asset_horizon") or {}).items()
+    }
+
+    selected_baselines: Dict[str, Any] = {}
+    for horizon, block in (audit.get("baseline_tournament_by_horizon") or {}).items():
+        if not isinstance(block, dict):
+            continue
+        selected_baselines[str(horizon)] = {
+            "model_v2": block.get("model_v2"),
+            "ret_48h_reversion": block.get("ret_48h_reversion"),
+            "ret_48h_trend": block.get("ret_48h_trend"),
+        }
+
+    return {
+        "available": bool(audit.get("available", True)),
+        "schema": audit.get("schema"),
+        "generated_at_utc": audit.get("generated_at_utc"),
+        "data_quality": audit.get("data_quality"),
+        "overall": compact_metrics(audit.get("overall")),
+        "overall_independent_sample": compact_metrics(audit.get("overall_independent_sample")),
+        "by_horizon": by_horizon,
+        "by_asset_horizon": by_asset_horizon,
+        "selected_baseline_tournament_by_horizon": selected_baselines,
+        "paired_short_horizon_benchmark_independent": audit.get("paired_short_horizon_benchmark_independent"),
+        "selected_conviction_thresholds": selected_conviction,
+        "warnings": audit.get("warnings", []),
+    }
+
+
 def compact_prediction_row(r: Dict[str, str]) -> Dict[str, Any]:
     return {
         "asset": r.get("asset"),
@@ -293,6 +354,7 @@ def diagnostics_state() -> Dict[str, Any]:
     repo_status = load_json(REPO_STATUS_PATH)
     model_readiness = load_json(MODEL_READINESS_PATH)
     model_readiness_v2 = load_json(MODEL_READINESS_V2_PATH)
+    prediction_audit = load_json(PREDICTION_AUDIT_PATH)
     prediction_summary = load_json(PREDICTION_SUMMARY_PATH)
     performance_summary = load_json(PERFORMANCE_SUMMARY_PATH)
     actionability_state = load_json(ACTIONABILITY_PATH)
@@ -323,6 +385,7 @@ def build_interpretation_instructions() -> Dict[str, Any]:
             "Use readiness_state to distinguish model maturity from raw prediction strength.",
             "Use the actionability_state block to distinguish raw predictions from actionable/caution/not-actionable signals.",
             "If prediction evaluations are available, explain whether the model has been accurate or drifting.",
+            "Use prediction_audit_state to compare V2 against simple baselines and to flag anti-calibrated confidence or magnitude.",
             "Give a cautious deployment posture, not financial advice.",
         ],
         "required_output_format": [
@@ -357,6 +420,7 @@ def main() -> None:
     pred_rows = load_csv_rows(PREDICTIONS_V1_PATH)
     actionability_state = load_json(ACTIONABILITY_PATH)
     model_readiness_v2 = load_json(MODEL_READINESS_V2_PATH)
+    prediction_audit = load_json(PREDICTION_AUDIT_PATH)
 
     payload = {
         "schema": "ai_handoff_v2",
@@ -373,6 +437,7 @@ def main() -> None:
                 "model_readiness_v2": MODEL_READINESS_V2_PATH if os.path.isfile(MODEL_READINESS_V2_PATH) else None,
                 "repo_status": REPO_STATUS_PATH if os.path.isfile(REPO_STATUS_PATH) else None,
                 "prediction_summary": PREDICTION_SUMMARY_PATH if os.path.isfile(PREDICTION_SUMMARY_PATH) else None,
+                "prediction_audit_v2": PREDICTION_AUDIT_PATH if os.path.isfile(PREDICTION_AUDIT_PATH) else None,
             },
         },
         "active_prediction_assets": ACTIVE_PREDICTION_ASSETS,
@@ -384,6 +449,7 @@ def main() -> None:
         "actionability_state": actionability_state or {"available": False},
         "readiness_state": model_readiness_v2 or {"available": False},
         "prediction_evaluation_state": prediction_evaluation_state(pred_rows),
+        "prediction_audit_state": compact_prediction_audit(prediction_audit),
         "diagnostics_state": diagnostics_state(),
         "interpretation_instructions": build_interpretation_instructions(),
     }
