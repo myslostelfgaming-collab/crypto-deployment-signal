@@ -3,6 +3,10 @@ name: Deployment Signal (Hourly)
 on:
   schedule:
     - cron: "07 * * * *"
+    # Extra pre-noon snapshot. On Luno cutoff days this gives a fresher
+    # candidate than the normal 11:07 UTC hourly run while retaining buffer
+    # before the official 12:00 UTC submission deadline.
+    - cron: "37 11 * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -146,6 +150,20 @@ jobs:
           print("Similarity forecast assets validated:", sorted(generated))
           PY
 
+      - name: Build Luno price proxy v1
+        run: |
+          python scripts/build_luno_price_proxy_v1.py
+          test -s data/luno/luno_price_proxy_latest_v1.json
+          test -s data/luno/luno_price_proxy_history_v1.csv
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path("data/luno/luno_price_proxy_latest_v1.json").read_text(encoding="utf-8"))
+          if p.get("schema") != "luno_price_proxy_v1":
+              raise SystemExit(f"Unexpected Luno proxy schema: {p.get('schema')}")
+          print("Luno proxy status:", p.get("status"), "proxy:", p.get("luno_usd_proxy"))
+          PY
+
       - name: Build predictions v1
         run: |
           python scripts/build_predictions_v1.py
@@ -196,6 +214,87 @@ jobs:
           test -s data/model/performance_summary_v1.json
           ls -l data/model/performance_summary_v1.json
 
+
+      - name: Audit predictions v2
+        run: |
+          python scripts/audit_predictions_v2.py
+          test -s data/diagnostics/prediction_audit_v2.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("data/diagnostics/prediction_audit_v2.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+
+          if payload.get("schema") != "prediction_audit_v2":
+              raise SystemExit(f"Expected prediction_audit_v2, got {payload.get('schema')}")
+
+          if not payload.get("available"):
+              raise SystemExit(f"Prediction audit unavailable: {payload.get('reason')}")
+
+          print("Prediction audit v2 validated.")
+          print("Overall direction accuracy:", payload.get("overall", {}).get("direction_accuracy_pct"))
+          print("Independent short benchmark:", payload.get("paired_short_horizon_benchmark_independent"))
+          PY
+
+      - name: Build model tournament v1
+        run: |
+          python scripts/build_model_tournament_v1.py
+          test -s data/diagnostics/model_tournament_v1.json
+          python scripts/validate_model_tournament_v1.py
+          ls -l data/diagnostics/model_tournament_v1.json
+
+      - name: Build Luno point-price tournament v1
+        run: |
+          python scripts/build_luno_point_tournament_v1.py
+          test -s data/diagnostics/luno_point_tournament_v1.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path("data/diagnostics/luno_point_tournament_v1.json").read_text(encoding="utf-8"))
+          if p.get("schema") != "luno_point_tournament_v1":
+              raise SystemExit(f"Unexpected Luno tournament schema: {p.get('schema')}")
+          print("Luno weekly proxy champion:", (p.get("weekly") or {}).get("historical_proxy_champion"))
+          print("Luno monthly proxy champion:", (p.get("monthly") or {}).get("historical_proxy_champion"))
+          PY
+
+      - name: Build prospective shadow challengers v1
+        run: |
+          python scripts/build_shadow_challengers_v1.py
+          test -s data/model/shadow_predictions_v1.csv
+          test -s data/model/shadow_challenger_performance_v1.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = json.loads(Path("data/model/shadow_challenger_performance_v1.json").read_text(encoding="utf-8"))
+          if p.get("schema") != "shadow_challenger_performance_v1":
+              raise SystemExit(f"Unexpected shadow schema: {p.get('schema')}")
+          if p.get("status") != "PROSPECTIVE_SHADOW_ONLY":
+              raise SystemExit(f"Unexpected shadow status: {p.get('status')}")
+          print("Shadow challengers validated:", p.get("rows_total"), "rows")
+          PY
+
+      - name: Build Luno competition shadow v1
+        run: |
+          python scripts/build_luno_shadow_v1.py
+          test -s data/luno/luno_shadow_entries_v1.csv
+          test -s data/luno/luno_shadow_latest_v1.json
+          test -s data/luno/luno_shadow_performance_v1.json
+          test -s data/luno/luno_manual_results_v1.csv
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          latest = json.loads(Path("data/luno/luno_shadow_latest_v1.json").read_text(encoding="utf-8"))
+          perf = json.loads(Path("data/luno/luno_shadow_performance_v1.json").read_text(encoding="utf-8"))
+          if latest.get("schema") != "luno_shadow_v1":
+              raise SystemExit(f"Unexpected Luno shadow schema: {latest.get('schema')}")
+          if perf.get("schema") != "luno_shadow_performance_v1":
+              raise SystemExit(f"Unexpected Luno shadow performance schema: {perf.get('schema')}")
+          if perf.get("status") != "PROSPECTIVE_SHADOW_ONLY":
+              raise SystemExit(f"Unexpected Luno shadow status: {perf.get('status')}")
+          print("Luno shadow rows:", perf.get("rows_total"))
+          PY
+
       - name: Build actionability v1
         run: |
           python scripts/build_actionability_v1.py
@@ -244,6 +343,7 @@ jobs:
         run: |
           python scripts/build_model_readiness_v2.py
           test -s data/diagnostics/model_readiness_v2.json
+          test -s data/diagnostics/prediction_audit_v2.json
           ls -l data/diagnostics/model_readiness_v2.json
 
       - name: Validate model readiness v2
@@ -435,6 +535,12 @@ jobs:
                   f"ai_handoff readiness missing assets: {missing_readiness_assets}"
               )
 
+          luno = payload.get("luno_price_predict_state", {})
+          if not luno.get("available"):
+              raise SystemExit("ai_handoff missing Luno Price Predict state")
+          if (luno.get("point_price_tournament") or {}).get("schema") != "luno_point_tournament_v1":
+              raise SystemExit("ai_handoff missing luno_point_tournament_v1")
+
           print("AI handoff v2 validated.")
           PY
 
@@ -544,6 +650,17 @@ jobs:
           test -s data/ai_handoff_v1.json
           test -s data/diagnostics/repo_status.json
           test -s data/diagnostics/model_readiness_v2.json
+          test -s data/diagnostics/prediction_audit_v2.json
+          test -s data/diagnostics/model_tournament_v1.json
+          test -s data/model/shadow_predictions_v1.csv
+          test -s data/model/shadow_challenger_performance_v1.json
+          test -s data/diagnostics/luno_point_tournament_v1.json
+          test -s data/luno/luno_price_proxy_latest_v1.json
+          test -s data/luno/luno_price_proxy_history_v1.csv
+          test -s data/luno/luno_shadow_entries_v1.csv
+          test -s data/luno/luno_shadow_latest_v1.json
+          test -s data/luno/luno_shadow_performance_v1.json
+          test -s data/luno/luno_manual_results_v1.csv
           test -s data/model/actionability_v1.json
           test -s data/model/similarity_forecast_v2_multi.json
           test -s data/model/similarity_forecast_v2_ETH-USDT.json
