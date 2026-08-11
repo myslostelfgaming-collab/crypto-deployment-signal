@@ -1,0 +1,733 @@
+{
+  "schema": "luno_point_tournament_v1",
+  "generated_at_utc": "2026-08-11T05:00:08.296885+00:00",
+  "status": "DIAGNOSTIC_ONLY",
+  "objective": "minimise absolute BTC USD price error at Luno Price Predict settlement time",
+  "settlement_truth_status": "KUCOIN_BTC_USDT_PROXY_NOT_LUNO_INTERNAL_RATE",
+  "schedule": {
+    "weekly": {
+      "submission_cutoff_utc": "Wednesday 12:00",
+      "settlement_utc": "Friday 12:00",
+      "generic_reference_horizon_h": 48
+    },
+    "monthly": {
+      "submission_cutoff_utc": "day 14 12:00",
+      "settlement_utc": "day 28 12:00",
+      "generic_reference_horizon_h": 336
+    }
+  },
+  "method": {
+    "entry_proxy": "latest KuCoin BTC-USDT repo snapshot within 3.0h before submission cutoff",
+    "settlement_proxy": "nearest KuCoin BTC-USDT repo snapshot within 90.0 minutes of settlement",
+    "warning": "Historical results measure target-aligned market-price forecasting, not exact Luno internal-rate accuracy.",
+    "mean_reversion_shrink_note": "0.13 coefficient is research-only and was discovered on prior broad 48h history; it must not be treated as an independent validation result."
+  },
+  "data_quality": {
+    "btc_price_points": 1351,
+    "btc_prediction_rows": 3032,
+    "btc_feature_rows": 1351,
+    "challenge_rows": 20
+  },
+  "weekly": {
+    "n_challenges_with_proxy_settlement": 16,
+    "historical_proxy_champion": "persistence",
+    "promotion_status": "PERSISTENCE_CHAMPION",
+    "models": {
+      "persistence": {
+        "n": 16,
+        "mae_usd": 1535.45,
+        "median_ae_usd": 1163.1,
+        "wins_vs_persistence": 0,
+        "win_rate_vs_persistence_pct": 0.0,
+        "paired_persistence_mae_usd": 1535.45,
+        "mae_improvement_vs_persistence_pct": 0.0
+      },
+      "similarity_v2": {
+        "n": 11,
+        "mae_usd": 2215.8444,
+        "median_ae_usd": 2098.4011,
+        "wins_vs_persistence": 2,
+        "win_rate_vs_persistence_pct": 18.18,
+        "paired_persistence_mae_usd": 1810.3091,
+        "mae_improvement_vs_persistence_pct": -22.4014
+      },
+      "mean_reversion_48h_full": {
+        "n": 16,
+        "mae_usd": 2468.2993,
+        "median_ae_usd": 1761.4178,
+        "wins_vs_persistence": 5,
+        "win_rate_vs_persistence_pct": 31.25,
+        "paired_persistence_mae_usd": 1535.45,
+        "mae_improvement_vs_persistence_pct": -60.7541
+      },
+      "mean_reversion_48h_shrunk_0p13": {
+        "n": 16,
+        "mae_usd": 1620.6458,
+        "median_ae_usd": 1094.2261,
+        "wins_vs_persistence": 5,
+        "win_rate_vs_persistence_pct": 31.25,
+        "paired_persistence_mae_usd": 1535.45,
+        "mae_improvement_vs_persistence_pct": -5.5486
+      }
+    },
+    "alignment": {
+      "median_absolute_gap_vs_generic_horizon_hours": 0.7686,
+      "median_settlement_proxy_timestamp_error_minutes": 19.35
+    }
+  },
+  "monthly": {
+    "n_challenges_with_proxy_settlement": 4,
+    "historical_proxy_champion": "persistence",
+    "promotion_status": "PERSISTENCE_CHAMPION",
+    "models": {
+      "persistence": {
+        "n": 4,
+        "mae_usd": 3231.2,
+        "median_ae_usd": 3018.6,
+        "wins_vs_persistence": 0,
+        "win_rate_vs_persistence_pct": 0.0,
+        "paired_persistence_mae_usd": 3231.2,
+        "mae_improvement_vs_persistence_pct": 0.0
+      },
+      "similarity_v2": {
+        "n": 3,
+        "mae_usd": 3872.7214,
+        "median_ae_usd": 1666.2376,
+        "wins_vs_persistence": 1,
+        "win_rate_vs_persistence_pct": 33.33,
+        "paired_persistence_mae_usd": 3714.1,
+        "mae_improvement_vs_persistence_pct": -4.2708
+      },
+      "mean_reversion_48h_full": {
+        "n": 4,
+        "mae_usd": 3951.3636,
+        "median_ae_usd": 4119.1376,
+        "wins_vs_persistence": 2,
+        "win_rate_vs_persistence_pct": 50.0,
+        "paired_persistence_mae_usd": 3231.2,
+        "mae_improvement_vs_persistence_pct": -22.2878
+      },
+      "mean_reversion_48h_shrunk_0p13": {
+        "n": 4,
+        "mae_usd": 3296.774,
+        "median_ae_usd": 3161.6699,
+        "wins_vs_persistence": 2,
+        "win_rate_vs_persistence_pct": 50.0,
+        "paired_persistence_mae_usd": 3231.2,
+        "mae_improvement_vs_persistence_pct": -2.0294
+      }
+    },
+    "alignment": {
+      "median_absolute_gap_vs_generic_horizon_hours": 1.1389,
+      "median_settlement_proxy_timestamp_error_minutes": 23.02
+    }
+  },
+  "challenge_rows": [
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-04-08T12:00:00+00:00",
+      "settlement_utc": "2026-04-10T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-04-08T11:10:46+00:00",
+      "entry_snapshot_minutes_before_cutoff": 49.23,
+      "entry_price": 71585.8,
+      "settlement_proxy_snapshot_utc": "2026-04-10T11:57:30+00:00",
+      "settlement_proxy_diff_minutes": 2.5,
+      "settlement_proxy_price": 72109.3,
+      "actual_return_pct": 0.73129,
+      "actual_hours_from_entry_snapshot": 48.8206,
+      "horizon_alignment_gap_hours": 0.8206,
+      "similarity_prediction_created_utc": null,
+      "feature_snapshot_utc": "2026-04-08T11:10:46+00:00",
+      "ret48_at_entry_pct": 2.8354,
+      "forecasts": {
+        "persistence": 71585.8,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 69556.0562,
+        "mean_reversion_48h_shrunk_0p13": 71321.9333
+      },
+      "absolute_errors": {
+        "persistence": 523.5,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 2553.2438,
+        "mean_reversion_48h_shrunk_0p13": 787.3667
+      }
+    },
+    {
+      "challenge_type": "monthly",
+      "cutoff_utc": "2026-04-14T12:00:00+00:00",
+      "settlement_utc": "2026-04-28T12:00:00+00:00",
+      "reference_horizon_h": 336,
+      "entry_snapshot_utc": "2026-04-14T11:13:33+00:00",
+      "entry_snapshot_minutes_before_cutoff": 46.45,
+      "entry_price": 74417.4,
+      "settlement_proxy_snapshot_utc": "2026-04-28T11:55:26+00:00",
+      "settlement_proxy_diff_minutes": 4.57,
+      "settlement_proxy_price": 76199.9,
+      "actual_return_pct": 2.395273,
+      "actual_hours_from_entry_snapshot": 336.7742,
+      "horizon_alignment_gap_hours": 0.7742,
+      "similarity_prediction_created_utc": null,
+      "feature_snapshot_utc": "2026-04-14T11:13:33+00:00",
+      "ret48_at_entry_pct": 4.1177,
+      "forecasts": {
+        "persistence": 74417.4,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 71353.1147,
+        "mean_reversion_48h_shrunk_0p13": 74019.0429
+      },
+      "absolute_errors": {
+        "persistence": 1782.5,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 4846.7853,
+        "mean_reversion_48h_shrunk_0p13": 2180.8571
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-04-15T12:00:00+00:00",
+      "settlement_utc": "2026-04-17T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-04-15T11:10:54+00:00",
+      "entry_snapshot_minutes_before_cutoff": 49.1,
+      "entry_price": 73991.5,
+      "settlement_proxy_snapshot_utc": "2026-04-17T11:59:21+00:00",
+      "settlement_proxy_diff_minutes": 0.65,
+      "settlement_proxy_price": 75599.1,
+      "actual_return_pct": 2.172682,
+      "actual_hours_from_entry_snapshot": 48.8183,
+      "horizon_alignment_gap_hours": 0.8183,
+      "similarity_prediction_created_utc": null,
+      "feature_snapshot_utc": "2026-04-15T11:10:54+00:00",
+      "ret48_at_entry_pct": 4.3165,
+      "forecasts": {
+        "persistence": 73991.5,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 70797.6569,
+        "mean_reversion_48h_shrunk_0p13": 73576.3004
+      },
+      "absolute_errors": {
+        "persistence": 1607.6,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 4801.4431,
+        "mean_reversion_48h_shrunk_0p13": 2022.7996
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-04-22T12:00:00+00:00",
+      "settlement_utc": "2026-04-24T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-04-22T11:16:52+00:00",
+      "entry_snapshot_minutes_before_cutoff": 43.13,
+      "entry_price": 78204.5,
+      "settlement_proxy_snapshot_utc": "2026-04-24T12:02:05+00:00",
+      "settlement_proxy_diff_minutes": 2.08,
+      "settlement_proxy_price": 78242.2,
+      "actual_return_pct": 0.048207,
+      "actual_hours_from_entry_snapshot": 48.7189,
+      "horizon_alignment_gap_hours": 0.7189,
+      "similarity_prediction_created_utc": null,
+      "feature_snapshot_utc": "2026-04-22T11:16:52+00:00",
+      "ret48_at_entry_pct": 3.9984,
+      "forecasts": {
+        "persistence": 78204.5,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 75077.5713,
+        "mean_reversion_48h_shrunk_0p13": 77797.9993
+      },
+      "absolute_errors": {
+        "persistence": 37.7,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 3164.6287,
+        "mean_reversion_48h_shrunk_0p13": 444.2007
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-04-29T12:00:00+00:00",
+      "settlement_utc": "2026-05-01T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-04-29T11:48:05+00:00",
+      "entry_snapshot_minutes_before_cutoff": 11.92,
+      "entry_price": 77628.1,
+      "settlement_proxy_snapshot_utc": "2026-05-01T11:16:57+00:00",
+      "settlement_proxy_diff_minutes": 43.05,
+      "settlement_proxy_price": 77358.7,
+      "actual_return_pct": -0.347039,
+      "actual_hours_from_entry_snapshot": 48.1986,
+      "horizon_alignment_gap_hours": 0.1986,
+      "similarity_prediction_created_utc": null,
+      "feature_snapshot_utc": "2026-04-29T11:48:05+00:00",
+      "ret48_at_entry_pct": -0.2797,
+      "forecasts": {
+        "persistence": 77628.1,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 77845.2258,
+        "mean_reversion_48h_shrunk_0p13": 77656.3264
+      },
+      "absolute_errors": {
+        "persistence": 269.4,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 486.5258,
+        "mean_reversion_48h_shrunk_0p13": 297.6264
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-05-06T12:00:00+00:00",
+      "settlement_utc": "2026-05-08T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-05-06T11:58:40+00:00",
+      "entry_snapshot_minutes_before_cutoff": 1.33,
+      "entry_price": 82519.7,
+      "settlement_proxy_snapshot_utc": "2026-05-08T11:26:26+00:00",
+      "settlement_proxy_diff_minutes": 33.57,
+      "settlement_proxy_price": 80304.1,
+      "actual_return_pct": -2.684935,
+      "actual_hours_from_entry_snapshot": 48.0222,
+      "horizon_alignment_gap_hours": 0.0222,
+      "similarity_prediction_created_utc": null,
+      "feature_snapshot_utc": "2026-05-06T11:58:40+00:00",
+      "ret48_at_entry_pct": 4.7212,
+      "forecasts": {
+        "persistence": 82519.7,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 78623.7799,
+        "mean_reversion_48h_shrunk_0p13": 82013.2304
+      },
+      "absolute_errors": {
+        "persistence": 2215.6,
+        "similarity_v2": null,
+        "mean_reversion_48h_full": 1680.3201,
+        "mean_reversion_48h_shrunk_0p13": 1709.1304
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-05-13T12:00:00+00:00",
+      "settlement_utc": "2026-05-15T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-05-13T11:35:42+00:00",
+      "entry_snapshot_minutes_before_cutoff": 24.3,
+      "entry_price": 80661.3,
+      "settlement_proxy_snapshot_utc": "2026-05-15T11:28:00+00:00",
+      "settlement_proxy_diff_minutes": 32.0,
+      "settlement_proxy_price": 80612.0,
+      "actual_return_pct": -0.06112,
+      "actual_hours_from_entry_snapshot": 48.405,
+      "horizon_alignment_gap_hours": 0.405,
+      "similarity_prediction_created_utc": "2026-05-13T11:35:41.554674+00:00",
+      "feature_snapshot_utc": "2026-05-13T11:35:42+00:00",
+      "ret48_at_entry_pct": -0.6609,
+      "forecasts": {
+        "persistence": 80661.3,
+        "similarity_v2": 80855.6937,
+        "mean_reversion_48h_full": 81194.3905,
+        "mean_reversion_48h_shrunk_0p13": 80730.6018
+      },
+      "absolute_errors": {
+        "persistence": 49.3,
+        "similarity_v2": 243.6937,
+        "mean_reversion_48h_full": 582.3905,
+        "mean_reversion_48h_shrunk_0p13": 118.6018
+      }
+    },
+    {
+      "challenge_type": "monthly",
+      "cutoff_utc": "2026-05-14T12:00:00+00:00",
+      "settlement_utc": "2026-05-28T12:00:00+00:00",
+      "reference_horizon_h": 336,
+      "entry_snapshot_utc": "2026-05-14T10:29:47+00:00",
+      "entry_snapshot_minutes_before_cutoff": 90.22,
+      "entry_price": 79691.0,
+      "settlement_proxy_snapshot_utc": "2026-05-28T12:41:28+00:00",
+      "settlement_proxy_diff_minutes": 41.47,
+      "settlement_proxy_price": 73519.1,
+      "actual_return_pct": -7.744789,
+      "actual_hours_from_entry_snapshot": 337.5036,
+      "horizon_alignment_gap_hours": 1.5036,
+      "similarity_prediction_created_utc": "2026-05-14T10:29:46.290531+00:00",
+      "feature_snapshot_utc": "2026-05-14T10:29:47+00:00",
+      "ret48_at_entry_pct": -1.2094,
+      "forecasts": {
+        "persistence": 79691.0,
+        "similarity_v2": 83181.2267,
+        "mean_reversion_48h_full": 80654.783,
+        "mean_reversion_48h_shrunk_0p13": 79816.2918
+      },
+      "absolute_errors": {
+        "persistence": 6171.9,
+        "similarity_v2": 9662.1267,
+        "mean_reversion_48h_full": 7135.683,
+        "mean_reversion_48h_shrunk_0p13": 6297.1918
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-05-20T12:00:00+00:00",
+      "settlement_utc": "2026-05-22T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-05-20T11:55:48+00:00",
+      "entry_snapshot_minutes_before_cutoff": 4.2,
+      "entry_price": 77387.5,
+      "settlement_proxy_snapshot_utc": "2026-05-22T11:52:44+00:00",
+      "settlement_proxy_diff_minutes": 7.27,
+      "settlement_proxy_price": 77424.0,
+      "actual_return_pct": 0.047165,
+      "actual_hours_from_entry_snapshot": 48.07,
+      "horizon_alignment_gap_hours": 0.07,
+      "similarity_prediction_created_utc": "2026-05-20T11:55:47.322990+00:00",
+      "feature_snapshot_utc": "2026-05-20T11:55:48+00:00",
+      "ret48_at_entry_pct": 0.1368,
+      "forecasts": {
+        "persistence": 77387.5,
+        "similarity_v2": 79143.4998,
+        "mean_reversion_48h_full": 77281.6339,
+        "mean_reversion_48h_shrunk_0p13": 77373.7374
+      },
+      "absolute_errors": {
+        "persistence": 36.5,
+        "similarity_v2": 1719.4998,
+        "mean_reversion_48h_full": 142.3661,
+        "mean_reversion_48h_shrunk_0p13": 50.2626
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-06-03T12:00:00+00:00",
+      "settlement_utc": "2026-06-05T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-06-03T10:03:31+00:00",
+      "entry_snapshot_minutes_before_cutoff": 116.48,
+      "entry_price": 67096.8,
+      "settlement_proxy_snapshot_utc": "2026-06-05T12:18:12+00:00",
+      "settlement_proxy_diff_minutes": 18.2,
+      "settlement_proxy_price": 62274.5,
+      "actual_return_pct": -7.187079,
+      "actual_hours_from_entry_snapshot": 49.9414,
+      "horizon_alignment_gap_hours": 1.9414,
+      "similarity_prediction_created_utc": "2026-06-03T10:03:30.818733+00:00",
+      "feature_snapshot_utc": "2026-06-03T10:03:31+00:00",
+      "ret48_at_entry_pct": -7.7708,
+      "forecasts": {
+        "persistence": 67096.8,
+        "similarity_v2": 67889.75,
+        "mean_reversion_48h_full": 72310.7581,
+        "mean_reversion_48h_shrunk_0p13": 67774.6146
+      },
+      "absolute_errors": {
+        "persistence": 4822.3,
+        "similarity_v2": 5615.25,
+        "mean_reversion_48h_full": 10036.2581,
+        "mean_reversion_48h_shrunk_0p13": 5500.1146
+      }
+    },
+    {
+      "challenge_type": "monthly",
+      "cutoff_utc": "2026-06-14T12:00:00+00:00",
+      "settlement_utc": "2026-06-28T12:00:00+00:00",
+      "reference_horizon_h": 336,
+      "entry_snapshot_utc": "2026-06-14T09:53:32+00:00",
+      "entry_snapshot_minutes_before_cutoff": 126.47,
+      "entry_price": 64606.7,
+      "settlement_proxy_snapshot_utc": "2026-06-28T11:56:02+00:00",
+      "settlement_proxy_diff_minutes": 3.97,
+      "settlement_proxy_price": 60352.0,
+      "actual_return_pct": -6.58554,
+      "actual_hours_from_entry_snapshot": 338.1078,
+      "horizon_alignment_gap_hours": 2.1078,
+      "similarity_prediction_created_utc": "2026-06-14T09:53:31.604499+00:00",
+      "feature_snapshot_utc": "2026-06-14T09:53:32+00:00",
+      "ret48_at_entry_pct": 1.3361,
+      "forecasts": {
+        "persistence": 64606.7,
+        "similarity_v2": 60062.2001,
+        "mean_reversion_48h_full": 63743.4899,
+        "mean_reversion_48h_shrunk_0p13": 64494.4827
+      },
+      "absolute_errors": {
+        "persistence": 4254.7,
+        "similarity_v2": 289.7999,
+        "mean_reversion_48h_full": 3391.4899,
+        "mean_reversion_48h_shrunk_0p13": 4142.4827
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-06-17T12:00:00+00:00",
+      "settlement_utc": "2026-06-19T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-06-17T10:00:41+00:00",
+      "entry_snapshot_minutes_before_cutoff": 119.32,
+      "entry_price": 64897.4,
+      "settlement_proxy_snapshot_utc": "2026-06-19T10:54:43+00:00",
+      "settlement_proxy_diff_minutes": 65.28,
+      "settlement_proxy_price": 62534.2,
+      "actual_return_pct": -3.64144,
+      "actual_hours_from_entry_snapshot": 49.9886,
+      "horizon_alignment_gap_hours": 1.9886,
+      "similarity_prediction_created_utc": "2026-06-17T10:00:40.389388+00:00",
+      "feature_snapshot_utc": "2026-06-17T10:00:41+00:00",
+      "ret48_at_entry_pct": -1.5555,
+      "forecasts": {
+        "persistence": 64897.4,
+        "similarity_v2": 65168.8658,
+        "mean_reversion_48h_full": 65906.8791,
+        "mean_reversion_48h_shrunk_0p13": 65028.6323
+      },
+      "absolute_errors": {
+        "persistence": 2363.2,
+        "similarity_v2": 2634.6658,
+        "mean_reversion_48h_full": 3372.6791,
+        "mean_reversion_48h_shrunk_0p13": 2494.4323
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-06-24T12:00:00+00:00",
+      "settlement_utc": "2026-06-26T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-06-24T11:52:11+00:00",
+      "entry_snapshot_minutes_before_cutoff": 7.82,
+      "entry_price": 62937.1,
+      "settlement_proxy_snapshot_utc": "2026-06-26T12:22:41+00:00",
+      "settlement_proxy_diff_minutes": 22.68,
+      "settlement_proxy_price": 59539.3,
+      "actual_return_pct": -5.398723,
+      "actual_hours_from_entry_snapshot": 48.1303,
+      "horizon_alignment_gap_hours": 0.1303,
+      "similarity_prediction_created_utc": "2026-06-24T11:52:11.026975+00:00",
+      "feature_snapshot_utc": "2026-06-24T11:52:11+00:00",
+      "ret48_at_entry_pct": -2.6566,
+      "forecasts": {
+        "persistence": 62937.1,
+        "similarity_v2": 63116.156,
+        "mean_reversion_48h_full": 64609.087,
+        "mean_reversion_48h_shrunk_0p13": 63154.4583
+      },
+      "absolute_errors": {
+        "persistence": 3397.8,
+        "similarity_v2": 3576.856,
+        "mean_reversion_48h_full": 5069.787,
+        "mean_reversion_48h_shrunk_0p13": 3615.1583
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-07-01T12:00:00+00:00",
+      "settlement_utc": "2026-07-03T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-07-01T10:08:32+00:00",
+      "entry_snapshot_minutes_before_cutoff": 111.47,
+      "entry_price": 58880.1,
+      "settlement_proxy_snapshot_utc": "2026-07-03T11:39:40+00:00",
+      "settlement_proxy_diff_minutes": 20.33,
+      "settlement_proxy_price": 61906.4,
+      "actual_return_pct": 5.139767,
+      "actual_hours_from_entry_snapshot": 49.8578,
+      "horizon_alignment_gap_hours": 1.8578,
+      "similarity_prediction_created_utc": "2026-07-01T10:08:31.520355+00:00",
+      "feature_snapshot_utc": "2026-07-01T10:08:32+00:00",
+      "ret48_at_entry_pct": -2.0105,
+      "forecasts": {
+        "persistence": 58880.1,
+        "similarity_v2": 59446.1144,
+        "mean_reversion_48h_full": 60063.8844,
+        "mean_reversion_48h_shrunk_0p13": 59033.992
+      },
+      "absolute_errors": {
+        "persistence": 3026.3,
+        "similarity_v2": 2460.2856,
+        "mean_reversion_48h_full": 1842.5156,
+        "mean_reversion_48h_shrunk_0p13": 2872.408
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-07-08T12:00:00+00:00",
+      "settlement_utc": "2026-07-10T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-07-08T10:28:53+00:00",
+      "entry_snapshot_minutes_before_cutoff": 91.12,
+      "entry_price": 62105.3,
+      "settlement_proxy_snapshot_utc": "2026-07-10T12:07:11+00:00",
+      "settlement_proxy_diff_minutes": 7.18,
+      "settlement_proxy_price": 64364.0,
+      "actual_return_pct": 3.636888,
+      "actual_hours_from_entry_snapshot": 49.5186,
+      "horizon_alignment_gap_hours": 1.5186,
+      "similarity_prediction_created_utc": "2026-07-08T10:28:52.900299+00:00",
+      "feature_snapshot_utc": "2026-07-08T10:28:53+00:00",
+      "ret48_at_entry_pct": -1.1372,
+      "forecasts": {
+        "persistence": 62105.3,
+        "similarity_v2": 61669.3829,
+        "mean_reversion_48h_full": 62811.5615,
+        "mean_reversion_48h_shrunk_0p13": 62197.114
+      },
+      "absolute_errors": {
+        "persistence": 2258.7,
+        "similarity_v2": 2694.6171,
+        "mean_reversion_48h_full": 1552.4385,
+        "mean_reversion_48h_shrunk_0p13": 2166.886
+      }
+    },
+    {
+      "challenge_type": "monthly",
+      "cutoff_utc": "2026-07-14T12:00:00+00:00",
+      "settlement_utc": "2026-07-28T12:00:00+00:00",
+      "reference_horizon_h": 336,
+      "entry_snapshot_utc": "2026-07-14T11:40:43+00:00",
+      "entry_snapshot_minutes_before_cutoff": 19.28,
+      "entry_price": 62846.3,
+      "settlement_proxy_snapshot_utc": "2026-07-28T12:59:13+00:00",
+      "settlement_proxy_diff_minutes": 59.22,
+      "settlement_proxy_price": 63562.0,
+      "actual_return_pct": 1.13881,
+      "actual_hours_from_entry_snapshot": 336.3214,
+      "horizon_alignment_gap_hours": 0.3214,
+      "similarity_prediction_created_utc": "2026-07-14T11:40:42.756875+00:00",
+      "feature_snapshot_utc": "2026-07-14T11:40:43+00:00",
+      "ret48_at_entry_pct": -1.8254,
+      "forecasts": {
+        "persistence": 62846.3,
+        "similarity_v2": 65228.2376,
+        "mean_reversion_48h_full": 63993.4964,
+        "mean_reversion_48h_shrunk_0p13": 62995.4355
+      },
+      "absolute_errors": {
+        "persistence": 715.7,
+        "similarity_v2": 1666.2376,
+        "mean_reversion_48h_full": 431.4964,
+        "mean_reversion_48h_shrunk_0p13": 566.5645
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-07-15T12:00:00+00:00",
+      "settlement_utc": "2026-07-17T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-07-15T11:44:13+00:00",
+      "entry_snapshot_minutes_before_cutoff": 15.78,
+      "entry_price": 64689.1,
+      "settlement_proxy_snapshot_utc": "2026-07-17T12:18:22+00:00",
+      "settlement_proxy_diff_minutes": 18.37,
+      "settlement_proxy_price": 63266.7,
+      "actual_return_pct": -2.198825,
+      "actual_hours_from_entry_snapshot": 48.2631,
+      "horizon_alignment_gap_hours": 0.2631,
+      "similarity_prediction_created_utc": "2026-07-15T11:44:12.402526+00:00",
+      "feature_snapshot_utc": "2026-07-15T11:44:13+00:00",
+      "ret48_at_entry_pct": 2.8363,
+      "forecasts": {
+        "persistence": 64689.1,
+        "similarity_v2": 65365.1011,
+        "mean_reversion_48h_full": 62854.3231,
+        "mean_reversion_48h_shrunk_0p13": 64450.579
+      },
+      "absolute_errors": {
+        "persistence": 1422.4,
+        "similarity_v2": 2098.4011,
+        "mean_reversion_48h_full": 412.3769,
+        "mean_reversion_48h_shrunk_0p13": 1183.879
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-07-22T12:00:00+00:00",
+      "settlement_utc": "2026-07-24T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-07-22T11:58:53+00:00",
+      "entry_snapshot_minutes_before_cutoff": 1.12,
+      "entry_price": 66018.5,
+      "settlement_proxy_snapshot_utc": "2026-07-24T12:24:48+00:00",
+      "settlement_proxy_diff_minutes": 24.8,
+      "settlement_proxy_price": 65114.7,
+      "actual_return_pct": -1.36901,
+      "actual_hours_from_entry_snapshot": 48.0186,
+      "horizon_alignment_gap_hours": 0.0186,
+      "similarity_prediction_created_utc": "2026-07-22T11:58:52.251887+00:00",
+      "feature_snapshot_utc": "2026-07-22T11:58:53+00:00",
+      "ret48_at_entry_pct": 1.5618,
+      "forecasts": {
+        "persistence": 66018.5,
+        "similarity_v2": 65627.0763,
+        "mean_reversion_48h_full": 64987.4231,
+        "mean_reversion_48h_shrunk_0p13": 65884.46
+      },
+      "absolute_errors": {
+        "persistence": 903.8,
+        "similarity_v2": 512.3763,
+        "mean_reversion_48h_full": 127.2769,
+        "mean_reversion_48h_shrunk_0p13": 769.76
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-07-29T12:00:00+00:00",
+      "settlement_utc": "2026-07-31T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-07-29T09:45:29+00:00",
+      "entry_snapshot_minutes_before_cutoff": 134.52,
+      "entry_price": 64585.7,
+      "settlement_proxy_snapshot_utc": "2026-07-31T13:03:26+00:00",
+      "settlement_proxy_diff_minutes": 63.43,
+      "settlement_proxy_price": 63779.5,
+      "actual_return_pct": -1.248264,
+      "actual_hours_from_entry_snapshot": 50.2419,
+      "horizon_alignment_gap_hours": 2.2419,
+      "similarity_prediction_created_utc": "2026-07-29T09:45:28.908616+00:00",
+      "feature_snapshot_utc": "2026-07-29T09:45:29+00:00",
+      "ret48_at_entry_pct": -1.0354,
+      "forecasts": {
+        "persistence": 64585.7,
+        "similarity_v2": 65631.4717,
+        "mean_reversion_48h_full": 65254.4203,
+        "mean_reversion_48h_shrunk_0p13": 64672.6336
+      },
+      "absolute_errors": {
+        "persistence": 806.2,
+        "similarity_v2": 1851.9717,
+        "mean_reversion_48h_full": 1474.9203,
+        "mean_reversion_48h_shrunk_0p13": 893.1336
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-08-05T12:00:00+00:00",
+      "settlement_utc": "2026-08-07T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-08-05T09:43:32+00:00",
+      "entry_snapshot_minutes_before_cutoff": 136.47,
+      "entry_price": 64174.2,
+      "settlement_proxy_snapshot_utc": "2026-08-07T11:53:03+00:00",
+      "settlement_proxy_diff_minutes": 6.95,
+      "settlement_proxy_price": 65001.1,
+      "actual_return_pct": 1.288524,
+      "actual_hours_from_entry_snapshot": 50.2744,
+      "horizon_alignment_gap_hours": 2.2744,
+      "similarity_prediction_created_utc": "2026-08-05T09:43:30.839168+00:00",
+      "feature_snapshot_utc": "2026-08-05T09:43:32+00:00",
+      "ret48_at_entry_pct": 2.1297,
+      "forecasts": {
+        "persistence": 64174.2,
+        "similarity_v2": 64034.4286,
+        "mean_reversion_48h_full": 62807.4821,
+        "mean_reversion_48h_shrunk_0p13": 63996.5267
+      },
+      "absolute_errors": {
+        "persistence": 826.9,
+        "similarity_v2": 966.6714,
+        "mean_reversion_48h_full": 2193.6179,
+        "mean_reversion_48h_shrunk_0p13": 1004.5733
+      }
+    }
+  ],
+  "promotion_rule": {
+    "historical_label_only": true,
+    "minimum_paired_observations": 10,
+    "minimum_mae_improvement_vs_persistence_pct": 5.0,
+    "live_promotion_requires_prospective_shadow_evidence": true
+  }
+}

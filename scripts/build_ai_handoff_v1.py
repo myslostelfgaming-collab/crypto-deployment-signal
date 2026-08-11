@@ -21,6 +21,10 @@ PREDICTION_SUMMARY_PATH = os.path.join("data", "diagnostics", "prediction_summar
 PREDICTION_AUDIT_PATH = os.path.join("data", "diagnostics", "prediction_audit_v2.json")
 MODEL_TOURNAMENT_PATH = os.path.join("data", "diagnostics", "model_tournament_v1.json")
 SHADOW_PERFORMANCE_PATH = os.path.join("data", "model", "shadow_challenger_performance_v1.json")
+LUNO_PROXY_PATH = os.path.join("data", "luno", "luno_price_proxy_latest_v1.json")
+LUNO_TOURNAMENT_PATH = os.path.join("data", "diagnostics", "luno_point_tournament_v1.json")
+LUNO_SHADOW_LATEST_PATH = os.path.join("data", "luno", "luno_shadow_latest_v1.json")
+LUNO_SHADOW_PERFORMANCE_PATH = os.path.join("data", "luno", "luno_shadow_performance_v1.json")
 
 OUT_PATH = os.path.join("data", "ai_handoff_v1.json")
 
@@ -264,6 +268,24 @@ def compact_model_tournament(tournament: Optional[Dict[str, Any]]) -> Dict[str, 
         "warnings": tournament.get("warnings", []),
     }
 
+def compact_luno_tournament(tournament: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    if not tournament:
+        return {"available": False}
+    return {
+        "available": True,
+        "schema": tournament.get("schema"),
+        "status": tournament.get("status"),
+        "generated_at_utc": tournament.get("generated_at_utc"),
+        "objective": tournament.get("objective"),
+        "settlement_truth_status": tournament.get("settlement_truth_status"),
+        "schedule": tournament.get("schedule"),
+        "data_quality": tournament.get("data_quality"),
+        "weekly": tournament.get("weekly"),
+        "monthly": tournament.get("monthly"),
+        "promotion_rule": tournament.get("promotion_rule"),
+    }
+
+
 def compact_prediction_row(r: Dict[str, str]) -> Dict[str, Any]:
     return {
         "asset": r.get("asset"),
@@ -429,6 +451,8 @@ def build_interpretation_instructions() -> Dict[str, Any]:
             "Use prediction_audit_state to compare V2 against simple baselines and to flag anti-calibrated confidence or magnitude.",
             "Use model_tournament_state to compare transparent challengers and regime behaviour; it is diagnostic-only and must not be described as a live replacement model.",
             "Use shadow_challenger_state as the strongest post-discovery evidence because those challenger calls are recorded prospectively before outcomes mature.",
+            "Treat luno_price_predict_state as a separate point-price objective from general direction forecasting.",
+            "For Luno Price Predict, compare every candidate against persistence/current-price MAE and distinguish KuCoin market-proxy evaluation from exact Luno internal-rate results.",
             "Give a cautious deployment posture, not financial advice.",
         ],
         "required_output_format": [
@@ -467,6 +491,10 @@ def main() -> None:
     prediction_audit = load_json(PREDICTION_AUDIT_PATH)
     model_tournament = load_json(MODEL_TOURNAMENT_PATH)
     shadow_performance = load_json(SHADOW_PERFORMANCE_PATH)
+    luno_proxy = load_json(LUNO_PROXY_PATH)
+    luno_tournament = load_json(LUNO_TOURNAMENT_PATH)
+    luno_shadow_latest = load_json(LUNO_SHADOW_LATEST_PATH)
+    luno_shadow_performance = load_json(LUNO_SHADOW_PERFORMANCE_PATH)
 
     payload = {
         "schema": "ai_handoff_v2",
@@ -486,6 +514,10 @@ def main() -> None:
                 "prediction_audit_v2": PREDICTION_AUDIT_PATH if os.path.isfile(PREDICTION_AUDIT_PATH) else None,
                 "model_tournament_v1": MODEL_TOURNAMENT_PATH if os.path.isfile(MODEL_TOURNAMENT_PATH) else None,
                 "shadow_challenger_performance_v1": SHADOW_PERFORMANCE_PATH if os.path.isfile(SHADOW_PERFORMANCE_PATH) else None,
+                "luno_price_proxy_v1": LUNO_PROXY_PATH if os.path.isfile(LUNO_PROXY_PATH) else None,
+                "luno_point_tournament_v1": LUNO_TOURNAMENT_PATH if os.path.isfile(LUNO_TOURNAMENT_PATH) else None,
+                "luno_shadow_latest_v1": LUNO_SHADOW_LATEST_PATH if os.path.isfile(LUNO_SHADOW_LATEST_PATH) else None,
+                "luno_shadow_performance_v1": LUNO_SHADOW_PERFORMANCE_PATH if os.path.isfile(LUNO_SHADOW_PERFORMANCE_PATH) else None,
             },
         },
         "active_prediction_assets": ACTIVE_PREDICTION_ASSETS,
@@ -500,6 +532,13 @@ def main() -> None:
         "prediction_audit_state": compact_prediction_audit(prediction_audit),
         "model_tournament_state": compact_model_tournament(model_tournament),
         "shadow_challenger_state": shadow_performance or {"available": False},
+        "luno_price_predict_state": {
+            "available": any([luno_proxy, luno_tournament, luno_shadow_latest, luno_shadow_performance]),
+            "price_proxy": luno_proxy or {"available": False},
+            "point_price_tournament": compact_luno_tournament(luno_tournament),
+            "prospective_shadow": luno_shadow_latest or {"available": False},
+            "prospective_performance": luno_shadow_performance or {"available": False},
+        },
         "diagnostics_state": diagnostics_state(),
         "interpretation_instructions": build_interpretation_instructions(),
     }

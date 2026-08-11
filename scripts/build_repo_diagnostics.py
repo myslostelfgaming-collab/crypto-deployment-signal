@@ -35,6 +35,13 @@ WATCH_FILES = [
     "data/diagnostics/model_tournament_v1.json",
     "data/model/shadow_predictions_v1.csv",
     "data/model/shadow_challenger_performance_v1.json",
+    "data/diagnostics/luno_point_tournament_v1.json",
+    "data/luno/luno_price_proxy_latest_v1.json",
+    "data/luno/luno_price_proxy_history_v1.csv",
+    "data/luno/luno_shadow_entries_v1.csv",
+    "data/luno/luno_shadow_latest_v1.json",
+    "data/luno/luno_shadow_performance_v1.json",
+    "data/luno/luno_manual_results_v1.csv",
 ]
 
 ASSETS = ["ETH-USDT", "BTC-USDT", "ETH-BTC"]
