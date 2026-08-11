@@ -32,6 +32,9 @@ WATCH_FILES = [
     "data/model/actionability_v1.json",
     "data/diagnostics/model_readiness_v2.json",
     "data/diagnostics/prediction_audit_v2.json",
+    "data/diagnostics/model_tournament_v1.json",
+    "data/model/shadow_predictions_v1.csv",
+    "data/model/shadow_challenger_performance_v1.json",
 ]
 
 ASSETS = ["ETH-USDT", "BTC-USDT", "ETH-BTC"]

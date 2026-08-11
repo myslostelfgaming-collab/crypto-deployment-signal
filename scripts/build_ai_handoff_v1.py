@@ -19,6 +19,8 @@ MODEL_READINESS_PATH = os.path.join("data", "diagnostics", "model_readiness.json
 MODEL_READINESS_V2_PATH = os.path.join("data", "diagnostics", "model_readiness_v2.json")
 PREDICTION_SUMMARY_PATH = os.path.join("data", "diagnostics", "prediction_summary.json")
 PREDICTION_AUDIT_PATH = os.path.join("data", "diagnostics", "prediction_audit_v2.json")
+MODEL_TOURNAMENT_PATH = os.path.join("data", "diagnostics", "model_tournament_v1.json")
+SHADOW_PERFORMANCE_PATH = os.path.join("data", "model", "shadow_challenger_performance_v1.json")
 
 OUT_PATH = os.path.join("data", "ai_handoff_v1.json")
 
@@ -225,6 +227,43 @@ def compact_prediction_audit(audit: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
+
+def compact_model_tournament(tournament: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+    if not tournament:
+        return {"available": False}
+
+    tournaments = tournament.get("tournaments") or {}
+    short_rules = {}
+    for h in ("24", "48"):
+        block = (tournaments.get("by_horizon_independent") or {}).get(h) or {}
+        rules = block.get("rules") or {}
+        short_rules[h] = {
+            name: rules.get(name)
+            for name in [
+                "similarity_v2",
+                "mean_reversion_48h",
+                "momentum_48h",
+                "sma24_trend",
+                "sma48_trend",
+            ]
+            if name in rules
+        }
+
+    selector = tournament.get("walk_forward_selector") or {}
+    return {
+        "available": bool(tournament.get("available", True)),
+        "schema": tournament.get("schema"),
+        "status": tournament.get("status"),
+        "generated_at_utc": tournament.get("generated_at_utc"),
+        "data_quality": tournament.get("data_quality"),
+        "regime_definition": tournament.get("regime_definition"),
+        "short_horizon_independent_rules": short_rules,
+        "walk_forward_selector_short": selector.get("short_horizons_24_48"),
+        "walk_forward_selector_by_horizon": selector.get("by_horizon"),
+        "promotion_rule": tournament.get("promotion_rule"),
+        "warnings": tournament.get("warnings", []),
+    }
+
 def compact_prediction_row(r: Dict[str, str]) -> Dict[str, Any]:
     return {
         "asset": r.get("asset"),
@@ -355,6 +394,7 @@ def diagnostics_state() -> Dict[str, Any]:
     model_readiness = load_json(MODEL_READINESS_PATH)
     model_readiness_v2 = load_json(MODEL_READINESS_V2_PATH)
     prediction_audit = load_json(PREDICTION_AUDIT_PATH)
+    model_tournament = load_json(MODEL_TOURNAMENT_PATH)
     prediction_summary = load_json(PREDICTION_SUMMARY_PATH)
     performance_summary = load_json(PERFORMANCE_SUMMARY_PATH)
     actionability_state = load_json(ACTIONABILITY_PATH)
@@ -368,6 +408,7 @@ def diagnostics_state() -> Dict[str, Any]:
         "prediction_summary": prediction_summary,
         "performance_summary": performance_summary,
         "actionability_state": actionability_state,
+        "model_tournament": compact_model_tournament(model_tournament),
     }
 
 
@@ -386,6 +427,8 @@ def build_interpretation_instructions() -> Dict[str, Any]:
             "Use the actionability_state block to distinguish raw predictions from actionable/caution/not-actionable signals.",
             "If prediction evaluations are available, explain whether the model has been accurate or drifting.",
             "Use prediction_audit_state to compare V2 against simple baselines and to flag anti-calibrated confidence or magnitude.",
+            "Use model_tournament_state to compare transparent challengers and regime behaviour; it is diagnostic-only and must not be described as a live replacement model.",
+            "Use shadow_challenger_state as the strongest post-discovery evidence because those challenger calls are recorded prospectively before outcomes mature.",
             "Give a cautious deployment posture, not financial advice.",
         ],
         "required_output_format": [
@@ -410,6 +453,7 @@ def build_interpretation_instructions() -> Dict[str, Any]:
             "If confidence is low, say so clearly.",
             "Treat READY, LIMITED, EARLY, and NOT_READY as model maturity labels, not direct buy/sell signals.",
             "Do not treat every prediction as actionable; follow the ACTIONABLE / CAUTION / NOT_ACTIONABLE labels.",
+            "Do not promote an experimental tournament rule merely because it wins an in-sample or small-sample slice.",
             "BTC prediction history is newly active, so be cautious when interpreting BTC performance.",
         ],
     }
@@ -421,6 +465,8 @@ def main() -> None:
     actionability_state = load_json(ACTIONABILITY_PATH)
     model_readiness_v2 = load_json(MODEL_READINESS_V2_PATH)
     prediction_audit = load_json(PREDICTION_AUDIT_PATH)
+    model_tournament = load_json(MODEL_TOURNAMENT_PATH)
+    shadow_performance = load_json(SHADOW_PERFORMANCE_PATH)
 
     payload = {
         "schema": "ai_handoff_v2",
@@ -438,6 +484,8 @@ def main() -> None:
                 "repo_status": REPO_STATUS_PATH if os.path.isfile(REPO_STATUS_PATH) else None,
                 "prediction_summary": PREDICTION_SUMMARY_PATH if os.path.isfile(PREDICTION_SUMMARY_PATH) else None,
                 "prediction_audit_v2": PREDICTION_AUDIT_PATH if os.path.isfile(PREDICTION_AUDIT_PATH) else None,
+                "model_tournament_v1": MODEL_TOURNAMENT_PATH if os.path.isfile(MODEL_TOURNAMENT_PATH) else None,
+                "shadow_challenger_performance_v1": SHADOW_PERFORMANCE_PATH if os.path.isfile(SHADOW_PERFORMANCE_PATH) else None,
             },
         },
         "active_prediction_assets": ACTIVE_PREDICTION_ASSETS,
@@ -450,6 +498,8 @@ def main() -> None:
         "readiness_state": model_readiness_v2 or {"available": False},
         "prediction_evaluation_state": prediction_evaluation_state(pred_rows),
         "prediction_audit_state": compact_prediction_audit(prediction_audit),
+        "model_tournament_state": compact_model_tournament(model_tournament),
+        "shadow_challenger_state": shadow_performance or {"available": False},
         "diagnostics_state": diagnostics_state(),
         "interpretation_instructions": build_interpretation_instructions(),
     }
