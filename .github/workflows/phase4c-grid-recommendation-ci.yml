@@ -1,0 +1,106 @@
+name: Phase 4C Pionex Grid Recommendation CI
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase4c-pionex-grid-recommendation
+  cancel-in-progress: false
+
+jobs:
+  grid-recommendation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build Phase 4C recommendation
+        run: |
+          python scripts/build_pionex_grid_recommendation_v1.py
+          test -s data/diagnostics/pionex_grid_recommendation_v1.json
+          test -s data/diagnostics/pionex_grid_calibration_v1.json
+          test -s data/pionex/grid_recommendations_v1.csv
+
+      - name: Validate Phase 4C outputs
+        run: |
+          python - <<'PY'
+          import csv
+          import json
+          from pathlib import Path
+
+          rec = json.loads(Path("data/diagnostics/pionex_grid_recommendation_v1.json").read_text(encoding="utf-8"))
+          cal = json.loads(Path("data/diagnostics/pionex_grid_calibration_v1.json").read_text(encoding="utf-8"))
+
+          if rec.get("schema") != "pionex_grid_recommendation_v1":
+              raise SystemExit(f"Unexpected recommendation schema: {rec.get('schema')}")
+          if cal.get("schema") != "pionex_grid_calibration_v1":
+              raise SystemExit(f"Unexpected calibration schema: {cal.get('schema')}")
+
+          scope = rec.get("scope") or {}
+          if scope.get("platform") != "Pionex" or scope.get("pair") != "ETH/USDT" or scope.get("horizon_h") != 24:
+              raise SystemExit(f"Unexpected scope: {scope}")
+
+          optimizer = rec.get("optimizer") or {}
+          if (optimizer.get("evaluated_candidate_count") or 0) < 30:
+              raise SystemExit(f"Too few optimizer candidates: {optimizer}")
+          if optimizer.get("shift_both_bounds_together") is not True:
+              raise SystemExit("Optimizer must preserve the user's both-bounds shift policy")
+
+          decision = rec.get("decision") or {}
+          if decision.get("action") not in {"KEEP_CURRENT", "SHIFT_UP", "SHIFT_DOWN"}:
+              raise SystemExit(f"Unexpected action: {decision}")
+          lower = decision.get("raw_selected_lower_usdt")
+          upper = decision.get("raw_selected_upper_usdt")
+          if lower is None or upper is None or upper <= lower:
+              raise SystemExit(f"Invalid recommended geometry: {decision}")
+
+          with Path("data/pionex/grid_recommendations_v1.csv").open("r", encoding="utf-8", newline="") as f:
+              rows = list(csv.DictReader(f))
+          if not rows:
+              raise SystemExit("Prospective recommendation ledger is empty")
+
+          print("Phase 4C validation passed.")
+          print("Status:", rec.get("status"))
+          print("Calibration windows:", cal.get("evaluated_windows"))
+          print("Optimizer candidates:", optimizer.get("evaluated_candidate_count"))
+          print("Decision:", decision)
+          print("Selected:", (rec.get("benchmarks") or {}).get("selected"))
+          PY
+
+      - name: Upload Phase 4C diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: pionex-grid-recommendation-v1
+          path: |
+            data/diagnostics/pionex_grid_recommendation_v1.json
+            data/diagnostics/pionex_grid_calibration_v1.json
+            data/pionex/grid_recommendations_v1.csv
+          if-no-files-found: error
+
+      - name: Persist prospective Phase 4C outputs
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            data/diagnostics/pionex_grid_recommendation_v1.json \
+            data/diagnostics/pionex_grid_calibration_v1.json \
+            data/pionex/grid_recommendations_v1.csv
+
+          git diff --cached --quiet && echo "No Phase 4C output changes" && exit 0
+          git commit -m "Phase 4C grid recommendation [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
