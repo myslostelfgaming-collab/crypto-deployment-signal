@@ -1,0 +1,63 @@
+name: Phase 4B Pionex Grid Simulator CI
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  pionex-grid-simulator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build Pionex grid simulator v1
+        run: |
+          python scripts/build_pionex_grid_simulator_v1.py
+          test -s data/diagnostics/pionex_grid_simulator_v1.json
+
+      - name: Validate Pionex grid simulator v1
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          p = json.loads(Path("data/diagnostics/pionex_grid_simulator_v1.json").read_text(encoding="utf-8"))
+          if p.get("schema") != "pionex_grid_simulator_v1":
+              raise SystemExit(f"Unexpected schema: {p.get('schema')}")
+          if p.get("status") != "DIAGNOSTIC_ONLY":
+              raise SystemExit(f"Unexpected status: {p.get('status')}")
+          if not (p.get("grid_math_validation") or {}).get("matches_display_within_0_02pp"):
+              raise SystemExit(f"Pionex grid math does not match supplied app display: {p.get('grid_math_validation')}")
+          data = p.get("data") or {}
+          if (data.get("independent_rows") or 0) < 50:
+              raise SystemExit(f"Too few independent historical paths: {data}")
+          if (data.get("atr_analog_rows") or 0) < 30:
+              raise SystemExit(f"Too few ATR analogues: {data}")
+          ranking = p.get("current_atr_regime_ranking_by_expected_grid_profit") or []
+          if not ranking:
+              raise SystemExit("No candidate ranking generated")
+
+          print("Phase 4B validation passed.")
+          print("Data:", data)
+          print("Grid math:", p.get("grid_math_validation"))
+          print("Ranking:")
+          for row in ranking:
+              print(row)
+          PY
+
+      - name: Upload Phase 4B diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: pionex-grid-simulator-v1
+          path: data/diagnostics/pionex_grid_simulator_v1.json
+          if-no-files-found: error
