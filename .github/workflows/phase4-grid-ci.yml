@@ -1,0 +1,69 @@
+name: Phase 4 ETH Pionex Grid CI
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  grid-tournament:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build ETH Pionex grid tournament v1
+        run: |
+          python scripts/build_grid_tournament_v1.py
+          test -s data/diagnostics/grid_tournament_v1.json
+
+      - name: Validate grid tournament v1
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("data/diagnostics/grid_tournament_v1.json")
+          payload = json.loads(path.read_text(encoding="utf-8"))
+
+          if payload.get("schema") != "grid_tournament_v1":
+              raise SystemExit(f"Unexpected schema: {payload.get('schema')}")
+
+          if payload.get("status") != "DIAGNOSTIC_ONLY":
+              raise SystemExit(f"Unexpected status: {payload.get('status')}")
+
+          scope = payload.get("scope") or {}
+          if scope.get("asset") != "ETH-USDT" or scope.get("horizon_h") != 24:
+              raise SystemExit(f"Unexpected scope: {scope}")
+
+          rows = payload.get("rows") or {}
+          if (rows.get("independent_24h_rows") or 0) < 50:
+              raise SystemExit(f"Too few independent rows: {rows}")
+
+          ranking = (
+              payload.get("candidates", {})
+              .get("independent_ranking_by_mae", [])
+          )
+          if not ranking:
+              raise SystemExit("No independent candidate ranking produced")
+
+          print("Phase 4A validation passed.")
+          print("Rows:", rows)
+          print("Champion:", payload.get("historical_champion_independent"))
+          print("Current Pionex reference:", payload.get("current_pionex_reference"))
+          PY
+
+      - name: Upload Phase 4A diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: grid-tournament-v1
+          path: data/diagnostics/grid_tournament_v1.json
+          if-no-files-found: error
