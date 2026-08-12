@@ -1,0 +1,84 @@
+{
+  "schema": "pionex_grid_profile_v1",
+  "created_at_utc": "2026-08-12T09:58:00+00:00",
+  "status": "MANUAL_PROSPECTIVE_TRACKING",
+  "platform": "Pionex",
+  "bot_type": "Spot Grid",
+  "pair": "ETH/USDT",
+  "objective": {
+    "primary": "Maximise probability of positive 24h grid profit while controlling range-escape and inventory/trend risk.",
+    "report_thresholds_return_pct_24h": [
+      0.03,
+      0.05,
+      0.06,
+      0.1,
+      0.15,
+      0.2
+    ],
+    "report_dollar_thresholds_usdt_24h": [
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "return_denominators": [
+      "current_bot_equity",
+      "original_investment_usdt"
+    ]
+  },
+  "adjustment_policy": {
+    "shift_upper_and_lower_together": true,
+    "typical_shift_usdt": [
+      50,
+      100
+    ],
+    "reason": "Preserve grid width and broadly preserve fee-deducted profit per grid while recentering when price approaches a boundary.",
+    "grid_count_normally_preserved": true,
+    "current_width_usdt": 250
+  },
+  "current_reference_state": {
+    "captured_at_local": "2026-08-12T11:58:00+02:00",
+    "captured_at_utc": "2026-08-12T09:58:00+00:00",
+    "investment_usdt": 510.0,
+    "current_profit_usdt": -166.16,
+    "current_profit_pct": -32.58,
+    "grid_profit_usdt": 172.27,
+    "grid_profit_pct": 33.78,
+    "trend_pnl_usdt": -338.44,
+    "trend_pnl_pct": -66.36,
+    "grid_annualized_pct": 50.18,
+    "total_annualized_pct": -44.33,
+    "rounds_24h": 7,
+    "rounds_total": 4262,
+    "avg_transactions_per_day": 17.32,
+    "lower_limit_usdt": 1750.0,
+    "upper_limit_usdt": 2000.0,
+    "grids": 30,
+    "current_price_usdt": 1905.24,
+    "eth_holdings": 0.03515,
+    "usdt_holdings": 276.86,
+    "quantity_per_grid_eth": 0.00318,
+    "start_price_usdt": 3389.82,
+    "profit_per_grid_pct_fee_deducted": [
+      0.33,
+      0.39
+    ],
+    "take_profit": null,
+    "stop_loss": null,
+    "trigger_price": null,
+    "trailing_up": null,
+    "reinvest_profits_automatically": false,
+    "runtime_display": "245D 16H 40m",
+    "created_display": "12/09/2025 7:17:16 PM"
+  },
+  "fee_model": {
+    "status": "VERIFY_ACCOUNT_TIER_BEFORE_PHASE4B",
+    "standard_public_spot_fee_pct_per_fill_reference": 0.05,
+    "note": "Pionex screen reports profit-per-grid and transaction profit as fee-deducted; simulator should be calibrated to actual bot records rather than assuming the public standard rate if account tier differs."
+  },
+  "data_policy": {
+    "manual_screenshot_updates": "Append a new state row whenever configuration changes; daily status snapshots are also useful.",
+    "prospective_start_local": "2026-08-12T11:58:00+02:00",
+    "do_not_backfill_unobserved_historical_settings": true
+  }
+}
