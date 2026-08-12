@@ -1,0 +1,189 @@
+{
+  "schema": "pionex_grid_recommendation_v1",
+  "generated_at_utc": "2026-08-12T11:42:20.582052+00:00",
+  "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
+  "scope": {
+    "platform": "Pionex",
+    "pair": "ETH/USDT",
+    "horizon_h": 24,
+    "bot_type": "Spot Grid"
+  },
+  "source_state": {
+    "captured_at_utc": "2026-08-12T09:58:00+00:00",
+    "captured_at_local": "2026-08-12T11:58:00+02:00",
+    "state_price_usdt": 1905.24,
+    "latest_market_price_usdt": 1913.24,
+    "lower_limit_usdt": 1750.0,
+    "upper_limit_usdt": 2000.0,
+    "width_usdt": 250.0,
+    "grids": 30,
+    "quantity_per_grid_eth": 0.00318
+  },
+  "market_regime": {
+    "feature_ts_utc": 1786528800,
+    "current_atr14_pct": 0.4286,
+    "atr_analogue_rows": 60,
+    "independent_history_rows": 235
+  },
+  "calibration": {
+    "schema": "pionex_grid_calibration_v1",
+    "generated_at_utc": "2026-08-12T11:42:18.509445+00:00",
+    "status": "EARLY_NO_CALIBRATION_APPLIED",
+    "minimum_windows_before_apply": 5,
+    "evaluated_windows": 0,
+    "profit_scale_applied": 1.0,
+    "rounds_scale_applied": 1.0,
+    "method": "Median actual/predicted 24h-equivalent ratio over 18-30h windows with unchanged grid geometry; clipped to [0.50, 1.75]."
+  },
+  "optimizer": {
+    "shift_both_bounds_together": true,
+    "width_preserved": true,
+    "grid_count_preserved": true,
+    "coarse_step_usdt": 5.0,
+    "refine_step_usdt": 0.5,
+    "feasible_shift_min_usdt": -86.76,
+    "feasible_shift_max_usdt": 163.24,
+    "evaluated_candidate_count": 143,
+    "absolute_escape_risk_cap_pct": 10.0,
+    "effective_escape_risk_cap_pct": 6.6667,
+    "precision_note": "Raw optimum is searched to $0.50 resolution around promising regions. A practical $5-rounded alternative is also reported because sub-dollar precision is not yet statistically decision-grade.",
+    "objective_note": "Primary selection maximises calibrated expected 24h grid profit subject to the escape-risk cap and a material-improvement rule. Pareto frontier is reported rather than pretending profit/risk is a single objectively weighted score."
+  },
+  "decision": {
+    "action": "SHIFT_UP",
+    "raw_selected_shift_usdt": 26.5,
+    "raw_selected_lower_usdt": 1776.5,
+    "raw_selected_upper_usdt": 2026.5,
+    "practical_shift_usdt": 25.0,
+    "practical_lower_usdt": 1775.0,
+    "practical_upper_usdt": 2025.0,
+    "expected_gain_vs_current_usdt": 0.00633,
+    "escape_risk_change_vs_current_pp": -3.3334,
+    "warning": "Decision support only. Inventory/trend P&L risk is not yet included in the optimization objective; Phase 4D will add it."
+  },
+  "benchmarks": {
+    "current": {
+      "shift_usdt": 0.0,
+      "lower_usdt": 1750.0,
+      "upper_usdt": 2000.0,
+      "expected_grid_profit_usdt": 0.273124,
+      "median_grid_profit_usdt": 0.240621,
+      "expected_rounds": 12.808333,
+      "escape_probability_pct": 6.6667,
+      "lower_escape_probability_pct": 0.0,
+      "upper_escape_probability_pct": 6.6667,
+      "p_profit_ge_0_25_pct": 48.3333,
+      "p_profit_ge_0_50_pct": 8.3333
+    },
+    "raw_profit_max": {
+      "shift_usdt": 26.5,
+      "lower_usdt": 1776.5,
+      "upper_usdt": 2026.5,
+      "expected_grid_profit_usdt": 0.279454,
+      "median_grid_profit_usdt": 0.256096,
+      "expected_rounds": 13.108333,
+      "escape_probability_pct": 3.3333,
+      "lower_escape_probability_pct": 1.6667,
+      "upper_escape_probability_pct": 1.6667,
+      "p_profit_ge_0_25_pct": 51.6667,
+      "p_profit_ge_0_50_pct": 10.0
+    },
+    "risk_constrained_optimum": {
+      "shift_usdt": 26.5,
+      "lower_usdt": 1776.5,
+      "upper_usdt": 2026.5,
+      "expected_grid_profit_usdt": 0.279454,
+      "median_grid_profit_usdt": 0.256096,
+      "expected_rounds": 13.108333,
+      "escape_probability_pct": 3.3333,
+      "lower_escape_probability_pct": 1.6667,
+      "upper_escape_probability_pct": 1.6667,
+      "p_profit_ge_0_25_pct": 51.6667,
+      "p_profit_ge_0_50_pct": 10.0
+    },
+    "minimum_escape_candidate": {
+      "shift_usdt": 26.5,
+      "lower_usdt": 1776.5,
+      "upper_usdt": 2026.5,
+      "expected_grid_profit_usdt": 0.279454,
+      "median_grid_profit_usdt": 0.256096,
+      "expected_rounds": 13.108333,
+      "escape_probability_pct": 3.3333,
+      "lower_escape_probability_pct": 1.6667,
+      "upper_escape_probability_pct": 1.6667,
+      "p_profit_ge_0_25_pct": 51.6667,
+      "p_profit_ge_0_50_pct": 10.0
+    },
+    "selected": {
+      "shift_usdt": 26.5,
+      "lower_usdt": 1776.5,
+      "upper_usdt": 2026.5,
+      "expected_grid_profit_usdt": 0.279454,
+      "median_grid_profit_usdt": 0.256096,
+      "expected_rounds": 13.108333,
+      "escape_probability_pct": 3.3333,
+      "lower_escape_probability_pct": 1.6667,
+      "upper_escape_probability_pct": 1.6667,
+      "p_profit_ge_0_25_pct": 51.6667,
+      "p_profit_ge_0_50_pct": 10.0
+    },
+    "practical": {
+      "shift_usdt": 25.0,
+      "lower_usdt": 1775.0,
+      "upper_usdt": 2025.0,
+      "expected_grid_profit_usdt": 0.253668,
+      "median_grid_profit_usdt": 0.239069,
+      "expected_rounds": 11.9,
+      "escape_probability_pct": 5.0,
+      "lower_escape_probability_pct": 1.6667,
+      "upper_escape_probability_pct": 3.3333,
+      "p_profit_ge_0_25_pct": 45.0,
+      "p_profit_ge_0_50_pct": 8.3333
+    }
+  },
+  "pareto_frontier": [
+    {
+      "shift_usdt": 26.5,
+      "lower_usdt": 1776.5,
+      "upper_usdt": 2026.5,
+      "expected_grid_profit_usdt": 0.279454,
+      "median_grid_profit_usdt": 0.256096,
+      "expected_rounds": 13.108333,
+      "escape_probability_pct": 3.3333,
+      "lower_escape_probability_pct": 1.6667,
+      "upper_escape_probability_pct": 1.6667,
+      "p_profit_ge_0_25_pct": 51.6667,
+      "p_profit_ge_0_50_pct": 10.0
+    }
+  ],
+  "all_history_robustness": [
+    {
+      "shift_usdt": 0.0,
+      "expected_profit_usdt_all_history": 0.419329,
+      "escape_probability_pct_all_history": 13.617,
+      "sample_n": 235
+    },
+    {
+      "shift_usdt": 25.0,
+      "expected_profit_usdt_all_history": 0.415784,
+      "escape_probability_pct_all_history": 13.1915,
+      "sample_n": 235
+    },
+    {
+      "shift_usdt": 26.5,
+      "expected_profit_usdt_all_history": 0.429463,
+      "escape_probability_pct_all_history": 12.3404,
+      "sample_n": 235
+    }
+  ],
+  "prospective_calibration_windows": [],
+  "next_phase": {
+    "phase": "4D",
+    "name": "Inventory/trend-risk + daily decision head",
+    "requirements": [
+      "continue appending Pionex screenshots/states, ideally near the same time daily and immediately after any configuration change",
+      "add trend/inventory P&L risk to the objective rather than optimizing grid profit alone",
+      "validate whether ATR-only analogue selection should be augmented with path-shape/trend features"
+    ]
+  }
+}
