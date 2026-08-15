@@ -1,0 +1,116 @@
+name: Phase 4D Pionex Grid Geometry CI
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase4d-pionex-grid-geometry
+  cancel-in-progress: false
+
+jobs:
+  grid-geometry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build Phase 4D grid geometry optimizer
+        run: |
+          python scripts/build_pionex_grid_geometry_optimizer_v1.py
+          test -s data/diagnostics/pionex_grid_geometry_optimizer_v1.json
+          test -s data/diagnostics/pionex_grid_calibration_v2.json
+          test -s data/pionex/grid_geometry_recommendations_v1.csv
+
+      - name: Validate Phase 4D outputs
+        run: |
+          python - <<'PY'
+          import csv
+          import json
+          from pathlib import Path
+
+          geo = json.loads(Path("data/diagnostics/pionex_grid_geometry_optimizer_v1.json").read_text(encoding="utf-8"))
+          cal = json.loads(Path("data/diagnostics/pionex_grid_calibration_v2.json").read_text(encoding="utf-8"))
+
+          if geo.get("schema") != "pionex_grid_geometry_optimizer_v1":
+              raise SystemExit(f"Unexpected geometry schema: {geo.get('schema')}")
+          if cal.get("schema") != "pionex_grid_calibration_v2":
+              raise SystemExit(f"Unexpected calibration schema: {cal.get('schema')}")
+
+          scope = geo.get("scope") or {}
+          if scope.get("platform") != "Pionex" or scope.get("pair") != "ETH/USDT" or scope.get("horizon_h") != 24:
+              raise SystemExit(f"Unexpected scope: {scope}")
+
+          model = geo.get("geometry_model") or {}
+          if set(model.get("joint_variables") or []) != {"centre", "width", "grid_count"}:
+              raise SystemExit(f"Joint geometry variables missing: {model}")
+          if (model.get("candidate_count") or 0) < 150:
+              raise SystemExit(f"Too few geometry candidates: {model.get('candidate_count')}")
+
+          benches = geo.get("benchmarks") or {}
+          current = benches.get("current") or {}
+          selected = benches.get("selected") or {}
+          for label, row in (("current", current), ("selected", selected)):
+              if not row or row.get("upper_usdt", 0) <= row.get("lower_usdt", 0):
+                  raise SystemExit(f"Invalid {label} geometry: {row}")
+              if int(row.get("grids") or 0) < 2:
+                  raise SystemExit(f"Invalid {label} grid count: {row}")
+              if row.get("net_profit_per_grid_pct_min") is None or row.get("net_profit_per_grid_pct_min") <= 0:
+                  raise SystemExit(f"Non-positive fee-deducted grid profit: {row}")
+
+          with Path("data/pionex/manual_grid_states_v1.csv").open("r", encoding="utf-8", newline="") as f:
+              states = list(csv.DictReader(f))
+          if len(states) < 3:
+              raise SystemExit(f"Expected at least three prospective manual Pionex states, found {len(states)}")
+
+          with Path("data/pionex/grid_geometry_recommendations_v1.csv").open("r", encoding="utf-8", newline="") as f:
+              ledger = list(csv.DictReader(f))
+          if not ledger:
+              raise SystemExit("Phase 4D prospective ledger is empty")
+
+          print("Phase 4D validation passed.")
+          print("Calibration:", cal.get("status"), "windows=", cal.get("evaluated_windows"))
+          print("Analogue state:", ((geo.get("market_regime") or {}).get("analogue_selection") or {}).get("current_shape"))
+          print("Candidates:", model.get("candidate_count"), "Pareto:", model.get("pareto_count"))
+          print("Decision:", geo.get("decision"))
+          print("Current:", current)
+          print("Selected:", selected)
+          print("Practical:", benches.get("practical"))
+          PY
+
+      - name: Upload Phase 4D diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: pionex-grid-geometry-v1
+          path: |
+            data/diagnostics/pionex_grid_geometry_optimizer_v1.json
+            data/diagnostics/pionex_grid_calibration_v2.json
+            data/pionex/grid_geometry_recommendations_v1.csv
+          if-no-files-found: error
+
+      - name: Persist prospective Phase 4D outputs
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            data/diagnostics/pionex_grid_geometry_optimizer_v1.json \
+            data/diagnostics/pionex_grid_calibration_v2.json \
+            data/pionex/grid_geometry_recommendations_v1.csv
+
+          git diff --cached --quiet && echo "No Phase 4D output changes" && exit 0
+          git commit -m "Phase 4D grid geometry recommendation [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
