@@ -1,0 +1,183 @@
+name: Phase 4D Full Pionex Decision CI
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase4d-full-pionex-decision
+  cancel-in-progress: false
+
+jobs:
+  full-pionex-decision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run complete Phase 4D decision pipeline
+        run: |
+          python scripts/run_pionex_phase4d_full_v1.py
+
+          test -s data/diagnostics/pionex_execution_resolution_v1.json
+          test -s data/pionex/execution_resolution_policy_v1.json
+          test -s data/pionex/execution_resolution_windows_v1.csv
+          test -s data/pionex/execution_candles/ETH-USDT_5min.csv
+          test -s data/diagnostics/pionex_grid_geometry_optimizer_v1.json
+          test -s data/diagnostics/pionex_grid_calibration_v2.json
+          test -s data/pionex/grid_geometry_recommendations_v1.csv
+          test -s data/diagnostics/pionex_grid_actionability_v1.json
+          test -s data/pionex/grid_activity_windows_v1.csv
+          test -s data/diagnostics/pionex_full_decision_v1.json
+
+      - name: Validate full-pipeline summary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          summary = json.loads(
+              Path("data/diagnostics/pionex_full_decision_v1.json").read_text(encoding="utf-8")
+          )
+
+          if summary.get("schema") != "pionex_full_decision_v1":
+              raise SystemExit(f"Unexpected full-decision schema: {summary.get('schema')}")
+
+          expected_order = [
+              "Phase 4D.1 execution resolution",
+              "Phase 4D geometry optimisation",
+              "Phase 4D.2 actionability",
+          ]
+          if (summary.get("pipeline_order") or []) != expected_order:
+              raise SystemExit(f"Unexpected pipeline order: {summary.get('pipeline_order')}")
+
+          integrity = summary.get("pipeline_integrity") or {}
+          if not integrity or not all(value is True for value in integrity.values()):
+              raise SystemExit(f"Pipeline integrity failed: {integrity}")
+
+          op = summary.get("operational_decision") or {}
+          if not op.get("action"):
+              raise SystemExit(f"Operational decision missing: {op}")
+
+          print("Full Phase 4D pipeline validation passed.")
+          print("Execution:", summary.get("execution_resolution"))
+          print("Calibration:", summary.get("calibration"))
+          print("All gates passed:", summary.get("all_prospective_gates_passed"))
+          print("Operational:", op)
+          PY
+
+      - name: Write Pionex decision summary
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          s = json.loads(
+              Path("data/diagnostics/pionex_full_decision_v1.json").read_text(encoding="utf-8")
+          )
+          source = s.get("source_state") or {}
+          execution = s.get("execution_resolution") or {}
+          calibration = s.get("calibration") or {}
+          research = s.get("research_decision") or {}
+          op = s.get("operational_decision") or {}
+          current = research.get("current_geometry") or {}
+          selected = research.get("selected_geometry") or {}
+
+          lines = [
+              "# Pionex Full Phase 4D Decision",
+              "",
+              f"**Operational decision:** `{op.get('action')}`",
+              f"**Actionable geometry change:** `{op.get('actionable_geometry_change')}`",
+              f"**All prospective gates passed:** `{s.get('all_prospective_gates_passed')}`",
+              "",
+              "## Source state",
+              f"- Captured: `{source.get('captured_at_local') or source.get('captured_at_utc')}`",
+              f"- State age at final gate: `{source.get('state_age_h_at_final_gate')}` h",
+              f"- Price: `${source.get('current_price_usdt')}`",
+              f"- Live geometry: `${source.get('lower_usdt')}–${source.get('upper_usdt')}` / `{source.get('grids')}` grids",
+              "",
+              "## Execution and calibration",
+              f"- Execution resolution: `{execution.get('active_execution_resolution')}`",
+              f"- Execution status: `{execution.get('status')}`",
+              f"- Execution windows: `{execution.get('windows_evaluated')}`",
+              f"- Improvement vs 1h: `{execution.get('candidate_improvement_vs_1hour_pct')}`%",
+              f"- Calibration: `{calibration.get('status')}`",
+              f"- Calibration windows: `{calibration.get('evaluated_windows')}`",
+              f"- Profit scale: `{calibration.get('profit_scale_applied')}`",
+              f"- Rounds scale: `{calibration.get('rounds_scale_applied')}`",
+              "",
+              "## Geometry research",
+              f"- Research action: `{research.get('action')}`",
+              f"- Confidence: `{research.get('confidence')}`",
+              f"- Current: `${current.get('lower_usdt')}–${current.get('upper_usdt')}` / `{current.get('grids')}` grids",
+              f"- Selected: `${selected.get('lower_usdt')}–${selected.get('upper_usdt')}` / `{selected.get('grids')}` grids",
+              "",
+              f"**Blockers:** `{op.get('blockers')}`",
+          ]
+
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
+          PY
+
+      - name: Upload complete Phase 4D diagnostic bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: pionex-full-phase4d-decision-v1
+          path: |
+            data/diagnostics/pionex_full_decision_v1.json
+            data/diagnostics/pionex_execution_resolution_v1.json
+            data/pionex/execution_resolution_policy_v1.json
+            data/pionex/execution_resolution_windows_v1.csv
+            data/pionex/execution_candles/ETH-USDT_5min.csv
+            data/diagnostics/pionex_grid_geometry_optimizer_v1.json
+            data/diagnostics/pionex_grid_calibration_v2.json
+            data/pionex/grid_geometry_recommendations_v1.csv
+            data/diagnostics/pionex_grid_actionability_v1.json
+            data/pionex/grid_activity_windows_v1.csv
+          if-no-files-found: error
+
+      - name: Persist complete Phase 4D outputs
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            data/diagnostics/pionex_full_decision_v1.json \
+            data/diagnostics/pionex_execution_resolution_v1.json \
+            data/pionex/execution_resolution_policy_v1.json \
+            data/pionex/execution_resolution_windows_v1.csv \
+            data/pionex/execution_candles/ETH-USDT_5min.csv \
+            data/diagnostics/pionex_grid_geometry_optimizer_v1.json \
+            data/diagnostics/pionex_grid_calibration_v2.json \
+            data/pionex/grid_geometry_recommendations_v1.csv \
+            data/diagnostics/pionex_grid_actionability_v1.json \
+            data/pionex/grid_activity_windows_v1.csv
+
+          if ! git diff --quiet; then
+            echo "Unexpected unstaged tracked changes remain after staging expected outputs:"
+            git status --short
+            exit 1
+          fi
+
+          git diff --cached --quiet && echo "No full Phase 4D output changes" && exit 0
+          git commit -m "Full Phase 4D Pionex decision [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
