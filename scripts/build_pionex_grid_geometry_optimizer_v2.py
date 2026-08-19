@@ -97,15 +97,21 @@ def fetch_forward_5m(row: dict, hourly_master: Dict[int, List[float]]) -> Option
     # Include the full final hourly bucket.
     end_ts = int(hourly_fwd[-1][0]) + 3600 - execres.BASE_INTERVAL_SEC
 
+    # KuCoin's Kline time-boundary behaviour can omit the candle sitting exactly
+    # on a requested edge. Request one 5m bucket of padding on BOTH sides, then
+    # strictly slice back to the exact 288 timestamps required by the 24h replay.
+    # This does not interpolate or invent any candle.
+    request_start_ts = start_ts - execres.BASE_INTERVAL_SEC
+    request_end_ts = end_ts + execres.BASE_INTERVAL_SEC
+
     try:
-        raw = execres.fetch_5m_range(start_ts, end_ts)
+        raw = execres.fetch_5m_range(request_start_ts, request_end_ts)
     except Exception as exc:
         print(f"5m analogue fetch failed for entry {entry_ts}: {exc}")
         _PATH_CACHE[entry_ts] = None
         _STATS["path_fetch_failures"] += 1
         return None
 
-    candles = []
     by_ts = {}
     for r in raw:
         if len(r) < 6:
@@ -121,17 +127,32 @@ def fetch_forward_5m(row: dict, hourly_master: Dict[int, List[float]]) -> Option
         ]
 
     expected = list(range(start_ts, end_ts + 1, execres.BASE_INTERVAL_SEC))
-    if len(expected) != base.sim.HORIZON_H * (3600 // execres.BASE_INTERVAL_SEC):
-        raise RuntimeError(f"Unexpected expected 5m path length: {len(expected)}")
+    expected_n = base.sim.HORIZON_H * (3600 // execres.BASE_INTERVAL_SEC)
+    if len(expected) != expected_n:
+        raise RuntimeError(f"Unexpected expected 5m path length: {len(expected)} != {expected_n}")
 
-    if any(ts not in by_ts for ts in expected):
-        missing = sum(ts not in by_ts for ts in expected)
-        print(f"Incomplete 5m analogue path for entry {entry_ts}: missing {missing}/{len(expected)} buckets")
+    missing_ts = [ts for ts in expected if ts not in by_ts]
+    if missing_ts:
+        # Make any future genuine data gap immediately diagnosable.
+        first_missing = datetime.fromtimestamp(missing_ts[0], tz=timezone.utc).isoformat()
+        last_missing = datetime.fromtimestamp(missing_ts[-1], tz=timezone.utc).isoformat()
+        boundary_flags = {
+            "missing_first_required_bucket": expected[0] in missing_ts,
+            "missing_last_required_bucket": expected[-1] in missing_ts,
+        }
+        print(
+            f"Incomplete 5m analogue path for entry {entry_ts}: "
+            f"missing {len(missing_ts)}/{len(expected)} buckets; "
+            f"first_missing={first_missing}; last_missing={last_missing}; "
+            f"boundary_flags={boundary_flags}"
+        )
         _PATH_CACHE[entry_ts] = None
         _STATS["path_fetch_failures"] += 1
         return None
 
     candles = [by_ts[ts] for ts in expected]
+    if len(candles) != 288:
+        raise RuntimeError(f"Exact 5m replay slice is not 288 candles: {len(candles)}")
 
     # Cheap OHLC integrity guard.
     for c in candles:
@@ -195,8 +216,10 @@ def annotate_outputs(policy: dict, active: str) -> None:
             "cache_entries": len(_PATH_CACHE),
             "expected_candles_per_24h_path": 288 if active == "5min" else None,
             "fetch_policy": (
-                "On-demand KuCoin 5m history for selected 24h analogue paths; "
-                "in-memory cache only, so the repository does not accumulate a full historical 5m archive."
+                "On-demand KuCoin 5m history for selected 24h analogue paths; each request "
+                "uses one 5m bucket of boundary padding on both sides, then strictly slices "
+                "to the exact 288 required timestamps. No missing candles are interpolated. "
+                "In-memory cache only, so the repository does not accumulate a full historical 5m archive."
                 if active == "5min"
                 else "Not used because active execution resolution is 1hour."
             ),
