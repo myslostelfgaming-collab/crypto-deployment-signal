@@ -32,6 +32,7 @@ import os
 import statistics
 import time
 from datetime import datetime, timezone
+from glob import glob
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
@@ -593,35 +594,103 @@ def choose_resolution(metrics: dict, n_windows: int) -> dict:
     }
 
 
+def build_finalized_hourly_reference() -> Dict[int, List[float]]:
+    """
+    Build a validation-only hourly reference that prefers the *latest* logged
+    observation of each KuCoin hour.
+
+    Important: sim.build_master_candles() intentionally uses setdefault(), which
+    preserves the first observation ever seen for a timestamp. That is useful for
+    some historical/prospective workflows, but the first observation can be a
+    still-forming hourly candle. Comparing finalized 5m aggregates against that
+    partial hour creates false consistency failures.
+
+    Here we overwrite repeated timestamps as history files advance, so old hours
+    converge to their finalized KuCoin OHLC values. This function is used only by
+    the 4D.1 schema/alignment guard; it does not alter the production master.
+    """
+    master: Dict[int, List[float]] = {}
+    for path in sorted(glob(os.path.join(sim.HISTORY_ROOT, "*", "*.json"))):
+        try:
+            snap = sim.load_json(path)
+        except Exception:
+            continue
+        for candle in sim.extract_candles(snap):
+            master[int(candle[0])] = candle
+    return master
+
+
 def hourly_consistency(agg_1h: Dict[int, List[float]]) -> dict:
-    # Compare derived 1h candles with the existing historical logger where
-    # overlap exists. This is a schema/order guard, not a market-performance test.
+    # Compare derived 1h candles with a finalized/latest historical reference.
+    # This remains a schema/timestamp guard, not a market-performance test.
     try:
-        master = sim.build_master_candles()
+        master = build_finalized_hourly_reference()
     except Exception as exc:
         return {"status": "UNAVAILABLE", "error": str(exc), "n": 0}
 
     diffs = {"open": [], "high": [], "low": [], "close": []}
+    worst = {"close_pct": -1.0, "ts": None, "derived_close": None, "reference_close": None}
+
     for ts, c in agg_1h.items():
-        old = master.get(ts)
-        if old is None:
+        ref = master.get(ts)
+        if ref is None:
             continue
-        denom = max(abs(float(old[4])), 1e-9)
+        denom = max(abs(float(ref[4])), 1e-9)
         for key, idx in [("open", 1), ("high", 2), ("low", 3), ("close", 4)]:
-            diffs[key].append(abs(float(c[idx]) - float(old[idx])) / denom * 100.0)
+            d = abs(float(c[idx]) - float(ref[idx])) / denom * 100.0
+            diffs[key].append(d)
+            if key == "close" and d > worst["close_pct"]:
+                worst = {
+                    "close_pct": d,
+                    "ts": int(ts),
+                    "derived_close": float(c[idx]),
+                    "reference_close": float(ref[idx]),
+                }
 
     n = len(diffs["close"])
     if n == 0:
         return {"status": "NO_OVERLAP", "n": 0}
+
+    def percentile(values, p):
+        if not values:
+            return None
+        vals = sorted(values)
+        if len(vals) == 1:
+            return vals[0]
+        pos = (len(vals) - 1) * p
+        lo = int(math.floor(pos))
+        hi = int(math.ceil(pos))
+        if lo == hi:
+            return vals[lo]
+        return vals[lo] + (vals[hi] - vals[lo]) * (pos - lo)
+
     return {
         "status": "OK",
+        "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
         "n": n,
         "mean_abs_pct_diff": {
             k: round(statistics.fmean(v), 8) if v else None for k, v in diffs.items()
         },
+        "p95_abs_pct_diff": {
+            k: round(percentile(v, 0.95), 8) if v else None for k, v in diffs.items()
+        },
         "max_abs_pct_diff": {
             k: round(max(v), 8) if v else None for k, v in diffs.items()
         },
+        "worst_close": {
+            "timestamp_utc": (
+                datetime.fromtimestamp(worst["ts"], tz=timezone.utc).isoformat()
+                if worst["ts"] is not None else None
+            ),
+            "derived_close": worst["derived_close"],
+            "reference_close": worst["reference_close"],
+            "abs_pct_diff": round(worst["close_pct"], 8) if worst["close_pct"] >= 0 else None,
+        },
+        "note": (
+            "Validation reference prefers the latest logged form of each historical "
+            "hour so finalized 5m aggregates are not compared with an early partial "
+            "1h candle. Production historical master semantics are unchanged."
+        ),
     }
 
 
