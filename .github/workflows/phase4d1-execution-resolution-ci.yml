@@ -1,0 +1,113 @@
+name: Phase 4D.1 Pionex Execution Resolution CI
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase4d1-pionex-execution-resolution
+  cancel-in-progress: false
+
+jobs:
+  execution-resolution:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Phase 4D.1 execution-resolution validation
+        run: |
+          python scripts/build_pionex_execution_resolution_v1.py
+          test -s data/diagnostics/pionex_execution_resolution_v1.json
+          test -s data/pionex/execution_resolution_policy_v1.json
+          test -s data/pionex/execution_resolution_windows_v1.csv
+          test -s data/pionex/execution_candles/ETH-USDT_5min.csv
+
+      - name: Validate Phase 4D.1 outputs
+        run: |
+          python - <<'PY'
+          import csv
+          import json
+          from pathlib import Path
+
+          diag = json.loads(Path("data/diagnostics/pionex_execution_resolution_v1.json").read_text(encoding="utf-8"))
+          policy = json.loads(Path("data/pionex/execution_resolution_policy_v1.json").read_text(encoding="utf-8"))
+
+          if diag.get("schema") != "pionex_execution_resolution_v1":
+              raise SystemExit(f"Unexpected diagnostic schema: {diag.get('schema')}")
+          if policy.get("schema") != "pionex_execution_resolution_policy_v1":
+              raise SystemExit(f"Unexpected policy schema: {policy.get('schema')}")
+
+          data_policy = diag.get("data_policy") or {}
+          if data_policy.get("execution_resolution_hard_floor") != "5min":
+              raise SystemExit(f"Hard resolution floor is not 5min: {data_policy}")
+          if data_policy.get("sub_5min_inference_allowed") is not False:
+              raise SystemExit("Sub-5-minute inference must remain disabled")
+          if int(data_policy.get("persisted_5m_rows") or 0) < 100:
+              raise SystemExit(f"Too few persisted 5m rows: {data_policy.get('persisted_5m_rows')}")
+
+          metrics = diag.get("resolution_metrics") or {}
+          for required in ("1hour", "15min", "5min"):
+              if required not in metrics:
+                  raise SystemExit(f"Missing resolution metric: {required}")
+
+          with Path("data/pionex/execution_resolution_windows_v1.csv").open("r", encoding="utf-8", newline="") as f:
+              rows = list(csv.DictReader(f))
+          if len(rows) < 6:
+              raise SystemExit(f"Expected at least 2 windows x 3 resolutions, found {len(rows)} rows")
+
+          guard = diag.get("hourly_consistency_guard") or {}
+          if guard.get("status") == "OK":
+              max_close = ((guard.get("max_abs_pct_diff") or {}).get("close"))
+              if max_close is not None and float(max_close) > 0.10:
+                  raise SystemExit(f"Derived 1h close differs too much from repo history: {max_close}%")
+
+          print("Phase 4D.1 validation passed.")
+          print("Metrics:", metrics)
+          print("Policy:", diag.get("selection_policy"))
+          print("Hourly consistency:", guard)
+          PY
+
+      - name: Upload Phase 4D.1 diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: pionex-execution-resolution-v1
+          path: |
+            data/diagnostics/pionex_execution_resolution_v1.json
+            data/pionex/execution_resolution_policy_v1.json
+            data/pionex/execution_resolution_windows_v1.csv
+            data/pionex/execution_candles/ETH-USDT_5min.csv
+          if-no-files-found: error
+
+      - name: Persist Phase 4D.1 outputs
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            data/diagnostics/pionex_execution_resolution_v1.json \
+            data/pionex/execution_resolution_policy_v1.json \
+            data/pionex/execution_resolution_windows_v1.csv \
+            data/pionex/execution_candles/ETH-USDT_5min.csv
+
+          git diff --cached --quiet && echo "No Phase 4D.1 output changes" && exit 0
+          git commit -m "Phase 4D.1 execution resolution validation [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
