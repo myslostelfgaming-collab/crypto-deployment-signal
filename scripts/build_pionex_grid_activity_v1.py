@@ -229,6 +229,25 @@ def load_optional_json(path: Path) -> Optional[dict]:
         return None
 
 
+
+def geometry_execution_integration_gate(geometry: dict, exec_gate_result: dict) -> dict:
+    integration = geometry.get("execution_resolution_integration") or {}
+    expected = str(exec_gate_result.get("active_execution_resolution") or "1hour")
+    actual = str(integration.get("execution_replay_resolution") or "")
+    integrated = integration.get("execution_resolution_integrated") is True
+
+    # If Phase 4D.1 has promoted a resolution, the geometry metrics themselves
+    # must have been generated using that exact execution replay resolution.
+    passed = integrated and actual == expected
+    return {
+        "passed": passed,
+        "expected_execution_resolution": expected,
+        "geometry_execution_replay_resolution": actual or None,
+        "integration_metadata_available": bool(integration),
+        "policy_status_seen_by_geometry": integration.get("policy_status"),
+    }
+
+
 def execution_gate(exec_policy: Optional[dict]) -> dict:
     if not exec_policy:
         return {
@@ -291,6 +310,7 @@ def main() -> None:
     cal_passed = cal_active and cal_windows >= MIN_CAL_WINDOWS_FOR_OPERATIONAL_ACTION
 
     egate = execution_gate(exec_policy)
+    gexec_gate = geometry_execution_integration_gate(geometry, egate)
     geometry_changed = str(research_decision.get("action") or "KEEP_CURRENT") != "KEEP_CURRENT"
     research_confidence = str(research_decision.get("confidence") or "LOW")
     confidence_passed = research_confidence in {"LOW_MEDIUM", "MEDIUM", "HIGH"}
@@ -302,6 +322,8 @@ def main() -> None:
         blockers.append("PROSPECTIVE_CALIBRATION_NOT_ACTIVE")
     if not egate["passed"]:
         blockers.append("EXECUTION_RESOLUTION_NOT_PROSPECTIVELY_VALIDATED")
+    if egate["passed"] and not gexec_gate["passed"]:
+        blockers.append("GEOMETRY_NOT_REPLAYED_AT_PROMOTED_EXECUTION_RESOLUTION")
     if geometry_changed and not confidence_passed:
         blockers.append("RESEARCH_GEOMETRY_CONFIDENCE_TOO_LOW")
 
@@ -377,6 +399,7 @@ def main() -> None:
                 "minimum_windows": MIN_CAL_WINDOWS_FOR_OPERATIONAL_ACTION,
             },
             "execution_resolution": egate,
+            "geometry_execution_integration": gexec_gate,
             "research_confidence": {
                 "passed": confidence_passed if geometry_changed else True,
                 "value": research_confidence,
@@ -401,6 +424,7 @@ def main() -> None:
     print("Latest observed activity:", latest_activity)
     print("Nearest triggers:", triggers)
     print("Execution gate:", egate)
+    print("Geometry execution integration gate:", gexec_gate)
     print("Calibration:", calibration.get("status"), "windows=", cal_windows)
     print("Research action:", research_decision.get("action"), research_confidence)
     print("Operational action:", operational_action, "blockers=", blockers)
