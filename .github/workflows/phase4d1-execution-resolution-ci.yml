@@ -73,16 +73,37 @@ jobs:
           if len(rows) < 6:
               raise SystemExit(f"Expected at least 2 windows x 3 resolutions, found {len(rows)} rows")
 
-          guard = diag.get("hourly_consistency_guard") or {}
-          if guard.get("status") == "OK":
-              max_close = ((guard.get("max_abs_pct_diff") or {}).get("close"))
-              if max_close is not None and float(max_close) > 0.10:
-                  raise SystemExit(f"Derived 1h close differs too much from repo history: {max_close}%")
+          # Hard candle-alignment guard. Prefer the fresh direct KuCoin comparison.
+          # If that endpoint has no overlap, the finalized/latest repo-hourly
+          # reference is an explicit fallback. NO_OVERLAP cannot silently pass.
+          direct = diag.get("hourly_consistency_guard") or {}
+          repo = diag.get("repo_hourly_consistency_reference") or {}
+
+          chosen = None
+          chosen_name = None
+          if direct.get("status") == "OK" and int(direct.get("n") or 0) > 0:
+              chosen = direct
+              chosen_name = "direct_kucoin"
+          elif repo.get("status") == "OK" and int(repo.get("n") or 0) > 0:
+              chosen = repo
+              chosen_name = "finalized_repo_reference"
+          else:
+              raise SystemExit(
+                  f"No usable hourly consistency reference. direct={direct}, repo={repo}"
+              )
+
+          max_close = ((chosen.get("max_abs_pct_diff") or {}).get("close"))
+          if max_close is None:
+              raise SystemExit(f"Hourly consistency reference lacks close metric: {chosen}")
+          if float(max_close) > 0.10:
+              raise SystemExit(
+                  f"Derived 1h close differs too much from {chosen_name}: {max_close}%"
+              )
 
           print("Phase 4D.1 validation passed.")
           print("Metrics:", metrics)
           print("Policy:", diag.get("selection_policy"))
-          print("Hourly consistency:", guard)
+          print("Hourly consistency source:", chosen_name, chosen)
           PY
 
       - name: Upload Phase 4D.1 diagnostic

@@ -13,7 +13,7 @@ concurrency:
 jobs:
   grid-actionability:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Check out repo
@@ -27,12 +27,44 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Refresh Phase 4D research geometry
+      - name: Install Python dependencies
         run: |
-          python scripts/build_pionex_grid_geometry_optimizer_v1.py
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Refresh Phase 4D research geometry at promoted execution resolution
+        run: |
+          python scripts/build_pionex_grid_geometry_optimizer_v2.py
           test -s data/diagnostics/pionex_grid_geometry_optimizer_v1.json
           test -s data/diagnostics/pionex_grid_calibration_v2.json
           test -s data/pionex/grid_geometry_recommendations_v1.csv
+
+      - name: Validate Phase 4D execution integration
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          geo = json.loads(Path("data/diagnostics/pionex_grid_geometry_optimizer_v1.json").read_text(encoding="utf-8"))
+          policy = json.loads(Path("data/pionex/execution_resolution_policy_v1.json").read_text(encoding="utf-8"))
+          integration = geo.get("execution_resolution_integration") or {}
+
+          expected = str(policy.get("active_execution_resolution") or "1hour")
+          actual = str(integration.get("execution_replay_resolution") or "")
+
+          if integration.get("execution_resolution_integrated") is not True:
+              raise SystemExit(f"Phase 4D execution integration missing: {integration}")
+          if actual != expected:
+              raise SystemExit(f"Phase 4D replay resolution {actual} != Phase 4D.1 policy {expected}")
+          if expected == "5min" and policy.get("status") != "PROMOTION_READY":
+              raise SystemExit(f"5min used without PROMOTION_READY policy: {policy}")
+
+          hist = integration.get("historical_5m_replay") or {}
+          if expected == "5min" and int(hist.get("paths_built") or 0) < 24:
+              raise SystemExit(f"Insufficient 5m analogue coverage: {hist}")
+
+          print("Phase 4D execution integration passed:", integration)
+          PY
 
       - name: Build Phase 4D.2 activity and actionability
         run: |
@@ -59,6 +91,12 @@ jobs:
           if audit.get("observed_live_quantity_per_grid_eth") is None:
               raise SystemExit("Current quantity audit missing observed value")
 
+          gates = diag.get("prospective_gates") or {}
+          exec_gate = gates.get("execution_resolution") or {}
+          integration_gate = gates.get("geometry_execution_integration") or {}
+          if exec_gate.get("passed") is True and integration_gate.get("passed") is not True:
+              raise SystemExit(f"Execution policy passed but geometry integration did not: {integration_gate}")
+
           op = diag.get("operational_decision") or {}
           if op.get("action") is None:
               raise SystemExit("Operational decision missing")
@@ -78,7 +116,7 @@ jobs:
           print("Phase 4D.2 validation passed.")
           print("Latest:", latest)
           print("Latest activity:", diag.get("latest_observed_activity_window"))
-          print("Gates:", diag.get("prospective_gates"))
+          print("Gates:", gates)
           print("Operational:", op)
           PY
 
@@ -99,8 +137,6 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Phase 4D is refreshed earlier in this workflow, so ALL files that
-          # Phase 4D writes must be staged alongside the 4D.2 outputs.
           git add \
             data/diagnostics/pionex_grid_actionability_v1.json \
             data/diagnostics/pionex_grid_geometry_optimizer_v1.json \
@@ -108,8 +144,6 @@ jobs:
             data/pionex/grid_activity_windows_v1.csv \
             data/pionex/grid_geometry_recommendations_v1.csv
 
-          # Do not hide unexpected tracked changes with --autostash. If a
-          # future builder starts modifying another tracked file, fail loudly.
           if ! git diff --quiet; then
             echo "Unexpected unstaged tracked changes remain after staging expected outputs:"
             git status --short

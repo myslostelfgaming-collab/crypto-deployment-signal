@@ -13,7 +13,7 @@ concurrency:
 jobs:
   grid-geometry:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Check out repo
@@ -27,9 +27,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build Phase 4D grid geometry optimizer
+      - name: Install Python dependencies
         run: |
-          python scripts/build_pionex_grid_geometry_optimizer_v1.py
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build Phase 4D grid geometry optimizer with promoted execution resolution
+        run: |
+          python scripts/build_pionex_grid_geometry_optimizer_v2.py
           test -s data/diagnostics/pionex_grid_geometry_optimizer_v1.json
           test -s data/diagnostics/pionex_grid_calibration_v2.json
           test -s data/pionex/grid_geometry_recommendations_v1.csv
@@ -43,11 +48,29 @@ jobs:
 
           geo = json.loads(Path("data/diagnostics/pionex_grid_geometry_optimizer_v1.json").read_text(encoding="utf-8"))
           cal = json.loads(Path("data/diagnostics/pionex_grid_calibration_v2.json").read_text(encoding="utf-8"))
+          policy = json.loads(Path("data/pionex/execution_resolution_policy_v1.json").read_text(encoding="utf-8"))
 
           if geo.get("schema") != "pionex_grid_geometry_optimizer_v1":
               raise SystemExit(f"Unexpected geometry schema: {geo.get('schema')}")
           if cal.get("schema") != "pionex_grid_calibration_v2":
               raise SystemExit(f"Unexpected calibration schema: {cal.get('schema')}")
+
+          integration = geo.get("execution_resolution_integration") or {}
+          expected = str(policy.get("active_execution_resolution") or "1hour")
+          actual = str(integration.get("execution_replay_resolution") or "")
+          if integration.get("execution_resolution_integrated") is not True:
+              raise SystemExit(f"Execution resolution not integrated into Phase 4D: {integration}")
+          if actual != expected:
+              raise SystemExit(f"Geometry replay resolution {actual} != policy {expected}")
+          if expected == "5min" and policy.get("status") != "PROMOTION_READY":
+              raise SystemExit(f"5min geometry replay without promotion-ready policy: {policy}")
+
+          hist = integration.get("historical_5m_replay") or {}
+          if expected == "5min":
+              if int(hist.get("paths_built") or 0) < 24:
+                  raise SystemExit(f"Too few 5m analogue paths built: {hist}")
+              if int(hist.get("five_minute_candles_used") or 0) < 24 * 288:
+                  raise SystemExit(f"Too few 5m execution candles used: {hist}")
 
           scope = geo.get("scope") or {}
           if scope.get("platform") != "Pionex" or scope.get("pair") != "ETH/USDT" or scope.get("horizon_h") != 24:
@@ -56,6 +79,8 @@ jobs:
           model = geo.get("geometry_model") or {}
           if set(model.get("joint_variables") or []) != {"centre", "width", "grid_count"}:
               raise SystemExit(f"Joint geometry variables missing: {model}")
+          if model.get("execution_replay_resolution") != expected:
+              raise SystemExit(f"Geometry model execution metadata mismatch: {model}")
           if (model.get("candidate_count") or 0) < 150:
               raise SystemExit(f"Too few geometry candidates: {model.get('candidate_count')}")
 
@@ -81,13 +106,12 @@ jobs:
               raise SystemExit("Phase 4D prospective ledger is empty")
 
           print("Phase 4D validation passed.")
+          print("Execution integration:", integration)
           print("Calibration:", cal.get("status"), "windows=", cal.get("evaluated_windows"))
-          print("Analogue state:", ((geo.get("market_regime") or {}).get("analogue_selection") or {}).get("current_shape"))
           print("Candidates:", model.get("candidate_count"), "Pareto:", model.get("pareto_count"))
           print("Decision:", geo.get("decision"))
           print("Current:", current)
           print("Selected:", selected)
-          print("Practical:", benches.get("practical"))
           PY
 
       - name: Upload Phase 4D diagnostic
