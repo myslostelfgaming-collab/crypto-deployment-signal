@@ -1,0 +1,116 @@
+{
+  "schema": "pionex_execution_resolution_v1",
+  "generated_at_utc": "2026-08-19T08:54:41.100324+00:00",
+  "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
+  "scope": {
+    "platform": "Pionex",
+    "pair": "ETH/USDT",
+    "bot_type": "Spot Grid",
+    "purpose": "execution path resolution only"
+  },
+  "data_policy": {
+    "forecast_regime_clock": "1hour",
+    "execution_resolution_hard_floor": "5min",
+    "sub_5min_inference_allowed": false,
+    "available_resolution_comparison": [
+      "1hour",
+      "15min",
+      "5min"
+    ],
+    "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
+    "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
+    "persisted_5m_rows": 2002,
+    "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
+    "persisted_5m_last_utc": "2026-08-19T08:40:00+00:00",
+    "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
+  },
+  "prospective_windows": {
+    "usable_window_count": 5,
+    "window_rule": "14-30h consecutive same-geometry manual Pionex screenshots"
+  },
+  "resolution_metrics": {
+    "1hour": {
+      "windows": 5,
+      "profit_mae_usdt": 0.02245539,
+      "rounds_mae": 1.1,
+      "mean_profit_relative_error": 0.205124,
+      "mean_rounds_relative_error": 0.216667,
+      "combined_relative_error_score": 0.210895,
+      "rounds_within_path_ambiguity_pct": 40.0,
+      "profit_within_path_ambiguity_pct": 40.0
+    },
+    "15min": {
+      "windows": 5,
+      "profit_mae_usdt": 0.0267292,
+      "rounds_mae": 1.3,
+      "mean_profit_relative_error": 0.248232,
+      "mean_rounds_relative_error": 0.258333,
+      "combined_relative_error_score": 0.253283,
+      "rounds_within_path_ambiguity_pct": 20.0,
+      "profit_within_path_ambiguity_pct": 20.0
+    },
+    "5min": {
+      "windows": 5,
+      "profit_mae_usdt": 0.02031026,
+      "rounds_mae": 1.0,
+      "mean_profit_relative_error": 0.178256,
+      "mean_rounds_relative_error": 0.191667,
+      "combined_relative_error_score": 0.184961,
+      "rounds_within_path_ambiguity_pct": 40.0,
+      "profit_within_path_ambiguity_pct": 20.0
+    }
+  },
+  "selection_policy": {
+    "status": "PROMOTION_READY",
+    "research_best_resolution": "5min",
+    "promotion_candidate": "5min",
+    "active_execution_resolution": "5min",
+    "windows_evaluated": 5,
+    "minimum_windows_to_promote": 3,
+    "candidate_improvement_vs_1hour_pct": 12.297115,
+    "minimum_required_improvement_vs_1hour_pct": 10.0,
+    "coarsest_within_best_tolerance_pct": 5.0,
+    "hard_execution_resolution_floor": "5min",
+    "hard_limit_note": "The project will not infer sub-5-minute execution paths. Even when 5m is promoted, each 5m candle remains path-ambiguous and is replayed in both OHLC and OLHC order."
+  },
+  "hourly_consistency_guard": {
+    "status": "NO_OVERLAP",
+    "n": 0
+  },
+  "repo_hourly_consistency_reference": {
+    "status": "OK",
+    "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
+    "n": 165,
+    "mean_abs_pct_diff": {
+      "open": 0.0,
+      "high": 0.0,
+      "low": 0.0,
+      "close": 0.0
+    },
+    "p95_abs_pct_diff": {
+      "open": 0.0,
+      "high": 0.0,
+      "low": 0.0,
+      "close": 0.0
+    },
+    "max_abs_pct_diff": {
+      "open": 0.0,
+      "high": 0.0,
+      "low": 0.0,
+      "close": 0.0
+    },
+    "worst_close": {
+      "timestamp_utc": "2026-08-12T10:00:00+00:00",
+      "derived_close": 1909.08,
+      "reference_close": 1909.08,
+      "abs_pct_diff": 0.0
+    },
+    "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
+  },
+  "limitations": [
+    "Pionex's exact internal fill timing is not observable from screenshots.",
+    "Even 5-minute OHLC does not reveal sub-5-minute price ordering; both OHLC and OLHC paths are replayed.",
+    "The current public fee reference remains a model input until account-specific effective fees are verified.",
+    "Fine execution resolution is not promoted into Phase 4D geometry recommendations until the prospective promotion gate passes."
+  ]
+}
