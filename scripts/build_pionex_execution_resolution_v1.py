@@ -620,7 +620,7 @@ def build_finalized_hourly_reference() -> Dict[int, List[float]]:
     return master
 
 
-def hourly_consistency(agg_1h: Dict[int, List[float]]) -> dict:
+def repo_hourly_consistency(agg_1h: Dict[int, List[float]]) -> dict:
     # Compare derived 1h candles with a finalized/latest historical reference.
     # This remains a schema/timestamp guard, not a market-performance test.
     try:
@@ -694,6 +694,121 @@ def hourly_consistency(agg_1h: Dict[int, List[float]]) -> dict:
     }
 
 
+
+def fetch_direct_uta_hourly(start_ts: int, end_ts: int) -> Dict[int, List[float]]:
+    """
+    Fetch fresh direct 1-hour KuCoin UTA candles covering the same period as the
+    persisted 5-minute execution data.
+
+    This is the authoritative schema/alignment guard for Phase 4D.1 because both
+    sides of the comparison are reconstructed from the same current KuCoin API
+    family rather than from the repo's incrementally captured historical archive.
+    """
+    step = 3600
+    start_ts = floor_ts(start_ts, step)
+    end_ts = floor_ts(end_ts, step)
+    if end_ts < start_ts:
+        return {}
+
+    chunk_span = step * 1489
+    dedup: Dict[int, List[float]] = {}
+    cursor = start_ts
+    while cursor <= end_ts:
+        chunk_end = min(end_ts, cursor + chunk_span)
+        params = {
+            "tradeType": "SPOT",
+            "symbol": SYMBOL,
+            "interval": "1hour",
+            "startAt": cursor,
+            "endAt": chunk_end,
+        }
+        payload = request_json(UTA_URL, params)
+        rows = parse_uta_rows(payload.get("data") or [])
+        for row in rows:
+            ts = int(row[0])
+            if start_ts <= ts <= end_ts:
+                dedup[ts] = row
+        cursor = chunk_end + step
+        time.sleep(REQUEST_SLEEP_SEC)
+
+    return dedup
+
+
+def direct_hourly_consistency(agg_1h: Dict[int, List[float]],
+                              direct_1h: Dict[int, List[float]]) -> dict:
+    """
+    Compare 1h candles aggregated from KuCoin 5m data against KuCoin's fresh
+    direct 1h candles.
+
+    A schema/order error would create large systematic OHLC differences. Small
+    isolated deviations can still occur from exchange-side historical revisions,
+    so the workflow keeps a 0.10% maximum close-difference guard.
+    """
+    diffs = {"open": [], "high": [], "low": [], "close": []}
+    worst = {"close_pct": -1.0, "ts": None, "derived_close": None, "reference_close": None}
+
+    for ts, c in agg_1h.items():
+        ref = direct_1h.get(ts)
+        if ref is None:
+            continue
+        denom = max(abs(float(ref[4])), 1e-9)
+        for key, idx in [("open", 1), ("high", 2), ("low", 3), ("close", 4)]:
+            d = abs(float(c[idx]) - float(ref[idx])) / denom * 100.0
+            diffs[key].append(d)
+            if key == "close" and d > worst["close_pct"]:
+                worst = {
+                    "close_pct": d,
+                    "ts": int(ts),
+                    "derived_close": float(c[idx]),
+                    "reference_close": float(ref[idx]),
+                }
+
+    n = len(diffs["close"])
+    if n == 0:
+        return {"status": "NO_OVERLAP", "n": 0}
+
+    def percentile(values, p):
+        vals = sorted(values)
+        if not vals:
+            return None
+        if len(vals) == 1:
+            return vals[0]
+        pos = (len(vals) - 1) * p
+        lo = int(math.floor(pos))
+        hi = int(math.ceil(pos))
+        if lo == hi:
+            return vals[lo]
+        return vals[lo] + (vals[hi] - vals[lo]) * (pos - lo)
+
+    return {
+        "status": "OK",
+        "reference_policy": "fresh_direct_kucoin_uta_1hour",
+        "n": n,
+        "mean_abs_pct_diff": {
+            k: round(statistics.fmean(v), 8) if v else None for k, v in diffs.items()
+        },
+        "p95_abs_pct_diff": {
+            k: round(percentile(v, 0.95), 8) if v else None for k, v in diffs.items()
+        },
+        "max_abs_pct_diff": {
+            k: round(max(v), 8) if v else None for k, v in diffs.items()
+        },
+        "worst_close": {
+            "timestamp_utc": (
+                datetime.fromtimestamp(worst["ts"], tz=timezone.utc).isoformat()
+                if worst["ts"] is not None else None
+            ),
+            "derived_close": worst["derived_close"],
+            "reference_close": worst["reference_close"],
+            "abs_pct_diff": round(worst["close_pct"], 8) if worst["close_pct"] >= 0 else None,
+        },
+        "note": (
+            "Hard Phase 4D.1 schema/alignment guard: finalized 1h candles aggregated "
+            "from current KuCoin 5m UTA history versus fresh direct KuCoin 1h UTA history."
+        ),
+    }
+
+
 def main() -> None:
     states = read_states()
     windows = prospective_windows(states)
@@ -726,7 +841,15 @@ def main() -> None:
 
     metrics = resolution_metrics(comparison_rows)
     policy = choose_resolution(metrics, len(windows))
-    consistency = hourly_consistency(by_resolution["1hour"])
+
+    # Hard consistency guard: compare two fresh/current KuCoin UTA resolutions.
+    direct_1h = fetch_direct_uta_hourly(min(base), max(base))
+    consistency = direct_hourly_consistency(by_resolution["1hour"], direct_1h)
+
+    # Diagnostic-only comparison with the repo's incrementally captured history.
+    # This is retained to study archive timing/revision effects, but it must not
+    # block the execution-resolution experiment.
+    repo_consistency = repo_hourly_consistency(by_resolution["1hour"])
 
     now = datetime.now(timezone.utc).isoformat()
     out = {
@@ -758,6 +881,7 @@ def main() -> None:
         "resolution_metrics": metrics,
         "selection_policy": policy,
         "hourly_consistency_guard": consistency,
+        "repo_hourly_consistency_reference": repo_consistency,
         "limitations": [
             "Pionex's exact internal fill timing is not observable from screenshots.",
             "Even 5-minute OHLC does not reveal sub-5-minute price ordering; both OHLC and OLHC paths are replayed.",
@@ -780,7 +904,8 @@ def main() -> None:
     print("Prospective windows:", len(windows))
     print("Metrics:", metrics)
     print("Policy:", policy)
-    print("Hourly consistency:", consistency)
+    print("Direct KuCoin hourly consistency guard:", consistency)
+    print("Repo hourly consistency reference (diagnostic only):", repo_consistency)
 
 
 if __name__ == "__main__":
