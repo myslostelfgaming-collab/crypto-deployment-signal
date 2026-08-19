@@ -32,6 +32,7 @@ jobs:
           python scripts/build_pionex_grid_geometry_optimizer_v1.py
           test -s data/diagnostics/pionex_grid_geometry_optimizer_v1.json
           test -s data/diagnostics/pionex_grid_calibration_v2.json
+          test -s data/pionex/grid_geometry_recommendations_v1.csv
 
       - name: Build Phase 4D.2 activity and actionability
         run: |
@@ -90,6 +91,7 @@ jobs:
             data/diagnostics/pionex_grid_geometry_optimizer_v1.json
             data/diagnostics/pionex_grid_calibration_v2.json
             data/pionex/grid_activity_windows_v1.csv
+            data/pionex/grid_geometry_recommendations_v1.csv
           if-no-files-found: error
 
       - name: Persist Phase 4D.2 outputs
@@ -97,11 +99,22 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Phase 4D is refreshed earlier in this workflow, so ALL files that
+          # Phase 4D writes must be staged alongside the 4D.2 outputs.
           git add \
             data/diagnostics/pionex_grid_actionability_v1.json \
             data/diagnostics/pionex_grid_geometry_optimizer_v1.json \
             data/diagnostics/pionex_grid_calibration_v2.json \
-            data/pionex/grid_activity_windows_v1.csv
+            data/pionex/grid_activity_windows_v1.csv \
+            data/pionex/grid_geometry_recommendations_v1.csv
+
+          # Do not hide unexpected tracked changes with --autostash. If a
+          # future builder starts modifying another tracked file, fail loudly.
+          if ! git diff --quiet; then
+            echo "Unexpected unstaged tracked changes remain after staging expected outputs:"
+            git status --short
+            exit 1
+          fi
 
           git diff --cached --quiet && echo "No Phase 4D.2 output changes" && exit 0
           git commit -m "Phase 4D.2 grid activity and actionability [skip ci]"
