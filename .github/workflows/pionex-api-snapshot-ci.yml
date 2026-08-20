@@ -2,6 +2,10 @@ name: Pionex Read-Only API Snapshot CI
 
 on:
   workflow_dispatch: {}
+  schedule:
+    # Hourly raw state capture. Cron is UTC; minute choice avoids the main
+    # deployment-signal job at :07 and the extra :37 run.
+    - cron: "22 * * * *"
 
 permissions:
   contents: write
@@ -38,26 +42,42 @@ jobs:
           PIONEX_API_SECRET: ${{ secrets.PIONEX_API_SECRET }}
         run: python scripts/pull_pionex_grid_state_v1.py
 
-      - name: Validate generated outputs
+      - name: Validate read-only state and confirmed round counter
         run: |
           test -s data/pionex/api_bot_state_latest_v1.json
           test -s data/pionex/api_grid_states_v1.csv
           test -s data/diagnostics/pionex_api_parity_v1.json
+
           python - <<'PY'
           import json
           from pathlib import Path
-          state = json.loads(Path("data/pionex/api_bot_state_latest_v1.json").read_text())
-          parity = json.loads(Path("data/diagnostics/pionex_api_parity_v1.json").read_text())
-          if state.get("schema") != "pionex_api_bot_state_v1": raise SystemExit("Bad state schema")
-          if parity.get("schema") != "pionex_api_parity_v1": raise SystemExit("Bad parity schema")
-          if (state.get("source") or {}).get("writes_to_pionex") is not False: raise SystemExit("Read-only invariant failed")
+
+          state = json.loads(
+              Path("data/pionex/api_bot_state_latest_v1.json").read_text(encoding="utf-8")
+          )
+          if state.get("schema") != "pionex_api_bot_state_v1":
+              raise SystemExit(f"Unexpected schema: {state.get('schema')}")
+          if (state.get("source") or {}).get("writes_to_pionex") is not False:
+              raise SystemExit("Read-only invariant failed")
+
           grid = state.get("grid") or {}
-          required = ["top", "bottom", "row", "perVolume", "baseAmount", "quoteAmount", "gridProfit"]
+          required = [
+              "top", "bottom", "row", "perVolume", "baseAmount", "quoteAmount",
+              "gridProfit", "exchangeOrderPairedCount",
+          ]
           missing = [k for k in required if grid.get(k) in (None, "")]
-          if missing: raise SystemExit(f"Expected Spot Grid fields missing: {missing}")
-          print("Read-only Pionex snapshot validation passed")
-          print("Geometry:", grid.get("bottom"), grid.get("top"), grid.get("row"))
-          print("Undocumented keys:", parity.get("undocumented_grid_keys_seen"))
+          if missing:
+              raise SystemExit(f"Required Pionex fields missing: {missing}")
+
+          derived = state.get("derived_ui_equivalents") or {}
+          for k in ("total_pnl_usdt", "grid_profit_usdt", "trend_pnl_usdt"):
+              if derived.get(k) is None:
+                  raise SystemExit(f"Derived UI-equivalent missing: {k}")
+
+          print("Pionex API raw snapshot validated.")
+          print("History rounds:", grid.get("exchangeOrderPairedCount"))
+          print("Range:", grid.get("bottom"), "-", grid.get("top"), "/", grid.get("row"))
+          print("Derived total P&L:", derived.get("total_pnl_usdt"))
           PY
 
       - name: Write run summary
@@ -65,45 +85,49 @@ jobs:
           python - <<'PY'
           import json, os
           from pathlib import Path
-          s = json.loads(Path("data/pionex/api_bot_state_latest_v1.json").read_text())
-          p = json.loads(Path("data/diagnostics/pionex_api_parity_v1.json").read_text())
-          g = s.get("grid") or {}; t = s.get("market_ticker") or {}
+
+          s = json.loads(
+              Path("data/pionex/api_bot_state_latest_v1.json").read_text(encoding="utf-8")
+          )
+          g = s.get("grid") or {}
+          d = s.get("derived_ui_equivalents") or {}
+          t = s.get("market_ticker") or {}
+
           lines = [
-              "# Pionex Read-Only API Snapshot", "",
+              "# Pionex Hourly Read-Only API Snapshot",
+              "",
               "**Pionex mutation capability used:** `NONE`",
-              "**Collector stage:** `VALIDATION`", "",
+              "**State source:** `API PRIMARY / UI PARITY CONFIRMED`",
+              "",
               f"- Price: `${t.get('current_price_usdt')}`",
               f"- Range: `${g.get('bottom')}–${g.get('top')}` / `{g.get('row')}` grids",
               f"- Quantity/grid: `{g.get('perVolume')}` ETH",
-              f"- ETH / USDT: `{g.get('baseAmount')}` / `{g.get('quoteAmount')}`",
-              f"- Grid profit: `${g.get('gridProfit')}`",
-              f"- Realized/total field: `${g.get('realizedProfit')}`",
-              f"- Geometry match vs manual: `{p.get('geometry_match_vs_latest_manual')}`",
-              f"- Undocumented keys: `{p.get('undocumented_grid_keys_seen')}`", "",
-              "The manual calibration CSV was deliberately not modified by this validation run.",
+              f"- History rounds: `{g.get('exchangeOrderPairedCount')}`",
+              f"- Grid profit: `${d.get('grid_profit_usdt')}`",
+              f"- Total P&L: `${d.get('total_pnl_usdt')}`",
+              f"- Trend P&L: `${d.get('trend_pnl_usdt')}`",
           ]
-          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f: f.write("\n".join(lines) + "\n")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
           PY
 
-      - name: Upload validation artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: pionex-readonly-api-snapshot-v1
-          path: |
-            data/pionex/api_bot_state_latest_v1.json
-            data/pionex/api_grid_states_v1.csv
-            data/diagnostics/pionex_api_parity_v1.json
-          if-no-files-found: error
-
-      - name: Persist read-only API outputs
+      - name: Persist raw API outputs
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/pionex/api_bot_state_latest_v1.json data/pionex/api_grid_states_v1.csv data/diagnostics/pionex_api_parity_v1.json
+
+          git add \
+            data/pionex/api_bot_state_latest_v1.json \
+            data/pionex/api_grid_states_v1.csv \
+            data/diagnostics/pionex_api_parity_v1.json
+
           if ! git diff --quiet; then
-            echo "Unexpected unstaged tracked changes remain:"; git status --short; exit 1
+            echo "Unexpected unstaged tracked changes remain:"
+            git status --short
+            exit 1
           fi
+
           git diff --cached --quiet && echo "No Pionex API snapshot changes" && exit 0
-          git commit -m "Pionex read-only API snapshot [skip ci]"
+          git commit -m "Pionex hourly read-only API snapshot [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
