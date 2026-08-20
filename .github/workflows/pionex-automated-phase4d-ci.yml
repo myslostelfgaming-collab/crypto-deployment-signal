@@ -1,0 +1,226 @@
+name: Pionex Automated Phase 4D Decision CI
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Full 4D decision every 3 hours, aligned to 04:42 SAST then every 3h. Cron is UTC.
+    # Raw API capture also runs hourly in pionex-api-snapshot-ci.yml.
+    - cron: "42 2,5,8,11,14,17,20,23 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  # Share the lock with the existing manual full Phase 4D workflow.
+  group: phase4d-full-pionex-decision
+  cancel-in-progress: false
+
+jobs:
+  automated-pionex-decision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Capture a fresh read-only Pionex state
+        env:
+          PIONEX_API_KEY: ${{ secrets.PIONEX_API_KEY }}
+          PIONEX_API_SECRET: ${{ secrets.PIONEX_API_SECRET }}
+        run: python scripts/pull_pionex_grid_state_v1.py
+
+      - name: Build canonical and runtime model-state histories
+        run: |
+          python scripts/build_pionex_model_state_v1.py
+          test -s data/pionex/model_grid_states_v1.csv
+          test -s data/pionex/runtime_grid_states_v1.csv
+          test -s data/diagnostics/pionex_state_source_v1.json
+
+      - name: Run Phase 4D against fresh API runtime state
+        run: |
+          # Core Phase 4D scripts currently read the legacy hard-coded
+          # manual_grid_states_v1.csv path. Keep the historic manual file immutable:
+          # temporarily substitute the runtime view, then restore it regardless of
+          # Phase 4D success/failure.
+          cp data/pionex/manual_grid_states_v1.csv /tmp/manual_grid_states_v1.audit.csv
+          cp data/pionex/runtime_grid_states_v1.csv data/pionex/manual_grid_states_v1.csv
+
+          set +e
+          python scripts/run_pionex_phase4d_full_v1.py
+          phase_status=$?
+          set -e
+
+          cp /tmp/manual_grid_states_v1.audit.csv data/pionex/manual_grid_states_v1.csv
+          exit $phase_status
+
+      - name: Validate immutable manual archive and full outputs
+        run: |
+          # The original screenshot archive must remain unchanged.
+          if ! git diff --quiet -- data/pionex/manual_grid_states_v1.csv; then
+            echo "Safety invariant failed: manual screenshot archive was modified."
+            git diff -- data/pionex/manual_grid_states_v1.csv
+            exit 1
+          fi
+
+          test -s data/diagnostics/pionex_execution_resolution_v1.json
+          test -s data/pionex/execution_resolution_policy_v1.json
+          test -s data/pionex/execution_resolution_windows_v1.csv
+          test -s data/pionex/execution_candles/ETH-USDT_5min.csv
+          test -s data/diagnostics/pionex_grid_geometry_optimizer_v1.json
+          test -s data/diagnostics/pionex_grid_calibration_v2.json
+          test -s data/pionex/grid_geometry_recommendations_v1.csv
+          test -s data/diagnostics/pionex_grid_actionability_v1.json
+          test -s data/pionex/grid_activity_windows_v1.csv
+          test -s data/diagnostics/pionex_full_decision_v1.json
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          source = json.loads(
+              Path("data/diagnostics/pionex_state_source_v1.json").read_text(encoding="utf-8")
+          )
+          decision = json.loads(
+              Path("data/diagnostics/pionex_full_decision_v1.json").read_text(encoding="utf-8")
+          )
+
+          if source.get("status") != "API_PRIMARY_UI_PARITY_CONFIRMED":
+              raise SystemExit(f"Unexpected state-source status: {source.get('status')}")
+          if decision.get("schema") != "pionex_full_decision_v1":
+              raise SystemExit(f"Unexpected full-decision schema: {decision.get('schema')}")
+
+          latest_source = source.get("latest_runtime_state") or {}
+          decision_source = decision.get("source_state") or {}
+          if latest_source.get("captured_at_utc") != decision_source.get("captured_at_utc"):
+              raise SystemExit(
+                  "Phase 4D did not consume the latest API runtime state: "
+                  f"{latest_source.get('captured_at_utc')} vs {decision_source.get('captured_at_utc')}"
+              )
+
+          integrity = decision.get("pipeline_integrity") or {}
+          if not integrity or not all(value is True for value in integrity.values()):
+              raise SystemExit(f"Phase 4D pipeline integrity failed: {integrity}")
+
+          print("Automated API -> canonical state -> Phase 4D validation passed.")
+          print("Latest source:", latest_source)
+          print("Operational:", decision.get("operational_decision"))
+          PY
+
+      - name: Write automated decision summary
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          source = json.loads(
+              Path("data/diagnostics/pionex_state_source_v1.json").read_text(encoding="utf-8")
+          )
+          s = json.loads(
+              Path("data/diagnostics/pionex_full_decision_v1.json").read_text(encoding="utf-8")
+          )
+
+          latest = source.get("latest_runtime_state") or {}
+          execution = s.get("execution_resolution") or {}
+          calibration = s.get("calibration") or {}
+          research = s.get("research_decision") or {}
+          op = s.get("operational_decision") or {}
+          selected = research.get("selected_geometry") or {}
+
+          lines = [
+              "# Automated Pionex Phase 4D Decision",
+              "",
+              "**State source:** `Pionex read-only Bot API`",
+              f"**Operational decision:** `{op.get('action')}`",
+              f"**Actionable geometry change:** `{op.get('actionable_geometry_change')}`",
+              "",
+              "## Fresh live state",
+              f"- Captured: `{latest.get('captured_at_local')}`",
+              f"- Price: `${latest.get('current_price_usdt')}`",
+              f"- Geometry: `${latest.get('lower_limit_usdt')}–${latest.get('upper_limit_usdt')}` / `{latest.get('grids')}` grids",
+              f"- History rounds: `{latest.get('rounds_total')}`",
+              f"- Derived 24h rounds: `{latest.get('rounds_24h')}`",
+              "",
+              "## Evidence",
+              f"- Calibration: `{calibration.get('status')}` / `{calibration.get('evaluated_windows')}` windows",
+              f"- Execution: `{execution.get('active_execution_resolution')}` / `{execution.get('status')}`",
+              f"- Research action: `{research.get('action')}`",
+              f"- Confidence: `{research.get('confidence')}`",
+              f"- Selected geometry: `${selected.get('lower_usdt')}–${selected.get('upper_usdt')}` / `{selected.get('grids')}` grids",
+              "",
+              f"- Canonical rows appended this run: `{source.get('canonical_rows_appended_this_run')}`",
+              f"- Blockers: `{op.get('blockers')}`",
+          ]
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
+          PY
+
+      - name: Upload automated Phase 4D bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: pionex-automated-phase4d-v2
+          path: |
+            data/pionex/api_bot_state_latest_v1.json
+            data/pionex/api_grid_states_v1.csv
+            data/diagnostics/pionex_api_parity_v1.json
+            data/pionex/model_grid_states_v1.csv
+            data/pionex/runtime_grid_states_v1.csv
+            data/diagnostics/pionex_state_source_v1.json
+            data/diagnostics/pionex_full_decision_v1.json
+            data/diagnostics/pionex_execution_resolution_v1.json
+            data/pionex/execution_resolution_policy_v1.json
+            data/pionex/execution_resolution_windows_v1.csv
+            data/pionex/execution_candles/ETH-USDT_5min.csv
+            data/diagnostics/pionex_grid_geometry_optimizer_v1.json
+            data/diagnostics/pionex_grid_calibration_v2.json
+            data/pionex/grid_geometry_recommendations_v1.csv
+            data/diagnostics/pionex_grid_actionability_v1.json
+            data/pionex/grid_activity_windows_v1.csv
+          if-no-files-found: error
+
+      - name: Persist API, state-model, and Phase 4D outputs
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            data/pionex/api_bot_state_latest_v1.json \
+            data/pionex/api_grid_states_v1.csv \
+            data/diagnostics/pionex_api_parity_v1.json \
+            data/pionex/model_grid_states_v1.csv \
+            data/pionex/runtime_grid_states_v1.csv \
+            data/diagnostics/pionex_state_source_v1.json \
+            data/diagnostics/pionex_full_decision_v1.json \
+            data/diagnostics/pionex_execution_resolution_v1.json \
+            data/pionex/execution_resolution_policy_v1.json \
+            data/pionex/execution_resolution_windows_v1.csv \
+            data/pionex/execution_candles/ETH-USDT_5min.csv \
+            data/diagnostics/pionex_grid_geometry_optimizer_v1.json \
+            data/diagnostics/pionex_grid_calibration_v2.json \
+            data/pionex/grid_geometry_recommendations_v1.csv \
+            data/diagnostics/pionex_grid_actionability_v1.json \
+            data/pionex/grid_activity_windows_v1.csv
+
+          if ! git diff --quiet; then
+            echo "Unexpected unstaged tracked changes remain:"
+            git status --short
+            exit 1
+          fi
+
+          git diff --cached --quiet && echo "No automated Pionex changes" && exit 0
+          git commit -m "Automated Pionex API Phase 4D decision [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
