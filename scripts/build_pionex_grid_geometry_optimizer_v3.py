@@ -1,33 +1,32 @@
 #!/usr/bin/env python3
 """
-Phase 4D v3 — out-of-grid recovery adapter.
+Phase 4D v3.1 — live-price bridge + edge/out-of-grid recovery adapter.
 
-This wraps the existing Phase 4D v2 execution-resolution adapter and changes
-behaviour only when the *live* Pionex market price is outside its configured
-range.
+This wraps the existing Phase 4D v2 execution-resolution adapter.
 
-Why this exists
----------------
-Legacy Phase 4D intentionally required lower < market < upper when evaluating a
-geometry. That is appropriate for candidate grids, but it made the entire
-pipeline crash exactly when a live bot escaped its range — the moment when
-decision support is most useful.
+Fixes two live-edge failure modes:
 
-Out-of-grid recovery policy
----------------------------
-1. Preserve all historical in-grid calibration behaviour unchanged.
-2. Evaluate the escaped current bot with its observed quantity and balances.
-3. Correct the mature grid state above the upper bound: all intervals wait to
-   buy on re-entry (no synthetic remaining sell interval).
-4. For a *new* candidate geometry, model the range edit as a rebalance of the
-   existing active grid notional. This is a sizing proxy only; the Pionex edit
-   screen remains authoritative.
-5. When the current grid is already escaped, select among feasible in-grid
-   candidates using a minimum-escape-risk band, then prefer higher expected grid
-   profit / stronger tail metrics. Do not compare against the escaped geometry
-   as though it were a normal active grid.
+1) LIVE PRICE SOURCE
+   The legacy Phase 4D optimizer used the latest hourly feature's entry_close as
+   both the regime reference and the live geometry/sizing price. With automated
+   Pionex API state, this can be 0-60 minutes stale relative to the bot state.
+   v3.1 keeps the hourly feature timestamp/ATR/path-shape conditioning, but uses
+   the fresh Pionex API state's current_price_usdt as the market price for:
+     - current geometry feasibility,
+     - candidate geometry placement,
+     - quantity sizing,
+     - historical-path remapping.
 
-No Pionex write endpoint is used.
+2) EDGE / OUT-OF-GRID LIVE BOT
+   The legacy candidate quantity function requires >=2 buy intervals and >=2
+   sell intervals. That is a sensible candidate-grid guard, but a valid live bot
+   can naturally have only 0-1 intervals remaining on one side near/after a
+   boundary. v3.1 evaluates such a live current geometry with its observed
+   quantity/balances and enters a recenter-recovery selection mode instead of
+   aborting.
+
+Historical in-grid calibration logic is otherwise preserved. No Pionex write
+endpoint is used.
 """
 
 from __future__ import annotations
@@ -45,10 +44,18 @@ GEO_PATH = Path("data/diagnostics/pionex_grid_geometry_optimizer_v1.json")
 
 _ORIGINAL_EVALUATE = base.evaluate_geometry
 _ORIGINAL_SELECT = base.select_geometry
-_ORIGINAL_INITIAL_STATES = base.sim.initial_states
+_ORIGINAL_LOAD_FEATURES = base.sim.load_eth_features
 
-OUT_OF_GRID_RISK_BAND_PP = 5.0
-OUT_OF_GRID_TAIL_TOL_USDT = 0.50
+RECOVERY_RISK_BAND_PP = 5.0
+RECOVERY_TAIL_TOL_USDT = 0.50
+MIN_ACTIVE_INTERVALS_EACH_SIDE = 2
+
+_LIVE_PRICE_BRIDGE = {
+    "installed": False,
+    "state_price_usdt": None,
+    "original_hourly_feature_close_usdt": None,
+    "latest_feature_ts_utc": None,
+}
 
 
 def _f(v, default=0.0):
@@ -59,22 +66,87 @@ def _f(v, default=0.0):
         return default
 
 
-def _live_escape_direction(state, market_price):
-    lower = _f(state.get("lower_limit_usdt"))
-    upper = _f(state.get("upper_limit_usdt"))
-    if market_price > upper:
-        return "ABOVE_UPPER"
-    if market_price < lower:
-        return "BELOW_LOWER"
-    return None
-
-
 def _same_live_geometry(state, lower, upper, grids):
     return (
         abs(_f(state.get("lower_limit_usdt")) - float(lower)) <= 1e-6
         and abs(_f(state.get("upper_limit_usdt")) - float(upper)) <= 1e-6
         and int(float(state.get("grids"))) == int(grids)
     )
+
+
+def _current_grid_side_counts(state, market_price):
+    lower = _f(state.get("lower_limit_usdt"))
+    upper = _f(state.get("upper_limit_usdt"))
+    grids = int(float(state.get("grids")))
+    lines = base.sim.grid_lines(lower, upper, grids)
+    states = corrected_initial_states(lines, market_price)
+    return {
+        "buy_intervals": sum(st == "buy" for st in states),
+        "sell_intervals": sum(st == "sell" for st in states),
+    }
+
+
+def _recovery_trigger(state, market_price):
+    lower = _f(state.get("lower_limit_usdt"))
+    upper = _f(state.get("upper_limit_usdt"))
+
+    if market_price > upper:
+        return "ABOVE_UPPER"
+    if market_price < lower:
+        return "BELOW_LOWER"
+
+    counts = _current_grid_side_counts(state, market_price)
+    if counts["sell_intervals"] < MIN_ACTIVE_INTERVALS_EACH_SIDE:
+        return "NEAR_UPPER_EDGE"
+    if counts["buy_intervals"] < MIN_ACTIVE_INTERVALS_EACH_SIDE:
+        return "NEAR_LOWER_EDGE"
+    return None
+
+
+def _install_live_price_bridge():
+    """
+    Preserve hourly regime/feature timing but replace only the latest feature's
+    entry_close with the fresh Pionex API price consumed by this run.
+
+    The optimizer's current_price is read from current_feature['entry_close'].
+    This bridge therefore makes live geometry/sizing use the API price without
+    rewriting the validated Phase 4D core.
+
+    Historical feature rows remain untouched, so walk-forward calibration and
+    matured analogue paths preserve their historical prices.
+    """
+    states = base.phase4c.read_manual_states()
+    if not states:
+        raise SystemExit("No Pionex state available for live-price bridge")
+
+    live_state = states[-1]
+    live_price = _f(live_state.get("current_price_usdt"), None)
+    if live_price is None or live_price <= 0:
+        raise SystemExit("Latest Pionex state lacks a valid current_price_usdt")
+
+    original = _ORIGINAL_LOAD_FEATURES()
+    if not original:
+        raise SystemExit("No ETH feature rows for live-price bridge")
+
+    original_close = _f(original[-1].get("entry_close"), None)
+    latest_ts = original[-1].get("ts")
+
+    def _load_features_with_live_price():
+        rows = _ORIGINAL_LOAD_FEATURES()
+        if not rows:
+            return rows
+        copied = [dict(r) for r in rows]
+        copied[-1]["entry_close"] = live_price
+        return copied
+
+    base.sim.load_eth_features = _load_features_with_live_price
+
+    _LIVE_PRICE_BRIDGE.update({
+        "installed": True,
+        "state_price_usdt": live_price,
+        "original_hourly_feature_close_usdt": original_close,
+        "latest_feature_ts_utc": latest_ts,
+    })
 
 
 def _candidate_rebalance_seed(
@@ -87,23 +159,19 @@ def _candidate_rebalance_seed(
     active_notional_proxy,
 ):
     """
-    Estimate post-edit quantity and seed balances from:
-      - preserved active grid notional, and
-      - current bot mark-to-market equity.
+    Estimate post-edit quantity and seed balances from preserved active-grid
+    notional plus current mark-to-market equity.
 
-    We intentionally do NOT constrain a new geometry by the pre-edit ETH/USDT
-    split. Pionex range edits can require reallocating the bot's assets to seed
-    the new buy/sell ladder; using the old split is what caused the legacy model
-    to estimate implausibly tiny quantities near a range edge.
-
-    This is still an offline proxy. The Pionex edit screen is authoritative.
+    The pre-edit ETH/USDT split is not imposed on a hypothetical new geometry,
+    because Pionex may rebalance assets when editing the live range. Pionex's
+    edit screen remains authoritative for actual quantity/grid and minimums.
     """
     lines = base.sim.grid_lines(lower, upper, grids)
     states = base.sim.initial_states(lines, current_price)
 
     sell_idx = [idx for idx, st in enumerate(states) if st == "sell"]
     buy_idx = [idx for idx, st in enumerate(states) if st == "buy"]
-    if len(sell_idx) < 2 or len(buy_idx) < 2:
+    if len(sell_idx) < MIN_ACTIVE_INTERVALS_EACH_SIDE or len(buy_idx) < MIN_ACTIVE_INTERVALS_EACH_SIDE:
         return None
 
     trigger_sum = sum(
@@ -150,7 +218,7 @@ def _candidate_rebalance_seed(
     }
 
 
-def _evaluate_special(
+def _evaluate_recovery_geometry(
     lower,
     upper,
     grids,
@@ -163,8 +231,10 @@ def _evaluate_special(
     profit_scale,
     rounds_scale,
 ):
-    escape_direction = _live_escape_direction(state, current_price)
-    if escape_direction is None:
+    trigger = _recovery_trigger(state, current_price)
+
+    # Normal, comfortably in-grid state: preserve validated legacy behaviour.
+    if trigger is None:
         return _ORIGINAL_EVALUATE(
             lower, upper, grids, current_price, state, fee_rate, utilization,
             active_notional_proxy, paths, profit_scale, rounds_scale
@@ -172,11 +242,10 @@ def _evaluate_special(
 
     is_current = _same_live_geometry(state, lower, upper, grids)
 
-    # Candidates still must contain the market. Only the observed live grid is
-    # allowed to be outside the market because it has already escaped.
+    # Hypothetical recovery candidates must contain the current market price.
+    # Only the observed current bot may legitimately sit at/outside an edge.
     if not is_current and not (lower < current_price < upper):
         return None
-
     if upper <= lower:
         return None
 
@@ -192,13 +261,17 @@ def _evaluate_special(
         qty = _f(state.get("quantity_per_grid_eth"))
         if qty <= 0:
             return None
+
         lines = base.sim.grid_lines(lower, upper, grids)
         states = base.sim.initial_states(lines, current_price)
         sell_n = sum(st == "sell" for st in states)
         buy_n = sum(st == "buy" for st in states)
+
+        # Evaluate the live bot exactly as observed. Do not pretend it is
+        # infeasible simply because one side of the grid is nearly exhausted.
         eth0 = _f(state.get("eth_holdings"))
         usdt0 = _f(state.get("usdt_holdings"))
-        sizing_mode = "OBSERVED_ESCAPED_LIVE_BOT"
+        sizing_mode = "OBSERVED_LIVE_EDGE_OR_ESCAPED_BOT"
         sizing_meta = {
             "qty_by_active_notional": None,
             "qty_by_equity": None,
@@ -211,6 +284,7 @@ def _evaluate_special(
         )
         if qinfo is None:
             return None
+
         qty = qinfo["qty"]
         sell_n = qinfo["sell_intervals"]
         buy_n = qinfo["buy_intervals"]
@@ -287,21 +361,24 @@ def _evaluate_special(
         "p20_total_pnl_usdt": round(base.percentile(pnls, 0.20), 6),
         "p10_total_pnl_usdt": round(base.percentile(pnls, 0.10), 6),
         "sample_n": n,
-        "out_of_grid_direction": escape_direction if is_current else None,
+        "recovery_trigger": trigger if is_current else None,
+        "out_of_grid_direction": (
+            trigger if is_current and trigger in {"ABOVE_UPPER", "BELOW_LOWER"} else None
+        ),
         "sizing_mode": sizing_mode,
         **sizing_meta,
     }
     return result
 
 
-def _select_special(candidates, current):
-    direction = current.get("out_of_grid_direction")
-    if not direction:
+def _select_recovery_geometry(candidates, current):
+    trigger = current.get("recovery_trigger")
+    if not trigger:
         return _ORIGINAL_SELECT(candidates, current)
 
     feasible = [
         c for c in candidates
-        if c is not current and not c.get("out_of_grid_direction")
+        if c is not current and not c.get("recovery_trigger")
     ]
 
     if not feasible:
@@ -315,22 +392,20 @@ def _select_special(candidates, current):
             "escape_change_vs_current_pp": 0.0,
             "effective_escape_cap_pct": 100.0,
             "eligible_count": 0,
-            "out_of_grid_recovery_status": "NO_FEASIBLE_RECENTER_CANDIDATE",
+            "recovery_status": "NO_FEASIBLE_RECENTER_CANDIDATE",
         }
 
     min_escape = min(c["escape_probability_pct"] for c in feasible)
-    risk_cap = min(100.0, min_escape + OUT_OF_GRID_RISK_BAND_PP)
+    risk_cap = min(100.0, min_escape + RECOVERY_RISK_BAND_PP)
     risk_band = [
         c for c in feasible
         if c["escape_probability_pct"] <= risk_cap + 1e-9
     ]
 
-    # Avoid buying a tiny profit improvement at the cost of a materially worse
-    # downside tail within the already-lowest escape-risk region.
     best_tail = max(c["p20_total_pnl_usdt"] for c in risk_band)
     tail_band = [
         c for c in risk_band
-        if c["p20_total_pnl_usdt"] >= best_tail - OUT_OF_GRID_TAIL_TOL_USDT
+        if c["p20_total_pnl_usdt"] >= best_tail - RECOVERY_TAIL_TOL_USDT
     ] or risk_band
 
     raw = max(
@@ -344,11 +419,15 @@ def _select_special(candidates, current):
     )
 
     chosen = raw
-    parts = [
-        "RECENTER_AFTER_UPPER_ESCAPE"
-        if direction == "ABOVE_UPPER"
-        else "RECENTER_AFTER_LOWER_ESCAPE"
-    ]
+
+    prefix = {
+        "ABOVE_UPPER": "RECENTER_AFTER_UPPER_ESCAPE",
+        "BELOW_LOWER": "RECENTER_AFTER_LOWER_ESCAPE",
+        "NEAR_UPPER_EDGE": "RECENTER_NEAR_UPPER_EDGE",
+        "NEAR_LOWER_EDGE": "RECENTER_NEAR_LOWER_EDGE",
+    }.get(trigger, "RECENTER_EDGE_GRID")
+
+    parts = [prefix]
 
     centre_delta = chosen["center_usdt"] - current["center_usdt"]
     width_delta = chosen["width_usdt"] - current["width_usdt"]
@@ -377,51 +456,59 @@ def _select_special(candidates, current):
         ),
         "effective_escape_cap_pct": round(risk_cap, 6),
         "eligible_count": len(risk_band),
-        "out_of_grid_recovery_status": "RECENTER_CANDIDATE_SELECTED",
+        "recovery_status": "RECENTER_CANDIDATE_SELECTED",
         "minimum_candidate_escape_probability_pct": round(min_escape, 6),
     }
 
 
-def _annotate_recovery_output():
+def _annotate_output():
     if not GEO_PATH.is_file():
         return
 
     geo = json.loads(GEO_PATH.read_text(encoding="utf-8"))
+
+    geo["live_market_price_bridge"] = {
+        **_LIVE_PRICE_BRIDGE,
+        "policy": (
+            "Hourly features remain the regime/analogue descriptor. Fresh Pionex "
+            "API current_price_usdt is authoritative for live grid geometry, "
+            "quantity sizing and historical-path remapping."
+        ),
+    }
+
     source = geo.get("source_state") or {}
+    source["geometry_market_price_source"] = "FRESH_PIONEX_API_STATE"
+    source["hourly_regime_feature_close_usdt"] = _LIVE_PRICE_BRIDGE.get(
+        "original_hourly_feature_close_usdt"
+    )
+    geo["source_state"] = source
+
     benches = geo.get("benchmarks") or {}
     current = benches.get("current") or {}
     selected = benches.get("selected") or {}
+    trigger = current.get("recovery_trigger")
 
-    direction = current.get("out_of_grid_direction")
-    if not direction:
-        geo["out_of_grid_recovery"] = {
-            "triggered": False,
-            "status": "LIVE_MARKET_INSIDE_GRID",
-        }
-    else:
-        geo["out_of_grid_recovery"] = {
-            "triggered": True,
-            "direction": direction,
-            "status": "RECOVERY_MODEL_ACTIVE",
-            "current_market_price_usdt": source.get("latest_market_price_usdt"),
-            "escaped_lower_usdt": current.get("lower_usdt"),
-            "escaped_upper_usdt": current.get("upper_usdt"),
-            "selected_lower_usdt": selected.get("lower_usdt"),
-            "selected_upper_usdt": selected.get("upper_usdt"),
-            "selected_grids": selected.get("grids"),
-            "candidate_sizing_mode": selected.get("sizing_mode"),
-            "warning": (
-                "Out-of-grid candidate sizing assumes the Pionex range edit can rebalance "
-                "the bot's active grid capital into the new ladder. Confirm quantity/grid "
-                "and minimum-order validation in the Pionex edit screen before applying."
-            ),
-        }
+    geo["edge_or_out_of_grid_recovery"] = {
+        "triggered": bool(trigger),
+        "trigger": trigger,
+        "status": (
+            "RECOVERY_MODEL_ACTIVE" if trigger else "LIVE_GRID_HAS_BOTH_ACTIVE_SIDES"
+        ),
+        "current_buy_intervals": current.get("buy_intervals"),
+        "current_sell_intervals": current.get("sell_intervals"),
+        "minimum_active_intervals_each_side_for_normal_candidate_mode": MIN_ACTIVE_INTERVALS_EACH_SIDE,
+        "selected_lower_usdt": selected.get("lower_usdt"),
+        "selected_upper_usdt": selected.get("upper_usdt"),
+        "selected_grids": selected.get("grids"),
+        "selected_sizing_mode": selected.get("sizing_mode"),
+    }
 
+    if trigger:
         decision = geo.get("decision") or {}
         decision["warning"] = (
-            "LIVE GRID HAS ESCAPED. Recovery geometry is decision support only. "
-            "Confirm Pionex's live edit-screen quantity/grid and minimum-order checks "
-            "before applying the suggested recenter."
+            "Live grid is at/through an edge. Recovery geometry is decision support "
+            "only. Confirm Pionex's live edit-screen quantity/grid and minimum-order "
+            "validation before applying any recenter."
         )
         geo["decision"] = decision
 
@@ -429,15 +516,22 @@ def _annotate_recovery_output():
 
 
 def main():
-    # Correct the edge-state model used by Phase 4D v2 during this process.
+    # Correct mature-grid interval state at/through boundaries.
     base.sim.initial_states = corrected_initial_states
-    base.evaluate_geometry = _evaluate_special
-    base.select_geometry = _select_special
+
+    # Fresh API state becomes the live market price; hourly feature still supplies
+    # timestamp/ATR/path-shape regime context.
+    _install_live_price_bridge()
+
+    # Recovery-aware current benchmark and selection.
+    base.evaluate_geometry = _evaluate_recovery_geometry
+    base.select_geometry = _select_recovery_geometry
 
     integration.main()
-    _annotate_recovery_output()
+    _annotate_output()
 
-    print("Phase 4D v3 out-of-grid recovery adapter complete.")
+    print("Phase 4D v3.1 live-price / edge-recovery adapter complete.")
+    print("Live-price bridge:", _LIVE_PRICE_BRIDGE)
 
 
 if __name__ == "__main__":
