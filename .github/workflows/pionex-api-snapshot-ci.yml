@@ -1,0 +1,109 @@
+name: Pionex Read-Only API Snapshot CI
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pionex-readonly-api-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Capture read-only Pionex Spot Grid state
+        env:
+          PIONEX_API_KEY: ${{ secrets.PIONEX_API_KEY }}
+          PIONEX_API_SECRET: ${{ secrets.PIONEX_API_SECRET }}
+        run: python scripts/pull_pionex_grid_state_v1.py
+
+      - name: Validate generated outputs
+        run: |
+          test -s data/pionex/api_bot_state_latest_v1.json
+          test -s data/pionex/api_grid_states_v1.csv
+          test -s data/diagnostics/pionex_api_parity_v1.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          state = json.loads(Path("data/pionex/api_bot_state_latest_v1.json").read_text())
+          parity = json.loads(Path("data/diagnostics/pionex_api_parity_v1.json").read_text())
+          if state.get("schema") != "pionex_api_bot_state_v1": raise SystemExit("Bad state schema")
+          if parity.get("schema") != "pionex_api_parity_v1": raise SystemExit("Bad parity schema")
+          if (state.get("source") or {}).get("writes_to_pionex") is not False: raise SystemExit("Read-only invariant failed")
+          grid = state.get("grid") or {}
+          required = ["top", "bottom", "row", "perVolume", "baseAmount", "quoteAmount", "gridProfit"]
+          missing = [k for k in required if grid.get(k) in (None, "")]
+          if missing: raise SystemExit(f"Expected Spot Grid fields missing: {missing}")
+          print("Read-only Pionex snapshot validation passed")
+          print("Geometry:", grid.get("bottom"), grid.get("top"), grid.get("row"))
+          print("Undocumented keys:", parity.get("undocumented_grid_keys_seen"))
+          PY
+
+      - name: Write run summary
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          s = json.loads(Path("data/pionex/api_bot_state_latest_v1.json").read_text())
+          p = json.loads(Path("data/diagnostics/pionex_api_parity_v1.json").read_text())
+          g = s.get("grid") or {}; t = s.get("market_ticker") or {}
+          lines = [
+              "# Pionex Read-Only API Snapshot", "",
+              "**Pionex mutation capability used:** `NONE`",
+              "**Collector stage:** `VALIDATION`", "",
+              f"- Price: `${t.get('current_price_usdt')}`",
+              f"- Range: `${g.get('bottom')}–${g.get('top')}` / `{g.get('row')}` grids",
+              f"- Quantity/grid: `{g.get('perVolume')}` ETH",
+              f"- ETH / USDT: `{g.get('baseAmount')}` / `{g.get('quoteAmount')}`",
+              f"- Grid profit: `${g.get('gridProfit')}`",
+              f"- Realized/total field: `${g.get('realizedProfit')}`",
+              f"- Geometry match vs manual: `{p.get('geometry_match_vs_latest_manual')}`",
+              f"- Undocumented keys: `{p.get('undocumented_grid_keys_seen')}`", "",
+              "The manual calibration CSV was deliberately not modified by this validation run.",
+          ]
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as f: f.write("\n".join(lines) + "\n")
+          PY
+
+      - name: Upload validation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pionex-readonly-api-snapshot-v1
+          path: |
+            data/pionex/api_bot_state_latest_v1.json
+            data/pionex/api_grid_states_v1.csv
+            data/diagnostics/pionex_api_parity_v1.json
+          if-no-files-found: error
+
+      - name: Persist read-only API outputs
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/pionex/api_bot_state_latest_v1.json data/pionex/api_grid_states_v1.csv data/diagnostics/pionex_api_parity_v1.json
+          if ! git diff --quiet; then
+            echo "Unexpected unstaged tracked changes remain:"; git status --short; exit 1
+          fi
+          git diff --cached --quiet && echo "No Pionex API snapshot changes" && exit 0
+          git commit -m "Pionex read-only API snapshot [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
