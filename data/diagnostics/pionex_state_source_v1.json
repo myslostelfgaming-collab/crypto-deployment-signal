@@ -11,19 +11,26 @@
     ],
     "purpose": "Keep prospective 14-30h calibration windows statistically usable while allowing raw API capture to run hourly."
   },
-  "canonical_rows": 11,
-  "canonical_rows_appended_this_run": [],
+  "canonical_rows": 12,
+  "canonical_rows_appended_this_run": [
+    {
+      "captured_at_utc": "2026-08-21T02:01:26.951911+00:00",
+      "elapsed_h_from_previous_canonical": 23.5408,
+      "geometry_changed": false,
+      "reason": "DAILY_CANONICAL_GE_23H"
+    }
+  ],
   "counter_semantics": {
     "exchangeOrderPairedCount": "CONFIRMED_PIONEX_UI_HISTORY_COMPLETED_ROUNDS",
     "rounds_24h_policy": "Prefer paired-count delta against nearest raw API observation 24h +/-1.5h; fallback to ~daily canonical paired-count delta for 22-26h intervals.",
     "trx24h": "NOT_UI_24H_ROUNDS"
   },
-  "generated_at_utc": "2026-08-20T23:59:00.145339+00:00",
+  "generated_at_utc": "2026-08-21T03:35:13.401785+00:00",
   "historic_manual_archive": "data/pionex/manual_grid_states_v1.csv",
   "latest_runtime_state": {
-    "captured_at_local": "2026-08-21T01:59:00.072096+02:00",
-    "captured_at_utc": "2026-08-20T23:59:00.072096+00:00",
-    "current_price_usdt": 2327.43,
+    "captured_at_local": "2026-08-21T05:35:13.335275+02:00",
+    "captured_at_utc": "2026-08-21T03:35:13.335275+00:00",
+    "current_price_usdt": 2351.61,
     "grids": 30,
     "lower_limit_usdt": 2050.0,
     "quantity_per_grid_eth": 0.00275,
@@ -37,7 +44,7 @@
   "phase4d_runtime_history": "data/pionex/runtime_grid_states_v1.csv",
   "raw_api_history": "data/pionex/api_grid_states_v1.csv",
   "runtime_policy": "Phase 4D receives canonical history plus at most one fresh latest API row. The hourly raw ledger is never passed wholesale into calibration.",
-  "runtime_rows": 12,
+  "runtime_rows": 13,
   "schema": "pionex_state_source_v1",
   "status": "API_PRIMARY_UI_PARITY_CONFIRMED"
 }
