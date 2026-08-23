@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-08-23T03:35:00.408725+00:00",
+  "generated_at_utc": "2026-08-23T06:01:18.438772+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 3090,
+    "persisted_5m_rows": 3120,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-08-23T03:20:00+00:00",
+    "persisted_5m_last_utc": "2026-08-23T05:50:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -31,13 +31,13 @@
   "resolution_metrics": {
     "1hour": {
       "windows": 7,
-      "profit_mae_usdt": 0.0336368,
-      "rounds_mae": 1.21428571,
-      "mean_profit_relative_error": 0.305012,
-      "mean_rounds_relative_error": 0.307471,
-      "combined_relative_error_score": 0.306242,
-      "rounds_within_path_ambiguity_pct": 42.8571,
-      "profit_within_path_ambiguity_pct": 28.5714
+      "profit_mae_usdt": 0.02896087,
+      "rounds_mae": 1.14285714,
+      "mean_profit_relative_error": 0.197707,
+      "mean_rounds_relative_error": 0.200328,
+      "combined_relative_error_score": 0.199018,
+      "rounds_within_path_ambiguity_pct": 57.1429,
+      "profit_within_path_ambiguity_pct": 42.8571
     },
     "15min": {
       "windows": 7,
@@ -67,7 +67,7 @@
     "active_execution_resolution": "5min",
     "windows_evaluated": 7,
     "minimum_windows_to_promote": 3,
-    "candidate_improvement_vs_1hour_pct": 48.442082,
+    "candidate_improvement_vs_1hour_pct": 20.664463,
     "minimum_required_improvement_vs_1hour_pct": 10.0,
     "coarsest_within_best_tolerance_pct": 5.0,
     "hard_execution_resolution_floor": "5min",
@@ -80,7 +80,7 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 256,
+    "n": 258,
     "mean_abs_pct_diff": {
       "open": 0.0,
       "high": 0.0,
