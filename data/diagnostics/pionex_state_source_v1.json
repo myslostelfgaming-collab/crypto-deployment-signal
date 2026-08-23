@@ -11,24 +11,31 @@
     ],
     "purpose": "Keep prospective 14-30h calibration windows statistically usable while allowing raw API capture to run hourly."
   },
-  "canonical_rows": 15,
-  "canonical_rows_appended_this_run": [],
+  "canonical_rows": 16,
+  "canonical_rows_appended_this_run": [
+    {
+      "captured_at_utc": "2026-08-23T11:40:01.812970+00:00",
+      "elapsed_h_from_previous_canonical": 23.304,
+      "geometry_changed": false,
+      "reason": "DAILY_CANONICAL_GE_23H"
+    }
+  ],
   "counter_semantics": {
     "exchangeOrderPairedCount": "CONFIRMED_PIONEX_UI_HISTORY_COMPLETED_ROUNDS",
     "rounds_24h_policy": "Prefer paired-count delta against nearest raw API observation 24h +/-1.5h; fallback to ~daily canonical paired-count delta for 22-26h intervals.",
     "trx24h": "NOT_UI_24H_ROUNDS"
   },
-  "generated_at_utc": "2026-08-23T09:02:45.344205+00:00",
+  "generated_at_utc": "2026-08-23T11:56:35.708161+00:00",
   "historic_manual_archive": "data/pionex/manual_grid_states_v1.csv",
   "latest_runtime_state": {
-    "captured_at_local": "2026-08-23T11:02:45.282158+02:00",
-    "captured_at_utc": "2026-08-23T09:02:45.282158+00:00",
-    "current_price_usdt": 2414.8,
+    "captured_at_local": "2026-08-23T13:56:35.630445+02:00",
+    "captured_at_utc": "2026-08-23T11:56:35.630445+00:00",
+    "current_price_usdt": 2431.2,
     "grids": 21,
     "lower_limit_usdt": 2185.0,
     "quantity_per_grid_eth": 0.00371,
-    "rounds_24h": 9,
-    "rounds_total": 4412,
+    "rounds_24h": 6,
+    "rounds_total": 4413,
     "source_note": "Automated read-only Pionex Bot API state; canonical_reason=RUNTIME_LATEST_NOT_CANONICAL; rounds_total is confirmed exchangeOrderPairedCount; total/trend P&L are mark-to-market reconstructions from bot balances and ETH/USDT ticker.",
     "upper_limit_usdt": 2585.0
   },
@@ -37,7 +44,7 @@
   "phase4d_runtime_history": "data/pionex/runtime_grid_states_v1.csv",
   "raw_api_history": "data/pionex/api_grid_states_v1.csv",
   "runtime_policy": "Phase 4D receives canonical history plus at most one fresh latest API row. The hourly raw ledger is never passed wholesale into calibration.",
-  "runtime_rows": 16,
+  "runtime_rows": 17,
   "schema": "pionex_state_source_v1",
   "status": "API_PRIMARY_UI_PARITY_CONFIRMED"
 }
