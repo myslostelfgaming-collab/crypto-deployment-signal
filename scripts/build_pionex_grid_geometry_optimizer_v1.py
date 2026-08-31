@@ -46,14 +46,14 @@ REFINE_WIDTH_STEP_PCT = 0.5
 COARSE_CENTER_STEP_USDT = 20.0
 REFINE_CENTER_STEP_USDT = 2.5
 CENTER_SEARCH_PCT = 4.0
-COARSE_GRID_COUNTS = (22, 26, 30, 34, 38, 42)
-REFINE_GRID_RADIUS = 1
+COARSE_GRID_COUNTS = tuple(range(10, 81, 5))
+REFINE_GRID_RADIUS = 2
 TOP_COARSE_TO_REFINE = 4
 
 # Net profit/grid must remain meaningfully above round-trip fees. This is a
 # modelling safety margin, not a claim about Pionex's live minimum.
-MIN_NET_PROFIT_GRID_PCT_FLOOR = 0.15
-FEE_BUFFER_PP = 0.03
+MIN_NET_PROFIT_GRID_PCT_FLOOR = 0.12
+FEE_BUFFER_PP = 0.00
 
 # Risk / action gates.
 ABS_ESCAPE_RISK_CAP_PCT = 10.0
@@ -61,7 +61,6 @@ MAX_POSITIVE_PNL_PROB_DROP_PP = 5.0
 MAX_P20_TOTAL_PNL_WORSEN_USDT = 0.50
 MIN_EXPECTED_GRID_PROFIT_GAIN_USDT = 0.02
 MIN_ESCAPE_RISK_REDUCTION_PP = 2.5
-MIN_ROUNDS_GAIN = 1.5
 PRACTICAL_PRICE_ROUND_USDT = 5.0
 
 # Calibration v2 reconstructs historical predictions at each manual state using
@@ -562,7 +561,7 @@ def select_geometry(candidates: List[dict], current: dict) -> dict:
     gain = raw["expected_grid_profit_usdt"] - current["expected_grid_profit_usdt"]
     risk_change = raw["escape_probability_pct"] - current["escape_probability_pct"]
     rounds_gain = raw["expected_rounds"] - current["expected_rounds"]
-    material = (gain >= MIN_EXPECTED_GRID_PROFIT_GAIN_USDT or risk_change <= -MIN_ESCAPE_RISK_REDUCTION_PP or rounds_gain >= MIN_ROUNDS_GAIN)
+    # Activity is diagnostic only. A geometry change must earn materially more\n    # expected USDT grid profit per 24h, or materially reduce escape risk.\n    material = (gain >= MIN_EXPECTED_GRID_PROFIT_GAIN_USDT or risk_change <= -MIN_ESCAPE_RISK_REDUCTION_PP)
     changed = (abs(raw["lower_usdt"] - current["lower_usdt"]) > 0.01 or abs(raw["upper_usdt"] - current["upper_usdt"]) > 0.01 or raw["grids"] != current["grids"])
     chosen = raw if material and changed else current
     action = "KEEP_CURRENT"
@@ -731,9 +730,12 @@ def main() -> None:
         "calibration": {k: v for k, v in calibration.items() if k != "windows"},
         "geometry_model": {
             "joint_variables": ["centre", "width", "grid_count"],
+            "optimization_objective": "Maximise expected_grid_profit_usdt over the 24h horizon among candidates that pass the existing risk constraints. Expected rounds/activity are diagnostic only and never make a change actionable by themselves.",
+            "grid_count_search": {"min": 10, "max": 80, "coarse_step": 5, "refine_radius": REFINE_GRID_RADIUS},
             "quantity_sizing": "Uniform ETH quantity/grid is rescaled from the latest observed balances using the same utilization ratio as the live bot, subject to buy-side USDT and sell-side ETH seeding requirements.",
             "portfolio_model": "Historical analogue paths replay buys/sells against the latest captured ETH and USDT holdings and mark remaining inventory to the 24h end price.",
             "min_net_profit_per_grid_pct_constraint": round(min_required, 6),
+            "net_profit_floor_semantics": "The interval profit metric is already net of modeled trading fees; 0.12% is therefore a true net-profit/grid floor.",
             "platform_minimum_warning": "Pionex's live minimum investment/order requirement depends on pair, range and grid count. Offline candidates still require confirmation in the Pionex edit screen before use.",
             "candidate_count": len(candidates), "pareto_count": len(frontier),
             "current_utilization_factor_est": round(utilization, 6),
@@ -747,7 +749,6 @@ def main() -> None:
             "material_change_rule": {
                 "expected_grid_profit_gain_usdt": MIN_EXPECTED_GRID_PROFIT_GAIN_USDT,
                 "or_escape_risk_reduction_pp": MIN_ESCAPE_RISK_REDUCTION_PP,
-                "or_expected_rounds_gain": MIN_ROUNDS_GAIN,
             },
         },
         "decision": {
