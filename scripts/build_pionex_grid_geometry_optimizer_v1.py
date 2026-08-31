@@ -561,7 +561,9 @@ def select_geometry(candidates: List[dict], current: dict) -> dict:
     gain = raw["expected_grid_profit_usdt"] - current["expected_grid_profit_usdt"]
     risk_change = raw["escape_probability_pct"] - current["escape_probability_pct"]
     rounds_gain = raw["expected_rounds"] - current["expected_rounds"]
-    # Activity is diagnostic only. A geometry change must earn materially more\n    # expected USDT grid profit per 24h, or materially reduce escape risk.\n    material = (gain >= MIN_EXPECTED_GRID_PROFIT_GAIN_USDT or risk_change <= -MIN_ESCAPE_RISK_REDUCTION_PP)
+    # Activity is diagnostic only. A geometry change must earn materially more
+    # expected USDT grid profit per 24h, or materially reduce escape risk.
+    material = (gain >= MIN_EXPECTED_GRID_PROFIT_GAIN_USDT or risk_change <= -MIN_ESCAPE_RISK_REDUCTION_PP)
     changed = (abs(raw["lower_usdt"] - current["lower_usdt"]) > 0.01 or abs(raw["upper_usdt"] - current["upper_usdt"]) > 0.01 or raw["grids"] != current["grids"])
     chosen = raw if material and changed else current
     action = "KEEP_CURRENT"
