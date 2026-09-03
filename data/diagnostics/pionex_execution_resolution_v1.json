@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-09-03T13:00:18.427732+00:00",
+  "generated_at_utc": "2026-09-03T18:04:40.326621+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 6372,
+    "persisted_5m_rows": 6432,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-09-03T12:50:00+00:00",
+    "persisted_5m_last_utc": "2026-09-03T17:50:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 527,
+    "n": 533,
     "mean_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
-      "low": 0.00028254,
-      "close": 0.00028096
+      "high": 0.0010218,
+      "low": 0.00060088,
+      "close": 0.0019058
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -95,15 +95,15 @@
     },
     "max_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
-      "low": 0.1488989,
-      "close": 0.14806473
+      "high": 0.54461903,
+      "low": 0.3202697,
+      "close": 1.01579275
     },
     "worst_close": {
-      "timestamp_utc": "2026-09-03T09:00:00+00:00",
-      "derived_close": 2394.05,
-      "reference_close": 2397.6,
-      "abs_pct_diff": 0.14806473
+      "timestamp_utc": "2026-09-03T15:00:00+00:00",
+      "derived_close": 2516.96,
+      "reference_close": 2491.65,
+      "abs_pct_diff": 1.01579275
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
