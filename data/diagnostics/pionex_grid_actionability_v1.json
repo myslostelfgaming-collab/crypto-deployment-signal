@@ -1,6 +1,6 @@
 {
   "schema": "pionex_grid_actionability_v1",
-  "generated_at_utc": "2026-09-05T01:30:56.131080+00:00",
+  "generated_at_utc": "2026-09-05T07:13:02.267471+00:00",
   "status": "PROSPECTIVE_DECISION_SUPPORT_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -9,12 +9,12 @@
     "role": "Operational gate above Phase 4D research geometry"
   },
   "latest_observed_state": {
-    "captured_at_utc": "2026-09-05T01:24:24.547897+00:00",
-    "captured_at_local": "2026-09-05T03:24:24.547897+02:00",
-    "state_age_h": 0.1088,
+    "captured_at_utc": "2026-09-05T07:07:03.399528+00:00",
+    "captured_at_local": "2026-09-05T09:07:03.399528+02:00",
+    "state_age_h": 0.0997,
     "fresh_for_operational_use": true,
     "freshness_limit_h": 6.0,
-    "current_price_usdt": 2453.11,
+    "current_price_usdt": 2454.54,
     "lower_usdt": 2190.0,
     "upper_usdt": 2630.0,
     "grids": 22,
@@ -25,9 +25,9 @@
     "rounds_total": 4486,
     "grid_profit_usdt": 181.1002556348,
     "nearest_waiting_buy_usdt": 2420.4762,
-    "nearest_waiting_buy_distance_pct": -1.3303,
+    "nearest_waiting_buy_distance_pct": -1.3878,
     "nearest_waiting_sell_usdt": 2462.381,
-    "nearest_waiting_sell_distance_pct": 0.3779,
+    "nearest_waiting_sell_distance_pct": 0.3194,
     "grid_spacing_usdt": 20.952381
   },
   "current_benchmark_quantity_audit": {
@@ -37,65 +37,65 @@
     "policy": "The live/current benchmark quantity is the observed Pionex value. Rescaled quantity estimates apply only to hypothetical candidate geometries."
   },
   "latest_observed_activity_window": {
-    "start_utc": "2026-09-04T04:43:09.481569+00:00",
-    "end_utc": "2026-09-05T01:24:24.547897+00:00",
-    "elapsed_h": 20.6875,
+    "start_utc": "2026-09-05T04:38:53.610935+00:00",
+    "end_utc": "2026-09-05T07:07:03.399528+00:00",
+    "elapsed_h": 2.4694,
     "same_geometry": true,
-    "start_price_usdt": 2515.12,
-    "end_price_usdt": 2453.11,
-    "completed_rounds_delta": 6,
-    "grid_profit_delta_usdt": 0.38923069,
-    "eth_delta": 0.00700596,
-    "usdt_delta": -16.94424585,
+    "start_price_usdt": 2450.62,
+    "end_price_usdt": 2454.54,
+    "completed_rounds_delta": 0,
+    "grid_profit_delta_usdt": 0.0,
+    "eth_delta": 0.0,
+    "usdt_delta": 0.0,
     "quantity_per_grid_eth": 0.00351,
-    "net_inventory_grid_units_raw": 1.996,
-    "net_inventory_grid_units_inferred": 2,
-    "inventory_inference_status": "NET_UNMATCHED_BUY_LEGS_INCREASE",
-    "estimated_fill_count_lower_bound": 14,
+    "net_inventory_grid_units_raw": 0.0,
+    "net_inventory_grid_units_inferred": 0,
+    "inventory_inference_status": "NO_NET_OPEN_LEG_CHANGE",
+    "estimated_fill_count_lower_bound": 0,
     "end_reported_rounds_24h": 6
   },
   "activity_model": {
     "completed_round_definition": "One completed Pionex round is treated as at least one buy plus one sell.",
     "net_open_leg_inference": "ETH holdings delta divided by observed quantity/grid; integer inference is accepted only within \u00b10.18 grid units.",
     "estimated_fill_count_is_lower_bound": true,
-    "windows_logged": 28
+    "windows_logged": 29
   },
   "research_geometry": {
-    "research_action": "SHIFT_UP+NARROW+FEWER_GRIDS",
+    "research_action": "SHIFT_UP+WIDEN+FEWER_GRIDS",
     "research_confidence": "MEDIUM",
     "raw_selected": {
-      "lower_usdt": 2236.2368,
-      "upper_usdt": 2628.7344,
-      "center_usdt": 2432.4856,
-      "width_usdt": 392.4976,
-      "width_pct_of_market": 16.0,
+      "lower_usdt": 2205.2221,
+      "upper_usdt": 2657.4947,
+      "center_usdt": 2431.3584,
+      "width_usdt": 452.2727,
+      "width_pct_of_market": 18.426,
       "grids": 10,
       "quantity_per_grid_eth_est": 0.00563502,
-      "avg_order_notional_usdt_est": 13.8233,
+      "avg_order_notional_usdt_est": 13.8314,
       "buy_intervals": 4,
       "sell_intervals": 5,
-      "net_profit_per_grid_pct_min": 1.58615,
-      "net_profit_per_grid_pct_max": 1.84921,
-      "expected_grid_profit_usdt": 0.322784,
-      "median_grid_profit_usdt": 0.336813,
-      "expected_rounds": 1.271921,
-      "median_rounds": 1.327222,
+      "net_profit_per_grid_pct_min": 1.82646,
+      "net_profit_per_grid_pct_max": 2.17766,
+      "expected_grid_profit_usdt": 0.350383,
+      "median_grid_profit_usdt": 0.293516,
+      "expected_rounds": 1.18897,
+      "median_rounds": 0.995416,
       "escape_probability_pct": 1.6667,
       "lower_escape_probability_pct": 0.0,
       "upper_escape_probability_pct": 1.6667,
-      "p_grid_profit_ge_0_25_pct": 56.6667,
-      "p_grid_profit_ge_0_50_pct": 21.6667,
-      "p_total_pnl_positive_pct": 56.6667,
-      "expected_total_pnl_usdt": 0.090203,
-      "p20_total_pnl_usdt": -0.74292,
-      "p10_total_pnl_usdt": -1.487398,
+      "p_grid_profit_ge_0_25_pct": 50.0,
+      "p_grid_profit_ge_0_50_pct": 15.0,
+      "p_total_pnl_positive_pct": 63.3333,
+      "expected_total_pnl_usdt": 0.185698,
+      "p20_total_pnl_usdt": -0.859283,
+      "p10_total_pnl_usdt": -1.563455,
       "sample_n": 60
     },
     "literal_practical_rounding": {
-      "lower_usdt": 2235.0,
-      "upper_usdt": 2630.0,
-      "center_usdt": 2432.5,
-      "width_usdt": 395.0,
+      "lower_usdt": 2205.0,
+      "upper_usdt": 2655.0,
+      "center_usdt": 2430.0,
+      "width_usdt": 450.0,
       "grids": 10,
       "metrics_recomputed_for_rounded_bounds": false,
       "note": "Literal usability rounding only. Research metrics belong to the raw selected geometry; Pionex live edit validation is required before any use."
@@ -104,7 +104,7 @@
   "prospective_gates": {
     "state_freshness": {
       "passed": true,
-      "state_age_h": 0.1088
+      "state_age_h": 0.0997
     },
     "calibration": {
       "passed": true,
@@ -132,7 +132,7 @@
     }
   },
   "operational_decision": {
-    "action": "SHIFT_UP+NARROW+FEWER_GRIDS",
+    "action": "SHIFT_UP+WIDEN+FEWER_GRIDS",
     "actionable_geometry_change": true,
     "blockers": [],
     "note": "Research output remains visible even when blocked. Operational action defaults to KEEP_CURRENT until every prospective gate passes."
