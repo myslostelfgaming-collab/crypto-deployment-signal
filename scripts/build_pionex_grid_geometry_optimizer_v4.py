@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Phase 4D v4.2 — live-only grid-density sweet-spot and low-grid-bias diagnostic.
+Phase 4D v4.3 — paired-cycle grid-profit correction and density diagnostic.
 
 This adapter wraps the validated v3.1 Phase 4D path and adds a diagnostic layer.
 It does NOT alter the existing operational actionability decision.
 
-Fixes vs v4.0
+Includes v4.3 fixes plus v4.3 paired-cycle correction
 -------------
 1. LIVE-ONLY CAPTURE
    Candidate evaluations performed inside historical calibration reconstruction
@@ -756,9 +756,513 @@ def _headline(
     }
 
 
+
+def _paired_simulate_portfolio_path(
+    mapped_candles: list[list[float]],
+    current_price: float,
+    lower: float,
+    upper: float,
+    grids: int,
+    qty: float,
+    fee_rate: float,
+    eth0: float,
+    usdt0: float,
+    mode: str,
+) -> dict[str, Any]:
+    """
+    Fresh-start paired-cycle accounting.
+
+    Critical distinction from the legacy simulator:
+    - intervals initially above the market contain seeded ETH and are marked
+      seed_sell;
+    - the FIRST sell of seeded ETH is inventory conversion, NOT a completed
+      buy->sell grid cycle;
+    - only a sell that follows an actual replay buy in that same interval earns
+      paired_grid_profit and increments paired_rounds.
+
+    This removes the synthetic full-grid-spread credit that structurally rewards
+    very wide / very low-density grids.
+    """
+    lines = base.sim.grid_lines(lower, upper, grids)
+    initial = base.sim.initial_states(lines, current_price)
+    states = ["buy" if st == "buy" else "seed_sell" for st in initial]
+
+    balances = {"eth": float(eth0), "usdt": float(usdt0)}
+    start_equity = balances["eth"] * current_price + balances["usdt"]
+
+    paired_rounds = 0
+    paired_grid_profit = 0.0
+    seed_sells = 0
+    seed_inventory_realized_pnl = 0.0
+    lower_escape = False
+    upper_escape = False
+    prev = current_price
+
+    for candle in mapped_candles:
+        _, o, h, l, cl, _ = candle
+        lower_escape = lower_escape or l < lower
+        upper_escape = upper_escape or h > upper
+
+        if mode == "ohlc":
+            pts = [o, h, l, cl]
+        elif mode == "olhc":
+            pts = [o, l, h, cl]
+        else:
+            raise ValueError(mode)
+
+        pts = [prev] + pts
+
+        for a, b in zip(pts, pts[1:]):
+            if b > a:
+                for idx in range(len(lines) - 1):
+                    trigger = lines[idx + 1]
+                    if not (a < trigger <= b):
+                        continue
+                    st = states[idx]
+                    if st not in {"seed_sell", "paired_sell"}:
+                        continue
+                    if balances["eth"] + 1e-12 < qty:
+                        continue
+
+                    balances["eth"] -= qty
+                    balances["usdt"] += qty * trigger * (1.0 - fee_rate)
+
+                    if st == "paired_sell":
+                        paired_rounds += 1
+                        paired_grid_profit += base.sim.interval_net_profit_usdt(
+                            lines[idx], lines[idx + 1], qty, fee_rate
+                        )
+                    else:
+                        # Seeded ETH existed at t0. Realize its mark-to-market
+                        # trading contribution relative to the t0 market price,
+                        # but DO NOT call it grid-cycle profit.
+                        seed_sells += 1
+                        seed_inventory_realized_pnl += (
+                            qty * (trigger - current_price)
+                            - fee_rate * qty * trigger
+                        )
+
+                    states[idx] = "buy"
+
+            elif b < a:
+                for idx in range(len(lines) - 2, -1, -1):
+                    trigger = lines[idx]
+                    if not (b <= trigger < a):
+                        continue
+                    if states[idx] != "buy":
+                        continue
+
+                    cost = qty * trigger * (1.0 + fee_rate)
+                    if balances["usdt"] + 1e-9 < cost:
+                        continue
+
+                    balances["usdt"] -= cost
+                    balances["eth"] += qty
+                    states[idx] = "paired_sell"
+
+        prev = cl
+
+    end_equity = balances["usdt"] + balances["eth"] * prev
+    return {
+        "paired_rounds": paired_rounds,
+        "paired_grid_profit_usdt": paired_grid_profit,
+        "seed_sells": seed_sells,
+        "seed_inventory_realized_pnl_usdt": seed_inventory_realized_pnl,
+        "total_pnl_usdt": end_equity - start_equity,
+        "end_equity_usdt": end_equity,
+        "end_eth": balances["eth"],
+        "end_usdt": balances["usdt"],
+        "lower_escape": lower_escape,
+        "upper_escape": upper_escape,
+        "any_escape": lower_escape or upper_escape,
+        "end_price": prev,
+    }
+
+
+def _paired_rebalanced_evaluate(
+    lower: float,
+    upper: float,
+    grids: int,
+    current_price: float,
+    state: dict,
+    fee_rate: float,
+    active_notional_proxy: float,
+    paths: list[dict],
+    profit_scale: float,
+    rounds_scale: float,
+) -> dict[str, Any] | None:
+    """
+    Evaluate one hypothetical fresh/reconfigured grid using:
+    - the same total equity as the live bot,
+    - the same active-order-notional cap,
+    - post-edit rebalance sizing,
+    - paired buy->sell cycle profit only.
+
+    Existing legacy calibration scales are applied provisionally only so the
+    magnitudes remain comparable. Ranking is unchanged by a common positive
+    scale. The paired model needs its own future calibration before promotion.
+    """
+    if upper <= lower or not (lower < current_price < upper):
+        return None
+
+    min_net, max_net = base.net_grid_profit_bounds(lower, upper, grids, fee_rate)
+    min_required = max(
+        base.MIN_NET_PROFIT_GRID_PCT_FLOOR,
+        fee_rate * 100.0 * 2.0 + base.FEE_BUFFER_PP,
+    )
+    if min_net < min_required:
+        return None
+
+    qinfo = v3._candidate_rebalance_seed(
+        state, current_price, lower, upper, grids, fee_rate, active_notional_proxy
+    )
+    if qinfo is None:
+        return None
+
+    qty = float(qinfo["qty"])
+    eth0 = float(qinfo["seed_eth"])
+    usdt0 = float(qinfo["seed_usdt"])
+
+    raw_profits: list[float] = []
+    scaled_profits: list[float] = []
+    raw_rounds: list[float] = []
+    scaled_rounds: list[float] = []
+    seed_sells: list[float] = []
+    seed_realized: list[float] = []
+    pnls: list[float] = []
+    escapes: list[bool] = []
+    lows: list[bool] = []
+    ups: list[bool] = []
+
+    for item in paths:
+        a = _paired_simulate_portfolio_path(
+            item["candles"], current_price, lower, upper, grids, qty,
+            fee_rate, eth0, usdt0, "ohlc"
+        )
+        b = _paired_simulate_portfolio_path(
+            item["candles"], current_price, lower, upper, grids, qty,
+            fee_rate, eth0, usdt0, "olhc"
+        )
+
+        raw_profit = (
+            float(a["paired_grid_profit_usdt"])
+            + float(b["paired_grid_profit_usdt"])
+        ) / 2.0
+        raw_round = (
+            float(a["paired_rounds"]) + float(b["paired_rounds"])
+        ) / 2.0
+
+        raw_profits.append(raw_profit)
+        scaled_profits.append(raw_profit * profit_scale)
+        raw_rounds.append(raw_round)
+        scaled_rounds.append(raw_round * rounds_scale)
+        seed_sells.append(
+            (float(a["seed_sells"]) + float(b["seed_sells"])) / 2.0
+        )
+        seed_realized.append(
+            (
+                float(a["seed_inventory_realized_pnl_usdt"])
+                + float(b["seed_inventory_realized_pnl_usdt"])
+            ) / 2.0
+        )
+        pnls.append(
+            (float(a["total_pnl_usdt"]) + float(b["total_pnl_usdt"])) / 2.0
+        )
+
+        lo = bool(a["lower_escape"] or b["lower_escape"])
+        up = bool(a["upper_escape"] or b["upper_escape"])
+        lows.append(lo)
+        ups.append(up)
+        escapes.append(lo or up)
+
+    if not raw_profits:
+        return None
+
+    n = len(raw_profits)
+    spacing = (upper - lower) / max(1, grids - 1)
+
+    return {
+        "lower_usdt": round(lower, 4),
+        "upper_usdt": round(upper, 4),
+        "center_usdt": round((lower + upper) / 2.0, 4),
+        "width_usdt": round(upper - lower, 4),
+        "width_pct_of_market": round((upper - lower) / current_price * 100.0, 4),
+        "grids": int(grids),
+        "grid_spacing_usdt": round(spacing, 6),
+        "quantity_per_grid_eth_est": round(qty, 8),
+        "avg_order_notional_usdt_est": round(qty * current_price, 4),
+        "buy_intervals": int(qinfo["buy_intervals"]),
+        "sell_intervals": int(qinfo["sell_intervals"]),
+        "net_profit_per_grid_pct_min": round(min_net, 5),
+        "net_profit_per_grid_pct_max": round(max_net, 5),
+
+        "expected_paired_grid_profit_usdt_raw": round(
+            statistics.fmean(raw_profits), 6
+        ),
+        "median_paired_grid_profit_usdt_raw": round(
+            statistics.median(raw_profits), 6
+        ),
+        "expected_paired_grid_profit_usdt_scaled_provisional": round(
+            statistics.fmean(scaled_profits), 6
+        ),
+        "median_paired_grid_profit_usdt_scaled_provisional": round(
+            statistics.median(scaled_profits), 6
+        ),
+
+        "expected_paired_rounds_raw": round(
+            statistics.fmean(raw_rounds), 6
+        ),
+        "median_paired_rounds_raw": round(
+            statistics.median(raw_rounds), 6
+        ),
+        "expected_paired_rounds_scaled_provisional": round(
+            statistics.fmean(scaled_rounds), 6
+        ),
+        "median_paired_rounds_scaled_provisional": round(
+            statistics.median(scaled_rounds), 6
+        ),
+
+        "p_zero_paired_rounds_pct": _prob_zero(raw_rounds),
+        "p_paired_rounds_ge_1_pct": _prob_ge(raw_rounds, 1),
+        "p_paired_rounds_ge_2_pct": _prob_ge(raw_rounds, 2),
+        "p_paired_rounds_ge_5_pct": _prob_ge(raw_rounds, 5),
+        "p_paired_rounds_ge_10_pct": _prob_ge(raw_rounds, 10),
+        "p_paired_rounds_ge_25_pct": _prob_ge(raw_rounds, 25),
+        "p_paired_rounds_ge_50_pct": _prob_ge(raw_rounds, 50),
+        "p90_paired_rounds_raw": round(float(_percentile(raw_rounds, 0.90)), 6),
+        "p95_paired_rounds_raw": round(float(_percentile(raw_rounds, 0.95)), 6),
+        "max_paired_rounds_raw": round(max(raw_rounds), 6),
+
+        "expected_seed_sells": round(statistics.fmean(seed_sells), 6),
+        "median_seed_sells": round(statistics.median(seed_sells), 6),
+        "expected_seed_inventory_realized_pnl_usdt": round(
+            statistics.fmean(seed_realized), 6
+        ),
+
+        "escape_probability_pct": round(sum(escapes) / n * 100.0, 4),
+        "lower_escape_probability_pct": round(sum(lows) / n * 100.0, 4),
+        "upper_escape_probability_pct": round(sum(ups) / n * 100.0, 4),
+        "p_total_pnl_positive_pct": round(sum(x > 0 for x in pnls) / n * 100.0, 4),
+        "expected_total_pnl_usdt": round(statistics.fmean(pnls), 6),
+        "p20_total_pnl_usdt": round(base.percentile(pnls, 0.20), 6),
+        "p10_total_pnl_usdt": round(base.percentile(pnls, 0.10), 6),
+        "sample_n": n,
+
+        "profit_per_expected_paired_round_usdt_raw": _safe_ratio(
+            statistics.fmean(raw_profits), statistics.fmean(raw_rounds)
+        ),
+        "seed_equity_usdt": round(float(qinfo["equity_usdt"]), 6),
+        "qty_by_active_notional": round(float(qinfo["qty_by_active_notional"]), 10),
+        "qty_by_equity": round(float(qinfo["qty_by_equity"]), 10),
+        "calibration_status": "PROVISIONAL_LEGACY_SCALE_REUSED_NOT_VALIDATED_FOR_PAIRED_MODEL",
+    }
+
+
+def _paired_current_band_sweep(
+    geo: dict[str, Any],
+) -> list[dict[str, Any]]:
+    if not _LIVE_CONTEXT:
+        raise SystemExit("Live evaluation context missing for paired-cycle sweep")
+
+    current = ((geo.get("benchmarks") or {}).get("current") or {})
+    if not current:
+        raise SystemExit("Current benchmark missing for paired-cycle sweep")
+
+    lower = float(current["lower_usdt"])
+    upper = float(current["upper_usdt"])
+    ctx = _LIVE_CONTEXT
+    out: list[dict[str, Any]] = []
+
+    for grids in range(DIAGNOSTIC_MIN_GRIDS, DIAGNOSTIC_MAX_GRIDS + 1):
+        row = _paired_rebalanced_evaluate(
+            lower,
+            upper,
+            grids,
+            ctx["current_price"],
+            ctx["state"],
+            ctx["fee_rate"],
+            ctx["active_notional_proxy"],
+            ctx["paths"],
+            ctx["profit_scale"],
+            ctx["rounds_scale"],
+        )
+        if row is None:
+            continue
+        row["standard_risk_eligible"] = _risk_eligible(row, geo)
+        out.append(row)
+
+    return out
+
+
+def _first_seed_sell_synthetic_profit_signature(
+    legacy_rows: list[dict[str, Any]],
+    geo: dict[str, Any],
+) -> dict[str, Any]:
+    """
+    Quantify the exact legacy first-seed-sell accounting effect on the lowest
+    tested grid count. This is intentionally transparent and auditable.
+    """
+    if not legacy_rows or not _LIVE_CONTEXT:
+        return {}
+
+    row = min(legacy_rows, key=lambda r: int(r["grids"]))
+    grids = int(row["grids"])
+    lower = float(row["lower_usdt"])
+    upper = float(row["upper_usdt"])
+    current_price = float(_LIVE_CONTEXT["current_price"])
+    fee_rate = float(_LIVE_CONTEXT["fee_rate"])
+    profit_scale = float(_LIVE_CONTEXT["profit_scale"])
+    qty = float(row["quantity_per_grid_eth_est"])
+
+    lines = base.sim.grid_lines(lower, upper, grids)
+    states = base.sim.initial_states(lines, current_price)
+    sell_idx = [idx for idx, st in enumerate(states) if st == "sell"]
+
+    if not sell_idx:
+        return {}
+
+    idx = sell_idx[0]
+    synthetic_raw = base.sim.interval_net_profit_usdt(
+        lines[idx], lines[idx + 1], qty, fee_rate
+    )
+    synthetic_scaled = synthetic_raw * profit_scale
+    legacy_median = float(row.get("median_grid_profit_usdt") or 0.0)
+    abs_diff = abs(legacy_median - synthetic_scaled)
+    tolerance = max(0.01, abs(legacy_median) * 0.02)
+
+    return {
+        "grid_count": grids,
+        "interval_lower_usdt": round(lines[idx], 6),
+        "interval_upper_usdt": round(lines[idx + 1], 6),
+        "start_market_price_usdt": round(current_price, 6),
+        "quantity_per_grid_eth": round(qty, 8),
+        "synthetic_full_interval_profit_raw_usdt": round(synthetic_raw, 6),
+        "synthetic_full_interval_profit_scaled_usdt": round(synthetic_scaled, 6),
+        "legacy_median_grid_profit_usdt": round(legacy_median, 6),
+        "absolute_difference_usdt": round(abs_diff, 6),
+        "matches_legacy_median_within_2pct_or_1cent": abs_diff <= tolerance,
+        "interpretation": (
+            "If this matches the legacy median, the median reported grid profit "
+            "is dominated by crediting an initial seeded sell with a full grid "
+            "spread even though no replay buy occurred at the interval lower line."
+        ),
+    }
+
+
+def _paired_cycle_correction_audit(
+    geo: dict[str, Any],
+    legacy_rows: list[dict[str, Any]],
+    paired_rows: list[dict[str, Any]],
+    low_grid_audit: dict[str, Any],
+) -> dict[str, Any]:
+    eligible = [
+        r for r in paired_rows if r.get("standard_risk_eligible") is True
+    ] or paired_rows
+
+    paired_expected_champion = (
+        max(
+            eligible,
+            key=lambda r: float(
+                r.get("expected_paired_grid_profit_usdt_raw") or 0.0
+            ),
+        )
+        if eligible
+        else None
+    )
+    paired_median_champion = (
+        max(
+            eligible,
+            key=lambda r: float(
+                r.get("median_paired_grid_profit_usdt_raw") or 0.0
+            ),
+        )
+        if eligible
+        else None
+    )
+
+    signature = _first_seed_sell_synthetic_profit_signature(legacy_rows, geo)
+
+    production_selected = ((geo.get("benchmarks") or {}).get("selected") or {})
+    production_grid = int(production_selected.get("grids") or 0)
+
+    legacy_by_grid = {int(r["grids"]): r for r in legacy_rows}
+    paired_by_grid = {int(r["grids"]): r for r in paired_rows}
+
+    production_legacy = legacy_by_grid.get(production_grid)
+    production_paired = paired_by_grid.get(production_grid)
+
+    inflation_ratio = None
+    if production_legacy and production_paired:
+        legacy_profit = float(
+            production_legacy.get("expected_grid_profit_usdt") or 0.0
+        )
+        paired_profit = float(
+            production_paired.get("expected_paired_grid_profit_usdt_scaled_provisional")
+            or 0.0
+        )
+        if paired_profit > 1e-12:
+            inflation_ratio = round(legacy_profit / paired_profit, 6)
+        elif legacy_profit > 0:
+            inflation_ratio = None
+
+    seed_bias_detected = bool(
+        signature.get("matches_legacy_median_within_2pct_or_1cent")
+    )
+
+    codes = []
+    if seed_bias_detected:
+        codes.append("INITIAL_SEED_SELL_FULL_SPREAD_CREDIT_CONFIRMED")
+    if low_grid_audit.get("production_selected_at_min_boundary") is True:
+        codes.append("PRODUCTION_SELECTION_AT_LOW_GRID_BOUNDARY")
+    if low_grid_audit.get("legacy_best_below_production_minimum"):
+        codes.append("LEGACY_OBJECTIVE_PREFERS_BELOW_PRODUCTION_MINIMUM")
+
+    provisional_differs = (
+        paired_expected_champion is not None
+        and int(paired_expected_champion["grids"]) != production_grid
+    )
+    if provisional_differs:
+        codes.append("PAIRED_CYCLE_CHAMPION_DIFFERS_FROM_PRODUCTION_SELECTION")
+
+    safety_block = bool(
+        seed_bias_detected
+        and low_grid_audit.get("production_selected_at_min_boundary") is True
+    )
+    if safety_block:
+        codes.append("KEEP_CURRENT_SAFETY_BLOCK_RECOMMENDED")
+
+    return {
+        "diagnosis_codes": codes,
+        "seed_profit_bias_detected": seed_bias_detected,
+        "synthetic_seed_profit_signature": signature,
+        "production_selected_grid_count": production_grid,
+        "production_legacy_current_band": production_legacy,
+        "production_paired_current_band": production_paired,
+        "production_legacy_vs_paired_scaled_profit_ratio": inflation_ratio,
+        "provisional_paired_expected_profit_champion": paired_expected_champion,
+        "provisional_paired_median_profit_champion": paired_median_champion,
+        "provisional_champion_differs_from_production": provisional_differs,
+        "safety_block_recommended": safety_block,
+        "safety_blocker_code": (
+            "GRID_PROFIT_INITIAL_SEED_ACCOUNTING_BIAS"
+            if safety_block else None
+        ),
+        "paired_cycle_semantics": (
+            "Only sell events that follow an actual replay buy in the same "
+            "interval count as grid-profit cycles. Initial seeded-ETH sells are "
+            "inventory conversion and contribute only to total P&L, not grid profit."
+        ),
+        "calibration_warning": (
+            "Current legacy profit/round calibration scales are reused only as "
+            "a provisional magnitude bridge. The paired-cycle model must receive "
+            "its own historical/prospective calibration before operational promotion."
+        ),
+        "operational_override": False,
+    }
+
 def _write_density_output() -> None:
     if not v3.GEO_PATH.is_file():
-        raise SystemExit("Phase 4D geometry output missing after v4.2 capture")
+        raise SystemExit("Phase 4D geometry output missing after v4.3 capture")
 
     geo = json.loads(v3.GEO_PATH.read_text(encoding="utf-8"))
     legacy_rows, rebalance_rows = _integer_current_band_sweeps(geo)
@@ -766,12 +1270,17 @@ def _write_density_output() -> None:
     audit = _bias_audit(geo, legacy_rows, rebalance_rows, joint)
     headline = _headline(legacy_rows, rebalance_rows, joint)
 
+    paired_rows = _paired_current_band_sweep(geo)
+    paired_audit = _paired_cycle_correction_audit(
+        geo, legacy_rows, paired_rows, audit
+    )
+
     source = geo.get("source_state") or {}
     integration = geo.get("execution_resolution_integration") or {}
 
     payload = {
         "schema": "pionex_grid_density_sweep_v1",
-        "version": "4.2",
+        "version": "4.3",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
         "scope": {
@@ -807,7 +1316,7 @@ def _write_density_output() -> None:
                 "Historical calibration reconstruction is explicitly excluded."
             ),
             "current_band_isolation": (
-                "Both explicit density sweeps hold the live lower/upper bounds "
+                "Explicit density sweeps hold the live lower/upper bounds "
                 "constant and vary only grid count."
             ),
             "legacy_sizing": (
@@ -819,8 +1328,16 @@ def _write_density_output() -> None:
                 "Post-edit rebalanced sizing using the same total equity and "
                 "active-order-notional cap, removing only pre-edit asset-split bias."
             ),
+            "paired_cycle_correction": (
+                "Initial seeded ETH sells do not earn grid-cycle profit. Only "
+                "sell events preceded by an actual replay buy in that interval "
+                "count as paired grid-profit cycles."
+            ),
             "spacing_formula": "width_usdt / (grids - 1)",
-            "operational_effect": "NONE",
+            "operational_effect": (
+                "DIAGNOSTIC_ONLY; runner may apply KEEP_CURRENT safety blocker "
+                "when confirmed seed-profit accounting bias affects a boundary selection."
+            ),
         },
         "live_candidate_count_captured": len(_CAPTURED_LIVE),
         "live_grid_counts_captured": sorted({
@@ -830,30 +1347,42 @@ def _write_density_output() -> None:
         "production_selected_geometry": ((geo.get("benchmarks") or {}).get("selected") or {}),
         "headline": headline,
         "low_grid_pressure_audit": audit,
+        "paired_cycle_correction": paired_audit,
         "joint_live_best_by_grid_count": joint,
         "legacy_current_band_integer_sweep": legacy_rows,
         "rebalanced_current_band_integer_sweep": rebalance_rows,
+        "paired_cycle_current_band_integer_sweep": paired_rows,
     }
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
-    print("\n=== GRID-DENSITY / LOW-GRID-BIAS DIAGNOSTIC v4.2 ===")
+    paired_champ = (
+        paired_audit.get("provisional_paired_expected_profit_champion") or {}
+    )
+
+    print("\n=== GRID-DENSITY / PAIRED-CYCLE DIAGNOSTIC v4.3 ===")
     print("Live candidates captured:", len(_CAPTURED_LIVE))
-    print("Diagnosis:", audit.get("diagnosis_codes"))
+    print("Low-grid diagnosis:", audit.get("diagnosis_codes"))
+    print(
+        "Seed-profit diagnosis:",
+        paired_audit.get("diagnosis_codes"),
+    )
     print(
         "Legacy current-band champion:",
         (headline.get("legacy_current_band_expected_profit_champion") or {}).get("grids"),
         "grids",
     )
     print(
-        "Rebalanced current-band champion:",
-        (headline.get("rebalanced_current_band_expected_profit_champion") or {}).get("grids"),
+        "Provisional paired-cycle champion:",
+        paired_champ.get("grids"),
         "grids",
     )
-    print("Operational override: False")
+    print(
+        "Safety block recommended:",
+        paired_audit.get("safety_block_recommended"),
+    )
     print("Written:", OUT_PATH)
-
 
 def main() -> None:
     v3.integration.main = _capturing_integration_main

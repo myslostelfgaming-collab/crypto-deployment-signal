@@ -1,6 +1,6 @@
-# Phase 4D v4.2 — density sweet-spot + low-grid-bias diagnostic
+# Phase 4D v4.3 — paired-cycle accounting correction
 
-Upload/replace these two files in the repo:
+## Upload / replace exactly these two files
 
 1. `scripts/build_pionex_grid_geometry_optimizer_v4.py`
 2. `scripts/run_pionex_phase4d_full_v2.py`
@@ -9,128 +9,152 @@ Then run:
 
 **Actions → Pionex Automated Phase 4D Decision CI → Run workflow**
 
-No workflow YAML edit is required for this revision.
+No workflow YAML edit is required.
 
-## What this fixes
+---
 
-### A. v4.0 calibration contamination
+## Why v4.3 is necessary
 
-The first density diagnostic captured historical `reconstruct_calibration()`
-evaluations as if they were current live candidates. That is why a geometry such
-as `$2185–$2585 / 21` could appear as the "live champion" even though its centre
-was outside the current live centre-search band.
+The v4.2 run confirmed that the production optimizer is genuinely pressing
+against its minimum grid-count boundary:
 
-v4.2 disables capture during calibration reconstruction and only records the
-current live candidate search.
+- production search minimum: 10 grids;
+- production selection: 10 grids;
+- diagnostic legacy current-band optimum: 5 grids.
 
-### B. Grid spacing formula
+The more important finding is an accounting defect in the legacy prospective
+grid-profit simulator.
 
-The prior diagnostic displayed spacing as `width / grids`.
+For hypothetical/reconfigured grids, intervals above the current market price
+start with seeded ETH and are immediately marked ready to sell. When the first
+sell triggers, the legacy simulator books the *entire interval spread* as grid
+profit even though no replay buy occurred at that interval's lower grid line.
 
-The simulator actually models Pionex grid count as N price levels with N-1
-intervals, so v4.2 uses:
+On the 5-grid live-band diagnostic:
 
-`spacing = width / (grids - 1)`
+- range: $2190–$2630;
+- levels: $2190, $2300, $2410, $2520, $2630;
+- market at the run: about $2510.94;
+- first seeded sell: $2520;
+- legacy accounting credits profit as though the ETH was bought at $2410.
 
-### C. Explicit lower-bound test
+Using the model's own quantity, fee and calibration scale, that single synthetic
+full-spread credit equals the reported legacy median grid profit to rounding.
+That is direct evidence that the low-grid objective is being structurally
+inflated by initial seed accounting.
 
-Production Phase 4D still searches from 10 grids upward.
+---
 
-The diagnostic now tests **5 through 80 grids** on the CURRENT live band.
-Counts 5–9 are diagnostic-only. They are never promoted into the production
-selection.
+## What the new paired-cycle model does
 
-If the legacy objective prefers 5–9 grids, we have direct evidence that the
-optimizer is pressing against its configured lower boundary rather than finding
-an interior optimum.
+For the fresh/reconfigured diagnostic:
 
-### D. Sizing-bias investigation
+- initial ETH above market is tagged `seed_sell`;
+- its first sale is inventory conversion;
+- that sale affects total portfolio P&L normally;
+- it does **not** earn grid-cycle profit;
+- after an interval executes a real replay buy, it becomes `paired_sell`;
+- only the subsequent sell counts as a completed grid cycle and earns
+  paired grid profit.
 
-The production normal-candidate model sizes hypothetical geometries from the
-current pre-edit ETH/USDT holdings plus the observed utilization and active-order
-notional cap.
+This is the metric we actually intended when asking whether many small completed
+cycles can beat one large cycle.
 
-That can disadvantage denser hypothetical grids because the current holdings
-were arranged for the live geometry.
+The corrected diagnostic again sweeps every integer grid count from 5 through 80
+on the current live band.
 
-v4.2 therefore runs the same 5–80 current-band sweep twice:
+New persisted section in `pionex_full_decision_v1.json`:
 
-1. `legacy_current_band_integer_sweep`
-   - existing production sizing semantics;
+`grid_density_sweep.paired_cycle_correction`
 
-2. `rebalanced_current_band_integer_sweep`
-   - post-edit rebalance counterfactual;
-   - same total equity;
-   - same active-order-notional cap;
-   - removes only the pre-edit ETH/USDT split constraint.
+and the full curve:
 
-This tells us whether "10 grids keeps winning" is:
-- a genuine frequency × profit/cycle optimum,
-- lower-bound pressure from the objective,
-- a current-asset-split sizing artefact,
-- or some combination.
+`grid_density_sweep.paired_cycle_current_band_integer_sweep`
 
-### E. Persistence without workflow edits
+Key fields include:
 
-The standalone file is still written:
+- `expected_paired_grid_profit_usdt_raw`
+- `median_paired_grid_profit_usdt_raw`
+- `expected_paired_rounds_raw`
+- `median_paired_rounds_raw`
+- `p_zero_paired_rounds_pct`
+- `p_paired_rounds_ge_10_pct`
+- `p_paired_rounds_ge_25_pct`
+- `p_paired_rounds_ge_50_pct`
+- `expected_seed_sells`
+- `expected_seed_inventory_realized_pnl_usdt`
 
-`data/diagnostics/pionex_grid_density_sweep_v1.json`
+The old calibration scales are also shown provisionally for magnitude
+comparability, but the paired model is **not yet independently calibrated**.
+The raw paired-profit ranking is the main research signal for this run.
 
-But the runner now embeds the useful full density diagnostic into:
+---
 
-`data/diagnostics/pionex_full_decision_v1.json`
+## Safety behaviour
 
-The existing automated workflow already stages and persists that file, so the
-density evidence will survive the run even if the standalone JSON is not added
-to the workflow's `git add` list.
+v4.3 does NOT silently promote the paired model to operational authority.
 
-## Expected new diagnostic sections
+However, if BOTH are true:
 
-Inside `pionex_full_decision_v1.json`:
+1. the initial-seed full-spread accounting bias is numerically confirmed; and
+2. production selection is sitting on the minimum grid-count boundary,
 
-`grid_density_sweep.low_grid_pressure_audit`
+then the final runner applies:
 
-Look for codes such as:
-- `LOW_GRID_BOUNDARY_PRESSURE_PRESENT`
-- `OBJECTIVE_PREFERS_BELOW_PRODUCTION_MINIMUM`
-- `PRE_EDIT_ASSET_SPLIT_HAS_MATERIAL_DENSITY_EFFECT`
+`GRID_PROFIT_INITIAL_SEED_ACCOUNTING_BIAS`
 
-Also inspect:
+and changes only the final operational recommendation to:
 
-- `grid_density_sweep.headline`
-- `grid_density_sweep.joint_live_best_by_grid_count`
-- `grid_density_sweep.legacy_current_band_integer_sweep`
-- `grid_density_sweep.rebalanced_current_band_integer_sweep`
+`KEEP_CURRENT`
 
-## Acceptance checks
+with:
 
-After the workflow completes:
+`actionable_geometry_change = false`
 
-1. Existing full Phase 4D pipeline remains green.
-2. `pionex_full_decision_v1.json` contains `grid_density_sweep.version == "4.2"`.
-3. Density `source_state.captured_at_utc` equals the fresh API state used by the
-   full decision.
-4. `legacy_current_band_integer_sweep` includes feasible integer counts below 10
-   where the model permits them.
-5. `rebalanced_current_band_integer_sweep` is present.
-6. `grid_spacing_usdt` for the live 22-grid / $440-wide geometry is approximately
-   `440 / 21 = 20.95238`, not 20.0.
-7. `operational_effect` remains `NONE_DIAGNOSTIC_ONLY`.
-8. Existing Pionex operational decision is NOT changed by this diagnostic.
+The legacy research recommendation remains visible for audit.
 
-## What we will read after the run
+The runner patches both:
 
-The most important outputs are:
+- `data/diagnostics/pionex_full_decision_v1.json`
+- `data/diagnostics/pionex_grid_actionability_v1.json`
 
-- Does the legacy curve peak below 10?
-- Does the rebalanced curve peak at a materially different density?
-- How quickly does quantity/grid fall as density rises?
-- How quickly do completed rounds rise?
-- Where does `expected_grid_profit_usdt` actually peak?
-- Where does `median_grid_profit_usdt` peak?
-- What is P(0 rounds) at each density?
-- Is there any realistic support for 25+ or 50+ rounds/day?
-- Is the profit peak sharp or a broad plateau?
+Both are already persisted by the existing automated workflow.
 
-Do not change the live bot based only on the v4.2 diagnostic. First inspect one
-fresh successful run and compare the two sizing curves.
+---
+
+## Acceptance checks after the run
+
+1. Workflow succeeds.
+2. `pionex_full_decision_v1.json` contains:
+   - `grid_density_sweep.version == "4.3"`
+   - `grid_density_sweep.paired_cycle_correction`
+   - `grid_density_sweep.paired_cycle_current_band_integer_sweep`
+3. Density source state matches the fresh API state.
+4. `synthetic_seed_profit_signature` reports whether the legacy median matches
+   the synthetic initial seeded-sell profit.
+5. If confirmed while production remains at the minimum boundary:
+   - final operational action is `KEEP_CURRENT`;
+   - blocker includes `GRID_PROFIT_INITIAL_SEED_ACCOUNTING_BIAS`.
+6. Legacy research output is still visible and unchanged.
+7. No Pionex write endpoint is used.
+
+---
+
+## What to inspect next
+
+After one successful v4.3 run, compare the paired-cycle curve at roughly:
+
+5, 10, 15, 20, 22, 30, 40, 50, 60, 70, and the highest feasible density.
+
+We want to see:
+
+- where raw paired grid profit peaks;
+- whether the optimum is an interior density rather than a boundary;
+- where median paired profit peaks;
+- how P(0 paired cycles) changes;
+- whether 25+ / 50+ completed paired cycles are genuinely plausible;
+- whether high-density profitability is being limited mainly by order size,
+  fees, or insufficient volatility.
+
+Only after that should the paired-cycle model be independently calibrated and
+considered for operational promotion.
