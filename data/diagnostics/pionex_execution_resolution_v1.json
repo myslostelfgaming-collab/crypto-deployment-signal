@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-09-09T13:09:40.686826+00:00",
+  "generated_at_utc": "2026-09-09T17:59:54.373059+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 8101,
+    "persisted_5m_rows": 8159,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-09-09T12:55:00+00:00",
+    "persisted_5m_last_utc": "2026-09-09T17:45:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 673,
+    "n": 677,
     "mean_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.00075177,
-      "low": 0.0,
-      "close": 0.00051867
+      "high": 0.0,
+      "low": 0.00055018,
+      "close": 8.428e-05
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -95,15 +95,15 @@
     },
     "max_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.50594414,
-      "low": 0.0,
-      "close": 0.34906535
+      "high": 0.0,
+      "low": 0.37247315,
+      "close": 0.0570563
     },
     "worst_close": {
-      "timestamp_utc": "2026-09-09T11:00:00+00:00",
-      "derived_close": 2501.07,
-      "reference_close": 2492.37,
-      "abs_pct_diff": 0.34906535
+      "timestamp_utc": "2026-09-09T15:00:00+00:00",
+      "derived_close": 2490.19,
+      "reference_close": 2488.77,
+      "abs_pct_diff": 0.0570563
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
