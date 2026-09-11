@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-09-11T13:01:02.194936+00:00",
+  "generated_at_utc": "2026-09-11T17:54:48.463533+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 8676,
+    "persisted_5m_rows": 8734,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-09-11T12:50:00+00:00",
+    "persisted_5m_last_utc": "2026-09-11T17:40:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 719,
+    "n": 725,
     "mean_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
-      "low": 0.00060786,
-      "close": 0.00022886
+      "high": 0.00026073,
+      "low": 0.002894,
+      "close": 0.00228987
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -95,15 +95,15 @@
     },
     "max_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
-      "low": 0.43705021,
-      "close": 0.16455082
+      "high": 0.18902938,
+      "low": 2.09814928,
+      "close": 1.66015437
     },
     "worst_close": {
-      "timestamp_utc": "2026-09-11T09:00:00+00:00",
-      "derived_close": 2469.33,
-      "reference_close": 2473.4,
-      "abs_pct_diff": 0.16455082
+      "timestamp_utc": "2026-09-11T15:00:00+00:00",
+      "derived_close": 2559.56,
+      "reference_close": 2602.77,
+      "abs_pct_diff": 1.66015437
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
