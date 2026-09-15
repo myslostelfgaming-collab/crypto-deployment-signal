@@ -1,160 +1,200 @@
-# Phase 4D v4.3 — paired-cycle accounting correction
+# Phase 4D v4.4 — paired calibration + robust density plateau
 
-## Upload / replace exactly these two files
+## Upload these files
 
-1. `scripts/build_pionex_grid_geometry_optimizer_v4.py`
-2. `scripts/run_pionex_phase4d_full_v2.py`
+Add:
+
+1. `scripts/build_pionex_grid_geometry_optimizer_v5.py`
+2. `data/pionex/pionex_execution_constraints_v1.json`
+
+Replace:
+
+3. `scripts/run_pionex_phase4d_full_v2.py`
+
+Do **not** delete or replace `scripts/build_pionex_grid_geometry_optimizer_v4.py`.
+v5 intentionally wraps the existing v4.3 implementation so rollback/audit remain
+easy.
 
 Then run:
 
 **Actions → Pionex Automated Phase 4D Decision CI → Run workflow**
 
-No workflow YAML edit is required.
+No workflow YAML change is required.
 
 ---
 
-## Why v4.3 is necessary
+## What v4.4 adds
 
-The v4.2 run confirmed that the production optimizer is genuinely pressing
-against its minimum grid-count boundary:
+### 1. Independent paired-cycle walk-forward calibration
 
-- production search minimum: 10 grids;
-- production selection: 10 grids;
-- diagnostic legacy current-band optimum: 5 grids.
+v4.3 correctly changed the accounting semantics but still reused the legacy
+profit/round scale.
 
-The more important finding is an accounting defect in the legacy prospective
-grid-profit simulator.
+v4.4 reconstructs the corrected paired model at historical manual Pionex state
+windows using:
 
-For hypothetical/reconfigured grids, intervals above the current market price
-start with seeded ETH and are immediately marked ready to sell. When the first
-sell triggers, the legacy simulator books the *entire interval spread* as grid
-profit even though no replay buy occurred at that interval's lower grid line.
+- the historical live range;
+- historical observed quantity/grid;
+- historical ETH/USDT balances;
+- only analogue paths that were already mature at that historical time;
+- the Phase 4D promoted replay resolution (5-minute when promoted);
+- only true replay buy → sell paired cycles as grid profit.
 
-On the 5-grid live-band diagnostic:
+Earlier windows estimate the calibration scale. Chronologically later windows
+are held out and reported separately.
 
-- range: $2190–$2630;
-- levels: $2190, $2300, $2410, $2520, $2630;
-- market at the run: about $2510.94;
-- first seeded sell: $2520;
-- legacy accounting credits profit as though the ETH was bought at $2410.
+Expected output:
 
-Using the model's own quantity, fee and calibration scale, that single synthetic
-full-spread credit equals the reported legacy median grid profit to rounding.
-That is direct evidence that the low-grid objective is being structurally
-inflated by initial seed accounting.
+`grid_density_sweep.promotion_readiness.paired_calibration`
 
----
+Key fields:
 
-## What the new paired-cycle model does
+- `status`
+- `calibration_ready`
+- `training_windows`
+- `validation_windows`
+- `profit_scale_applied`
+- `rounds_scale_applied`
+- `holdout_validation`
 
-For the fresh/reconfigured diagnostic:
+### 2. Robust plateau selector
 
-- initial ETH above market is tagged `seed_sell`;
-- its first sale is inventory conversion;
-- that sale affects total portfolio P&L normally;
-- it does **not** earn grid-cycle profit;
-- after an interval executes a real replay buy, it becomes `paired_sell`;
-- only the subsequent sell counts as a completed grid cycle and earns
-  paired grid profit.
+v4.4 stops treating the single highest expected-profit grid count as a magic
+integer.
 
-This is the metric we actually intended when asking whether many small completed
-cycles can beat one large cycle.
+It finds the contiguous grid-count region containing the expected-profit peak
+where every candidate retains at least **95% of peak expected paired profit**.
 
-The corrected diagnostic again sweeps every integer grid count from 5 through 80
-on the current live band.
+Inside that plateau it selects:
 
-New persisted section in `pionex_full_decision_v1.json`:
+1. highest **median paired profit**;
+2. then lower P(0 paired cycles);
+3. then higher paired activity;
+4. then larger estimated order notional.
 
-`grid_density_sweep.paired_cycle_correction`
+This should naturally prefer a robust point in the broad ~35–46 region when the
+data continues to support it, rather than oscillating between e.g. 37 and 39.
 
-and the full curve:
+Expected output:
 
-`grid_density_sweep.paired_cycle_current_band_integer_sweep`
+`grid_density_sweep.promotion_readiness.plateau_selector`
 
-Key fields include:
+### 3. Cross-run stability history
 
-- `expected_paired_grid_profit_usdt_raw`
-- `median_paired_grid_profit_usdt_raw`
-- `expected_paired_rounds_raw`
-- `median_paired_rounds_raw`
-- `p_zero_paired_rounds_pct`
-- `p_paired_rounds_ge_10_pct`
-- `p_paired_rounds_ge_25_pct`
-- `p_paired_rounds_ge_50_pct`
-- `expected_seed_sells`
-- `expected_seed_inventory_realized_pnl_usdt`
+The runner preserves the previous full-decision history and appends each fresh
+v4.4 result.
 
-The old calibration scales are also shown provisionally for magnitude
-comparability, but the paired model is **not yet independently calibrated**.
-The raw paired-profit ranking is the main research signal for this run.
+Stability requires:
 
----
+- at least 3 paired-calibrated runs;
+- robust selected grids spanning no more than 6 grids;
+- overlapping 95%-of-peak plateaus.
 
-## Safety behaviour
+Output:
 
-v4.3 does NOT silently promote the paired model to operational authority.
+`paired_density_history`
 
-However, if BOTH are true:
+and
 
-1. the initial-seed full-spread accounting bias is numerically confirmed; and
-2. production selection is sitting on the minimum grid-count boundary,
+`grid_density_sweep.promotion_readiness.cross_run_stability`
 
-then the final runner applies:
+### 4. Pionex execution validation policy
 
-`GRID_PROFIT_INITIAL_SEED_ACCOUNTING_BIAS`
+Pionex does not publish one universal Spot Grid minimum that can safely be
+hard-coded for every pair/range/grid combination.
 
-and changes only the final operational recommendation to:
+The new config:
+
+`data/pionex/pionex_execution_constraints_v1.json`
+
+therefore starts with dynamic live validation required.
+
+Known constraints can be added later, but an exact candidate is only marked
+live-validated when `validated_candidate.accepted_by_pionex_ui` is explicitly
+recorded after testing that exact setup in Pionex.
+
+**Do not fill the example validation values until an actual Pionex setup has
+been checked.**
+
+### 5. Stronger low-grid safety gate
+
+v4.3 only blocked the legacy recommendation when its narrow synthetic
+seed-profit detector fired.
+
+v4.4 adds a second, broader safety condition.
+
+If:
+
+- paired calibration is ready;
+- legacy production selection is pinned to the minimum grid-count boundary;
+- the robust paired plateau is materially denser;
+- and either the low-grid paired candidate has >=25% zero-cycle risk or the
+  calibrated paired plateau beats it by >=5% expected paired profit;
+
+then the operational legacy geometry change is blocked with:
+
+`PAIRED_CALIBRATED_DENSITY_CONFLICT`
+
+and operational action becomes:
 
 `KEEP_CURRENT`
 
-with:
+This is intentionally **one-way**.
 
-`actionable_geometry_change = false`
+The paired model may block a suspect legacy change, but v4.4 will **not**
+automatically move the bot to the paired candidate.
 
-The legacy research recommendation remains visible for audit.
+---
 
-The runner patches both:
+## Important scope limit
 
-- `data/diagnostics/pionex_full_decision_v1.json`
-- `data/diagnostics/pionex_grid_actionability_v1.json`
+v4.4 promotion-readiness is for **density on the current live band**.
 
-Both are already persisted by the existing automated workflow.
+It does not yet promote a corrected paired-cycle joint optimisation of:
+
+- centre,
+- width,
+- grid count.
+
+So a result such as "46 grids" means "46 grids on the current range being swept",
+not automatically "use the legacy optimizer's proposed new range with 46 grids."
+
+That joint paired-geometry step should come only after the density model is
+calibrated and stable.
 
 ---
 
 ## Acceptance checks after the run
 
-1. Workflow succeeds.
-2. `pionex_full_decision_v1.json` contains:
-   - `grid_density_sweep.version == "4.3"`
-   - `grid_density_sweep.paired_cycle_correction`
-   - `grid_density_sweep.paired_cycle_current_band_integer_sweep`
-3. Density source state matches the fresh API state.
-4. `synthetic_seed_profit_signature` reports whether the legacy median matches
-   the synthetic initial seeded-sell profit.
-5. If confirmed while production remains at the minimum boundary:
-   - final operational action is `KEEP_CURRENT`;
-   - blocker includes `GRID_PROFIT_INITIAL_SEED_ACCOUNTING_BIAS`.
-6. Legacy research output is still visible and unchanged.
-7. No Pionex write endpoint is used.
+Confirm:
+
+1. `pionex_full_decision_v1.json` contains
+   `grid_density_sweep.version == "4.4"`.
+2. `promotion_readiness.paired_calibration.evaluated_windows > 0`.
+3. When enough history exists,
+   `paired_calibration.status == "PAIRED_CALIBRATION_ACTIVE_WITH_HOLDOUT"`.
+4. `plateau_selector.expected_profit_champion` is present.
+5. `plateau_selector.robust_plateau_selection` is present.
+6. `paired_density_history` contains the latest capture.
+7. The first run will normally say `ACCUMULATING_EVIDENCE` because v4.3 history
+   did not yet contain the v4.4 plateau selector.
+8. If calibrated paired evidence materially contradicts the legacy 10-grid
+   boundary selection, final operational action should be `KEEP_CURRENT` with
+   blocker `PAIRED_CALIBRATED_DENSITY_CONFLICT`.
+9. `automatic_paired_promotion_allowed` must remain `false`.
+10. No Pionex write endpoint is called.
 
 ---
 
-## What to inspect next
+## After the first successful run
 
-After one successful v4.3 run, compare the paired-cycle curve at roughly:
+Send ChatGPT the repo again. We should inspect:
 
-5, 10, 15, 20, 22, 30, 40, 50, 60, 70, and the highest feasible density.
-
-We want to see:
-
-- where raw paired grid profit peaks;
-- whether the optimum is an interior density rather than a boundary;
-- where median paired profit peaks;
-- how P(0 paired cycles) changes;
-- whether 25+ / 50+ completed paired cycles are genuinely plausible;
-- whether high-density profitability is being limited mainly by order size,
-  fees, or insufficient volatility.
-
-Only after that should the paired-cycle model be independently calibrated and
-considered for operational promotion.
+- paired training/holdout calibration scales;
+- holdout profit and rounds error;
+- expected-profit plateau bounds;
+- robust plateau grid count;
+- current-vs-plateau calibrated gains;
+- whether the low-grid conflict safety blocker fired;
+- the order-notional estimate of the plateau candidate;
+- cross-run stability as it accumulates over subsequent automated runs.

@@ -1,0 +1,28 @@
+{
+  "schema": "pionex_execution_constraints_v1",
+  "version": "1.0",
+  "status": "DYNAMIC_LIVE_VALIDATION_REQUIRED",
+  "platform": "Pionex",
+  "pair": "ETH/USDT",
+  "bot_type": "Spot Grid",
+  "min_order_notional_usdt": null,
+  "min_quantity_eth": null,
+  "max_grids": 150,
+  "validated_candidate": null,
+  "policy": {
+    "do_not_invent_universal_minimum": true,
+    "exact_live_setup_validation_required_before_promotion": true,
+    "reason": "Pionex documents Spot Grid minimum investment as dynamic with the trading pair, range, grid count, spacing and current order rules. The live Pionex setup/edit panel is authoritative."
+  },
+  "how_to_record_validation": {
+    "validated_candidate_example": {
+      "lower_usdt": 2290.0,
+      "upper_usdt": 2730.0,
+      "grids": 46,
+      "accepted_by_pionex_ui": true,
+      "validated_at_utc": "REPLACE_WITH_REAL_TIMESTAMP",
+      "pionex_displayed_minimum_investment_usdt": "OPTIONAL_REAL_VALUE"
+    },
+    "instruction": "Only populate validated_candidate after entering the exact candidate range/grid count in Pionex and confirming the UI accepts the setup. Do not copy the example values unless they are the candidate actually validated."
+  }
+}
