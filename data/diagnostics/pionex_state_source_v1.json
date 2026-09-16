@@ -11,25 +11,32 @@
     ],
     "purpose": "Keep prospective 14-30h calibration windows statistically usable while allowing raw API capture to run hourly."
   },
-  "canonical_rows": 41,
-  "canonical_rows_appended_this_run": [],
+  "canonical_rows": 42,
+  "canonical_rows_appended_this_run": [
+    {
+      "captured_at_utc": "2026-09-16T07:54:58.509681+00:00",
+      "elapsed_h_from_previous_canonical": 24.0466,
+      "geometry_changed": false,
+      "reason": "DAILY_CANONICAL_GE_23H"
+    }
+  ],
   "counter_semantics": {
     "exchangeOrderPairedCount": "CONFIRMED_PIONEX_UI_HISTORY_COMPLETED_ROUNDS",
     "rounds_24h_policy": "Prefer paired-count delta against nearest raw API observation 24h +/-1.5h; fallback to ~daily canonical paired-count delta for 22-26h intervals.",
     "trx24h": "NOT_UI_24H_ROUNDS"
   },
-  "generated_at_utc": "2026-09-16T01:39:33.054588+00:00",
+  "generated_at_utc": "2026-09-16T07:54:58.601194+00:00",
   "historic_manual_archive": "data/pionex/manual_grid_states_v1.csv",
   "latest_runtime_state": {
-    "captured_at_local": "2026-09-16T03:39:32.957975+02:00",
-    "captured_at_utc": "2026-09-16T01:39:32.957975+00:00",
-    "current_price_usdt": 2394.27,
+    "captured_at_local": "2026-09-16T09:54:58.509681+02:00",
+    "captured_at_utc": "2026-09-16T07:54:58.509681+00:00",
+    "current_price_usdt": 2397.7,
     "grids": 40,
     "lower_limit_usdt": 2300.0,
     "quantity_per_grid_eth": 0.00182,
-    "rounds_24h": 35,
-    "rounds_total": 4596,
-    "source_note": "Automated read-only Pionex Bot API state; canonical_reason=RUNTIME_LATEST_NOT_CANONICAL; rounds_total is confirmed exchangeOrderPairedCount; total/trend P&L are mark-to-market reconstructions from bot balances and ETH/USDT ticker.",
+    "rounds_24h": 37,
+    "rounds_total": 4600,
+    "source_note": "Automated read-only Pionex Bot API state; canonical_reason=DAILY_CANONICAL_GE_23H; rounds_total is confirmed exchangeOrderPairedCount; total/trend P&L are mark-to-market reconstructions from bot balances and ETH/USDT ticker.",
     "upper_limit_usdt": 2650.0
   },
   "manual_archive_mutated": false,
