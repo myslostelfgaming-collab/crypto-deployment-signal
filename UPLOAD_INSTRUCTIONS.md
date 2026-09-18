@@ -1,200 +1,239 @@
-# Phase 4D v4.4 — paired calibration + robust density plateau
+# Phase 4.5 — Joint Paired-Cycle Geometry Optimiser
 
-## Upload these files
+This is the next development stage after v4.4.
 
-Add:
+## Upload
 
-1. `scripts/build_pionex_grid_geometry_optimizer_v5.py`
-2. `data/pionex/pionex_execution_constraints_v1.json`
+### Add
+1. `scripts/build_pionex_grid_geometry_optimizer_v6.py`
+2. `scripts/run_pionex_phase4_5_full_v1.py`
 
-Replace:
+### Replace
+3. `.github/workflows/pionex-automated-phase4d-ci.yml`
 
-3. `scripts/run_pionex_phase4d_full_v2.py`
+Do not delete or replace:
+- `build_pionex_grid_geometry_optimizer_v4.py`
+- `build_pionex_grid_geometry_optimizer_v5.py`
+- `run_pionex_phase4d_full_v2.py`
 
-Do **not** delete or replace `scripts/build_pionex_grid_geometry_optimizer_v4.py`.
-v5 intentionally wraps the existing v4.3 implementation so rollback/audit remain
-easy.
+Phase 4.5 intentionally wraps those validated layers.
 
-Then run:
+After upload, run:
 
-**Actions → Pionex Automated Phase 4D Decision CI → Run workflow**
-
-No workflow YAML change is required.
+**Actions → Pionex Automated Phase 4.5 Decision CI → Run workflow**
 
 ---
 
-## What v4.4 adds
+## What Phase 4.5 solves
 
-### 1. Independent paired-cycle walk-forward calibration
+v4.4 only optimises grid density on the current live band.
 
-v4.3 correctly changed the accounting semantics but still reused the legacy
-profit/round scale.
+Phase 4.5 jointly searches:
+- centre
+- width
+- grid count
 
-v4.4 reconstructs the corrected paired model at historical manual Pionex state
-windows using:
+using:
+- paired buy→sell grid-profit accounting;
+- paired-specific walk-forward calibration;
+- the promoted 5-minute replay;
+- actual live bot equity/state;
+- fresh post-edit rebalance sizing for changed candidates;
+- the same risk constraints used by the existing Phase 4D architecture.
 
-- the historical live range;
-- historical observed quantity/grid;
-- historical ETH/USDT balances;
-- only analogue paths that were already mature at that historical time;
-- the Phase 4D promoted replay resolution (5-minute when promoted);
-- only true replay buy → sell paired cycles as grid profit.
+It remains research-only.
 
-Earlier windows estimate the calibration scale. Chronologically later windows
-are held out and reported separately.
+---
 
-Expected output:
+## Important v4.4 hotfix included
 
-`grid_density_sweep.promotion_readiness.paired_calibration`
+The v4.4 plateau selector originally tried grid count 22 first when defining
+`current_band_live_density`.
 
-Key fields:
+The live bot later changed to 40 grids, so gain-vs-current percentages could be
+anchored to a hypothetical 22-grid row.
 
-- `status`
-- `calibration_ready`
-- `training_windows`
-- `validation_windows`
-- `profit_scale_applied`
-- `rounds_scale_applied`
-- `holdout_validation`
+Phase 4.5 repairs the current run before v4.4 history is updated:
 
-### 2. Robust plateau selector
+`phase4_5_hotfix.v44_current_live_density_anchor_repaired = true`
 
-v4.4 stops treating the single highest expected-profit grid count as a magic
-integer.
+Phase 4.5 itself does not use the old contaminated v4.4 stability history.
 
-It finds the contiguous grid-count region containing the expected-profit peak
-where every candidate retains at least **95% of peak expected paired profit**.
+---
 
-Inside that plateau it selects:
+## New diagnostic
 
-1. highest **median paired profit**;
-2. then lower P(0 paired cycles);
-3. then higher paired activity;
-4. then larger estimated order notional.
+`data/diagnostics/pionex_joint_paired_geometry_v1.json`
 
-This should naturally prefer a robust point in the broad ~35–46 region when the
-data continues to support it, rather than oscillating between e.g. 37 and 39.
+Schema:
 
-Expected output:
+`pionex_joint_paired_geometry_v1`
 
-`grid_density_sweep.promotion_readiness.plateau_selector`
+Version:
 
-### 3. Cross-run stability history
+`4.5`
 
-The runner preserves the previous full-decision history and appends each fresh
-v4.4 result.
+Key sections:
 
-Stability requires:
+- `current_status_quo_paired_benchmark`
+- `current_geometry_fresh_rebalance_counterfactual`
+- `paired_calibration`
+- `calibration_quality`
+- `risk_policy`
+- `search`
+- `selection`
+- `practical_candidate_exact_recompute`
+- `comparison_to_legacy_optimizer`
+- `best_eligible_by_grid_count`
+- `near_peak_candidates_top100`
 
-- at least 3 paired-calibrated runs;
-- robust selected grids spanning no more than 6 grids;
-- overlapping 95%-of-peak plateaus.
+---
 
-Output:
+## Search logic
 
-`paired_density_history`
+Coarse search uses the established Phase 4D envelope:
+- centre: ±4% around market, $20 coarse spacing;
+- width: 6%–19% of market, 2 percentage-point coarse spacing;
+- grids: 10–80 in steps of 5.
 
-and
+The strongest four corrected paired candidates are locally refined using:
+- centre ±$5 in $2.50 increments;
+- width ±0.5 percentage points;
+- grids ±3.
 
-`grid_density_sweep.promotion_readiness.cross_run_stability`
+Every changed candidate is sized as a hypothetical post-edit bot using:
+- the same total live equity;
+- the preserved active-order-notional budget;
+- a fresh rebalance seed.
 
-### 4. Pionex execution validation policy
+The status quo is evaluated separately using the actual live:
+- quantity/grid;
+- ETH balance;
+- USDT balance.
 
-Pionex does not publish one universal Spot Grid minimum that can safely be
-hard-coded for every pair/range/grid combination.
+---
 
-The new config:
+## Robust selector
 
-`data/pionex/pionex_execution_constraints_v1.json`
+Phase 4.5 does NOT simply choose one expected-profit argmax.
 
-therefore starts with dynamic live validation required.
+It keeps candidates:
+1. passing risk and known execution checks;
+2. within 95% of peak calibrated expected paired grid profit;
+3. then within 95% of the best median paired grid profit in that near-peak set.
 
-Known constraints can be added later, but an exact candidate is only marked
-live-validated when `validated_candidate.accepted_by_pionex_ui` is explicitly
-recorded after testing that exact setup in Pionex.
+It prefers a candidate surrounded by the greatest number of other near-peak
+geometries, then:
+- lower escape risk;
+- smaller change from the current bot;
+- higher median/expected paired profit;
+- larger order notional.
 
-**Do not fill the example validation values until an actual Pionex setup has
-been checked.**
+This is intended to favour a broad joint plateau rather than a fragile
+one-coordinate maximum.
 
-### 5. Stronger low-grid safety gate
+---
 
-v4.3 only blocked the legacy recommendation when its narrow synthetic
-seed-profit detector fired.
+## Practical rounding is now exact
 
-v4.4 adds a second, broader safety condition.
+Older output sometimes displayed rounded $5 bounds while leaving metrics from
+the unrounded candidate.
 
-If:
+Phase 4.5 rounds the selected bounds to the nearest $5 and SIMULATES THAT
+ROUNDED GEOMETRY AGAIN.
 
-- paired calibration is ready;
-- legacy production selection is pinned to the minimum grid-count boundary;
-- the robust paired plateau is materially denser;
-- and either the low-grid paired candidate has >=25% zero-cycle risk or the
-  calibrated paired plateau beats it by >=5% expected paired profit;
+The workflow fails if a practical candidate is emitted without:
 
-then the operational legacy geometry change is blocked with:
+`metrics_recomputed_for_rounded_bounds = true`
 
-`PAIRED_CALIBRATED_DENSITY_CONFLICT`
+---
 
-and operational action becomes:
+## Cross-run stability
+
+`pionex_full_decision_v1.json` now accumulates:
+
+`phase4_5_joint_history`
+
+The newest three material joint selections are called stable only if:
+- centre-offset span <= 1.5 percentage points;
+- width span <= 3.0 percentage points;
+- grid-count span <= 10.
+
+This is deliberately broader than v4.4 density-only stability because Phase 4.5
+is solving three variables at once.
+
+---
+
+## Safety
+
+Phase 4.5 can add:
+
+`PAIRED_JOINT_GEOMETRY_CONFLICT`
+
+when its corrected joint evidence materially contradicts the legacy
+centre/width/grid recommendation.
+
+That blocker can force/retain:
 
 `KEEP_CURRENT`
 
-This is intentionally **one-way**.
+But:
 
-The paired model may block a suspect legacy change, but v4.4 will **not**
-automatically move the bot to the paired candidate.
+`automatic_joint_promotion_allowed = false`
 
----
+is a hard invariant.
 
-## Important scope limit
+Phase 4.5 cannot automatically move the live bot.
 
-v4.4 promotion-readiness is for **density on the current live band**.
-
-It does not yet promote a corrected paired-cycle joint optimisation of:
-
-- centre,
-- width,
-- grid count.
-
-So a result such as "46 grids" means "46 grids on the current range being swept",
-not automatically "use the legacy optimizer's proposed new range with 46 grids."
-
-That joint paired-geometry step should come only after the density model is
-calibrated and stable.
+A changed geometry still needs:
+1. repeated/stable joint evidence;
+2. exact live Pionex setup validation;
+3. manual review.
 
 ---
 
-## Acceptance checks after the run
+## Calibration caution
 
-Confirm:
+The paired calibration is statistically active, but recent holdout percentage
+errors have been large.
 
-1. `pionex_full_decision_v1.json` contains
-   `grid_density_sweep.version == "4.4"`.
-2. `promotion_readiness.paired_calibration.evaluated_windows > 0`.
-3. When enough history exists,
-   `paired_calibration.status == "PAIRED_CALIBRATION_ACTIVE_WITH_HOLDOUT"`.
-4. `plateau_selector.expected_profit_champion` is present.
-5. `plateau_selector.robust_plateau_selection` is present.
-6. `paired_density_history` contains the latest capture.
-7. The first run will normally say `ACCUMULATING_EVIDENCE` because v4.3 history
-   did not yet contain the v4.4 plateau selector.
-8. If calibrated paired evidence materially contradicts the legacy 10-grid
-   boundary selection, final operational action should be `KEEP_CURRENT` with
-   blocker `PAIRED_CALIBRATED_DENSITY_CONFLICT`.
-9. `automatic_paired_promotion_allowed` must remain `false`.
-10. No Pionex write endpoint is called.
+Phase 4.5 therefore records:
+
+`calibration_quality`
+
+and raises:
+
+`CAUTION_HIGH_HOLDOUT_PERCENTAGE_ERROR`
+
+when profit or rounds holdout MAPE exceeds 100%.
+
+This does not stop research ranking, but it prevents us from pretending that
+small dollar differences are precise.
 
 ---
 
-## After the first successful run
+## Acceptance checks after first run
 
-Send ChatGPT the repo again. We should inspect:
+Check that:
 
-- paired training/holdout calibration scales;
-- holdout profit and rounds error;
-- expected-profit plateau bounds;
-- robust plateau grid count;
-- current-vs-plateau calibrated gains;
-- whether the low-grid conflict safety blocker fired;
-- the order-notional estimate of the plateau candidate;
-- cross-run stability as it accumulates over subsequent automated runs.
+1. workflow passes;
+2. `pionex_joint_paired_geometry_v1.json` exists;
+3. version is `4.5`;
+4. its source capture matches the latest Pionex API state;
+5. `current_status_quo_paired_benchmark.grids` equals the ACTUAL live bot;
+6. `phase4_5_hotfix.v44_current_live_density_anchor_repaired == true`;
+7. a joint search candidate count is reported;
+8. practical candidate metrics are recomputed if a practical candidate exists;
+9. full decision contains `phase4_5_joint_paired_geometry`;
+10. `phase4_5_joint_history` gets the current run;
+11. `automatic_joint_promotion_allowed == false`;
+12. operational output remains manual/safety-gated.
+
+After the run, send ChatGPT back to the repo. The main questions will be:
+- does corrected paired geometry want the band centred lower/higher?
+- does it want a different width?
+- what grid count belongs on that new band?
+- is the result materially better than staying on the live bot?
+- what does the legacy 10-grid candidate look like under corrected paired
+  accounting?
+- does the same joint region recur over the next several automated runs?
