@@ -1,17 +1,16 @@
-name: Pionex Automated Phase 4D Decision CI
+name: Pionex Automated Phase 4.5 Decision CI
 
 on:
   workflow_dispatch: {}
   schedule:
-    # Full 4D decision every 3 hours, aligned to 04:42 SAST then every 3h. Cron is UTC.
-    # Raw API capture also runs hourly in pionex-api-snapshot-ci.yml.
+    # Full Phase 4.5 decision every 3 hours, aligned to 04:42 SAST then every 3h.
+    # Cron is UTC. Raw API capture also runs hourly.
     - cron: "42 2,5,8,11,14,17,20,23 * * *"
 
 permissions:
   contents: write
 
 concurrency:
-  # Share the lock with the existing manual full Phase 4D workflow.
   group: phase4d-full-pionex-decision
   cancel-in-progress: false
 
@@ -50,17 +49,13 @@ jobs:
           test -s data/pionex/runtime_grid_states_v1.csv
           test -s data/diagnostics/pionex_state_source_v1.json
 
-      - name: Run Phase 4D against fresh API runtime state
+      - name: Run Phase 4.5 against fresh API runtime state
         run: |
-          # Core Phase 4D scripts currently read the legacy hard-coded
-          # manual_grid_states_v1.csv path. Keep the historic manual file immutable:
-          # temporarily substitute the runtime view, then restore it regardless of
-          # Phase 4D success/failure.
           cp data/pionex/manual_grid_states_v1.csv /tmp/manual_grid_states_v1.audit.csv
           cp data/pionex/runtime_grid_states_v1.csv data/pionex/manual_grid_states_v1.csv
 
           set +e
-          python scripts/run_pionex_phase4d_full_v2.py
+          python scripts/run_pionex_phase4_5_full_v1.py
           phase_status=$?
           set -e
 
@@ -69,7 +64,6 @@ jobs:
 
       - name: Validate immutable manual archive and full outputs
         run: |
-          # The original screenshot archive must remain unchanged.
           if ! git diff --quiet -- data/pionex/manual_grid_states_v1.csv; then
             echo "Safety invariant failed: manual screenshot archive was modified."
             git diff -- data/pionex/manual_grid_states_v1.csv
@@ -85,6 +79,8 @@ jobs:
           test -s data/pionex/grid_geometry_recommendations_v1.csv
           test -s data/diagnostics/pionex_grid_actionability_v1.json
           test -s data/pionex/grid_activity_windows_v1.csv
+          test -s data/diagnostics/pionex_grid_density_sweep_v1.json
+          test -s data/diagnostics/pionex_joint_paired_geometry_v1.json
           test -s data/diagnostics/pionex_full_decision_v1.json
 
           python - <<'PY'
@@ -97,30 +93,64 @@ jobs:
           decision = json.loads(
               Path("data/diagnostics/pionex_full_decision_v1.json").read_text(encoding="utf-8")
           )
+          joint = json.loads(
+              Path("data/diagnostics/pionex_joint_paired_geometry_v1.json").read_text(encoding="utf-8")
+          )
 
           if source.get("status") != "API_PRIMARY_UI_PARITY_CONFIRMED":
               raise SystemExit(f"Unexpected state-source status: {source.get('status')}")
           if decision.get("schema") != "pionex_full_decision_v1":
               raise SystemExit(f"Unexpected full-decision schema: {decision.get('schema')}")
+          if joint.get("schema") != "pionex_joint_paired_geometry_v1":
+              raise SystemExit(f"Unexpected Phase 4.5 schema: {joint.get('schema')}")
+          if joint.get("version") != "4.5":
+              raise SystemExit(f"Unexpected Phase 4.5 version: {joint.get('version')}")
 
           latest_source = source.get("latest_runtime_state") or {}
           decision_source = decision.get("source_state") or {}
-          if latest_source.get("captured_at_utc") != decision_source.get("captured_at_utc"):
+          joint_source = joint.get("source_state") or {}
+
+          expected_capture = latest_source.get("captured_at_utc")
+          if expected_capture != decision_source.get("captured_at_utc"):
               raise SystemExit(
-                  "Phase 4D did not consume the latest API runtime state: "
-                  f"{latest_source.get('captured_at_utc')} vs {decision_source.get('captured_at_utc')}"
+                  "Full decision did not consume latest API runtime state: "
+                  f"{expected_capture} vs {decision_source.get('captured_at_utc')}"
+              )
+          if expected_capture != joint_source.get("captured_at_utc"):
+              raise SystemExit(
+                  "Phase 4.5 did not consume latest API runtime state: "
+                  f"{expected_capture} vs {joint_source.get('captured_at_utc')}"
               )
 
           integrity = decision.get("pipeline_integrity") or {}
           if not integrity or not all(value is True for value in integrity.values()):
               raise SystemExit(f"Phase 4D pipeline integrity failed: {integrity}")
 
-          print("Automated API -> canonical state -> Phase 4D validation passed.")
+          phase45 = decision.get("phase4_5_joint_paired_geometry") or {}
+          if not phase45:
+              raise SystemExit("Phase 4.5 summary missing from full decision")
+          if (
+              (decision.get("paired_cycle_validation") or {})
+              .get("phase4_5", {})
+              .get("automatic_joint_promotion_allowed")
+              is not False
+          ):
+              raise SystemExit("Safety invariant failed: automatic joint promotion enabled")
+
+          practical = joint.get("practical_candidate_exact_recompute") or {}
+          if practical and practical.get("lower_usdt") is not None:
+              if practical.get("metrics_recomputed_for_rounded_bounds") is not True:
+                  raise SystemExit(
+                      "Practical Phase 4.5 candidate exists without exact metric recomputation"
+                  )
+
+          print("Automated API -> Phase 4.5 validation passed.")
           print("Latest source:", latest_source)
+          print("Phase 4.5:", phase45.get("selection"))
           print("Operational:", decision.get("operational_decision"))
           PY
 
-      - name: Write automated decision summary
+      - name: Write automated Phase 4.5 summary
         run: |
           python - <<'PY'
           import json, os
@@ -129,19 +159,20 @@ jobs:
           source = json.loads(
               Path("data/diagnostics/pionex_state_source_v1.json").read_text(encoding="utf-8")
           )
-          s = json.loads(
+          d = json.loads(
               Path("data/diagnostics/pionex_full_decision_v1.json").read_text(encoding="utf-8")
           )
 
           latest = source.get("latest_runtime_state") or {}
-          execution = s.get("execution_resolution") or {}
-          calibration = s.get("calibration") or {}
-          research = s.get("research_decision") or {}
-          op = s.get("operational_decision") or {}
-          selected = research.get("selected_geometry") or {}
+          execution = d.get("execution_resolution") or {}
+          phase45 = d.get("phase4_5_joint_paired_geometry") or {}
+          selection = phase45.get("selection") or {}
+          chosen = selection.get("robust_joint_selection") or {}
+          practical = phase45.get("practical_candidate_exact_recompute") or {}
+          op = d.get("operational_decision") or {}
 
           lines = [
-              "# Automated Pionex Phase 4D Decision",
+              "# Automated Pionex Phase 4.5 Decision",
               "",
               "**State source:** `Pionex read-only Bot API`",
               f"**Operational decision:** `{op.get('action')}`",
@@ -151,27 +182,28 @@ jobs:
               f"- Captured: `{latest.get('captured_at_local')}`",
               f"- Price: `${latest.get('current_price_usdt')}`",
               f"- Geometry: `${latest.get('lower_limit_usdt')}–${latest.get('upper_limit_usdt')}` / `{latest.get('grids')}` grids",
-              f"- History rounds: `{latest.get('rounds_total')}`",
               f"- Derived 24h rounds: `{latest.get('rounds_24h')}`",
               "",
-              "## Evidence",
-              f"- Calibration: `{calibration.get('status')}` / `{calibration.get('evaluated_windows')}` windows",
-              f"- Execution: `{execution.get('active_execution_resolution')}` / `{execution.get('status')}`",
-              f"- Research action: `{research.get('action')}`",
-              f"- Confidence: `{research.get('confidence')}`",
-              f"- Selected geometry: `${selected.get('lower_usdt')}–${selected.get('upper_usdt')}` / `{selected.get('grids')}` grids",
+              "## Phase 4.5 paired joint research",
+              f"- Execution replay: `{execution.get('active_execution_resolution')}`",
+              f"- Selection status: `{selection.get('status')}`",
+              f"- Research action: `{selection.get('research_action')}`",
+              f"- Robust raw geometry: `${chosen.get('lower_usdt')}–${chosen.get('upper_usdt')}` / `{chosen.get('grids')}` grids",
+              f"- Practical exact-recomputed geometry: `${practical.get('lower_usdt')}–${practical.get('upper_usdt')}` / `{practical.get('grids')}` grids",
+              f"- Expected paired gain vs current: `{selection.get('expected_profit_gain_vs_current_pct')}%`",
+              f"- Joint stability: `{(phase45.get('cross_run_stability') or {}).get('status')}`",
+              f"- Promotion status: `{phase45.get('promotion_status')}`",
               "",
-              f"- Canonical rows appended this run: `{source.get('canonical_rows_appended_this_run')}`",
               f"- Blockers: `{op.get('blockers')}`",
           ]
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
               f.write("\n".join(lines) + "\n")
           PY
 
-      - name: Upload automated Phase 4D bundle
+      - name: Upload automated Phase 4.5 bundle
         uses: actions/upload-artifact@v4
         with:
-          name: pionex-automated-phase4d-v2
+          name: pionex-automated-phase4-5-v1
           path: |
             data/pionex/api_bot_state_latest_v1.json
             data/pionex/api_grid_states_v1.csv
@@ -189,9 +221,11 @@ jobs:
             data/pionex/grid_geometry_recommendations_v1.csv
             data/diagnostics/pionex_grid_actionability_v1.json
             data/pionex/grid_activity_windows_v1.csv
+            data/diagnostics/pionex_grid_density_sweep_v1.json
+            data/diagnostics/pionex_joint_paired_geometry_v1.json
           if-no-files-found: error
 
-      - name: Persist API, state-model, and Phase 4D outputs
+      - name: Persist API, state-model, Phase 4D and Phase 4.5 outputs
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -212,7 +246,9 @@ jobs:
             data/diagnostics/pionex_grid_calibration_v2.json \
             data/pionex/grid_geometry_recommendations_v1.csv \
             data/diagnostics/pionex_grid_actionability_v1.json \
-            data/pionex/grid_activity_windows_v1.csv
+            data/pionex/grid_activity_windows_v1.csv \
+            data/diagnostics/pionex_grid_density_sweep_v1.json \
+            data/diagnostics/pionex_joint_paired_geometry_v1.json
 
           if ! git diff --quiet; then
             echo "Unexpected unstaged tracked changes remain:"
@@ -221,6 +257,6 @@ jobs:
           fi
 
           git diff --cached --quiet && echo "No automated Pionex changes" && exit 0
-          git commit -m "Automated Pionex API Phase 4D decision [skip ci]"
+          git commit -m "Automated Pionex Phase 4.5 joint decision [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
