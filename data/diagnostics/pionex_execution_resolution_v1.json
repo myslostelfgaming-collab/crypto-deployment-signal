@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-09-20T07:55:37.255524+00:00",
+  "generated_at_utc": "2026-09-20T13:13:06.813148+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 11207,
+    "persisted_5m_rows": 11270,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-09-20T07:45:00+00:00",
+    "persisted_5m_last_utc": "2026-09-20T13:00:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -31,31 +31,31 @@
   "resolution_metrics": {
     "1hour": {
       "windows": 32,
-      "profit_mae_usdt": 0.06419182,
-      "rounds_mae": 1.5625,
-      "mean_profit_relative_error": 0.293387,
-      "mean_rounds_relative_error": 0.301622,
-      "combined_relative_error_score": 0.297505,
+      "profit_mae_usdt": 0.06384257,
+      "rounds_mae": 1.53125,
+      "mean_profit_relative_error": 0.288726,
+      "mean_rounds_relative_error": 0.296694,
+      "combined_relative_error_score": 0.29271,
       "rounds_within_path_ambiguity_pct": 43.75,
       "profit_within_path_ambiguity_pct": 40.625
     },
     "15min": {
       "windows": 32,
-      "profit_mae_usdt": 0.04867607,
-      "rounds_mae": 1.875,
-      "mean_profit_relative_error": 0.230655,
-      "mean_rounds_relative_error": 0.245642,
-      "combined_relative_error_score": 0.238148,
+      "profit_mae_usdt": 0.04850181,
+      "rounds_mae": 1.859375,
+      "mean_profit_relative_error": 0.226472,
+      "mean_rounds_relative_error": 0.241195,
+      "combined_relative_error_score": 0.233833,
       "rounds_within_path_ambiguity_pct": 25.0,
       "profit_within_path_ambiguity_pct": 25.0
     },
     "5min": {
       "windows": 32,
-      "profit_mae_usdt": 0.04383108,
+      "profit_mae_usdt": 0.04383179,
       "rounds_mae": 1.59375,
-      "mean_profit_relative_error": 0.199514,
-      "mean_rounds_relative_error": 0.213182,
-      "combined_relative_error_score": 0.206348,
+      "mean_profit_relative_error": 0.19827,
+      "mean_rounds_relative_error": 0.21174,
+      "combined_relative_error_score": 0.205005,
       "rounds_within_path_ambiguity_pct": 34.375,
       "profit_within_path_ambiguity_pct": 31.25
     }
@@ -67,7 +67,7 @@
     "active_execution_resolution": "5min",
     "windows_evaluated": 32,
     "minimum_windows_to_promote": 3,
-    "candidate_improvement_vs_1hour_pct": 30.640493,
+    "candidate_improvement_vs_1hour_pct": 29.963103,
     "minimum_required_improvement_vs_1hour_pct": 10.0,
     "coarsest_within_best_tolerance_pct": 5.0,
     "hard_execution_resolution_floor": "5min",
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 932,
+    "n": 937,
     "mean_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.00024218,
-      "low": 0.000253,
-      "close": 0.00016644
+      "high": 0.00023077,
+      "low": 0.0,
+      "close": 0.00032624
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -95,15 +95,15 @@
     },
     "max_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.22570825,
-      "low": 0.23579143,
-      "close": 0.15512594
+      "high": 0.21623472,
+      "low": 0.0,
+      "close": 0.30568433
     },
     "worst_close": {
-      "timestamp_utc": "2026-09-20T06:00:00+00:00",
-      "derived_close": 2574.55,
-      "reference_close": 2578.55,
-      "abs_pct_diff": 0.15512594
+      "timestamp_utc": "2026-09-20T11:00:00+00:00",
+      "derived_close": 2579.14,
+      "reference_close": 2571.28,
+      "abs_pct_diff": 0.30568433
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
