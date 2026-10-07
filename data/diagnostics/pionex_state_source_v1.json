@@ -11,13 +11,13 @@
     ],
     "purpose": "Keep prospective 14-30h calibration windows statistically usable while allowing raw API capture to run hourly."
   },
-  "canonical_rows": 65,
+  "canonical_rows": 66,
   "canonical_rows_appended_this_run": [
     {
-      "captured_at_utc": "2026-10-07T08:50:38.864643+00:00",
-      "elapsed_h_from_previous_canonical": 23.4243,
-      "geometry_changed": false,
-      "reason": "DAILY_CANONICAL_GE_23H"
+      "captured_at_utc": "2026-10-07T16:38:45.278610+00:00",
+      "elapsed_h_from_previous_canonical": 7.8018,
+      "geometry_changed": true,
+      "reason": "STRUCTURAL_BREAK_GEOMETRY_CHANGE"
     }
   ],
   "counter_semantics": {
@@ -25,26 +25,26 @@
     "rounds_24h_policy": "Prefer paired-count delta against nearest raw API observation 24h +/-1.5h; fallback to ~daily canonical paired-count delta for 22-26h intervals.",
     "trx24h": "NOT_UI_24H_ROUNDS"
   },
-  "generated_at_utc": "2026-10-07T09:20:08.051559+00:00",
+  "generated_at_utc": "2026-10-07T17:58:10.349600+00:00",
   "historic_manual_archive": "data/pionex/manual_grid_states_v1.csv",
   "latest_runtime_state": {
-    "captured_at_local": "2026-10-07T11:20:07.942666+02:00",
-    "captured_at_utc": "2026-10-07T09:20:07.942666+00:00",
-    "current_price_usdt": 2605.69,
+    "captured_at_local": "2026-10-07T19:58:10.246990+02:00",
+    "captured_at_utc": "2026-10-07T17:58:10.246990+00:00",
+    "current_price_usdt": 2551.63,
     "grids": 35,
-    "lower_limit_usdt": 2500.0,
-    "quantity_per_grid_eth": 0.00195,
-    "rounds_24h": 9,
-    "rounds_total": 5063,
+    "lower_limit_usdt": 2450.0,
+    "quantity_per_grid_eth": 0.00196,
+    "rounds_24h": 11,
+    "rounds_total": 5067,
     "source_note": "Automated read-only Pionex Bot API state; canonical_reason=RUNTIME_LATEST_NOT_CANONICAL; rounds_total is confirmed exchangeOrderPairedCount; total/trend P&L are mark-to-market reconstructions from bot balances and ETH/USDT ticker.",
-    "upper_limit_usdt": 2850.0
+    "upper_limit_usdt": 2800.0
   },
   "manual_archive_mutated": false,
   "model_seeded_from_manual_this_run": false,
   "phase4d_runtime_history": "data/pionex/runtime_grid_states_v1.csv",
   "raw_api_history": "data/pionex/api_grid_states_v1.csv",
   "runtime_policy": "Phase 4D receives canonical history plus at most one fresh latest API row. The hourly raw ledger is never passed wholesale into calibration.",
-  "runtime_rows": 66,
+  "runtime_rows": 67,
   "schema": "pionex_state_source_v1",
   "status": "API_PRIMARY_UI_PARITY_CONFIRMED"
 }
