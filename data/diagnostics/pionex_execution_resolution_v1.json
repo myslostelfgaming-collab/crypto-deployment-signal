@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-10-10T16:23:15.564695+00:00",
+  "generated_at_utc": "2026-10-10T20:42:13.493458+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 17068,
+    "persisted_5m_rows": 17120,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-10-10T16:10:00+00:00",
+    "persisted_5m_last_utc": "2026-10-10T20:30:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 1419,
+    "n": 1424,
     "mean_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
+      "high": 9.066e-05,
       "low": 0.0,
-      "close": 8.5e-07
+      "close": 6.38e-05
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -95,15 +95,15 @@
     },
     "max_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
+      "high": 0.12909807,
       "low": 0.0,
-      "close": 0.00120042
+      "close": 0.09084679
     },
     "worst_close": {
-      "timestamp_utc": "2026-10-10T13:00:00+00:00",
-      "derived_close": 2499.09,
-      "reference_close": 2499.12,
-      "abs_pct_diff": 0.00120042
+      "timestamp_utc": "2026-10-10T18:00:00+00:00",
+      "derived_close": 2512.0,
+      "reference_close": 2509.72,
+      "abs_pct_diff": 0.09084679
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
