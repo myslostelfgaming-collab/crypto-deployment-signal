@@ -1,6 +1,6 @@
 {
   "schema": "luno_point_tournament_v1",
-  "generated_at_utc": "2026-10-16T07:03:51.315024+00:00",
+  "generated_at_utc": "2026-10-16T12:19:28.571373+00:00",
   "status": "DIAGNOSTIC_ONLY",
   "objective": "minimise absolute BTC USD price error at Luno Price Predict settlement time",
   "settlement_truth_status": "KUCOIN_BTC_USDT_PROXY_NOT_LUNO_INTERNAL_RATE",
@@ -23,56 +23,56 @@
     "mean_reversion_shrink_note": "0.13 coefficient is research-only and was discovered on prior broad 48h history; it must not be treated as an independent validation result."
   },
   "data_quality": {
-    "btc_price_points": 2061,
-    "btc_prediction_rows": 5724,
-    "btc_feature_rows": 2061,
-    "challenge_rows": 23
+    "btc_price_points": 2062,
+    "btc_prediction_rows": 5728,
+    "btc_feature_rows": 2062,
+    "challenge_rows": 24
   },
   "weekly": {
-    "n_challenges_with_proxy_settlement": 19,
+    "n_challenges_with_proxy_settlement": 20,
     "historical_proxy_champion": "persistence",
     "promotion_status": "PERSISTENCE_CHAMPION",
     "models": {
       "persistence": {
-        "n": 19,
-        "mae_usd": 2126.9842,
-        "median_ae_usd": 1422.4,
+        "n": 20,
+        "mae_usd": 2075.275,
+        "median_ae_usd": 1374.35,
         "wins_vs_persistence": 0,
         "win_rate_vs_persistence_pct": 0.0,
-        "paired_persistence_mae_usd": 2126.9842,
+        "paired_persistence_mae_usd": 2075.275,
         "mae_improvement_vs_persistence_pct": 0.0
       },
       "similarity_v2": {
-        "n": 14,
-        "mae_usd": 2944.3015,
-        "median_ae_usd": 2279.3434,
+        "n": 15,
+        "mae_usd": 2863.9202,
+        "median_ae_usd": 2098.4011,
         "wins_vs_persistence": 3,
-        "win_rate_vs_persistence_pct": 21.43,
-        "paired_persistence_mae_usd": 2554.2071,
-        "mae_improvement_vs_persistence_pct": -15.2726
+        "win_rate_vs_persistence_pct": 20.0,
+        "paired_persistence_mae_usd": 2456.78,
+        "mae_improvement_vs_persistence_pct": -16.5721
       },
       "mean_reversion_48h_full": {
-        "n": 19,
-        "mae_usd": 2910.3545,
-        "median_ae_usd": 1842.5156,
-        "wins_vs_persistence": 6,
-        "win_rate_vs_persistence_pct": 31.58,
-        "paired_persistence_mae_usd": 2126.9842,
-        "mae_improvement_vs_persistence_pct": -36.8301
+        "n": 20,
+        "mae_usd": 2817.7499,
+        "median_ae_usd": 1761.4178,
+        "wins_vs_persistence": 7,
+        "win_rate_vs_persistence_pct": 35.0,
+        "paired_persistence_mae_usd": 2075.275,
+        "mae_improvement_vs_persistence_pct": -35.7772
       },
       "mean_reversion_48h_shrunk_0p13": {
-        "n": 19,
-        "mae_usd": 2198.4438,
-        "median_ae_usd": 1441.139,
-        "wins_vs_persistence": 6,
-        "win_rate_vs_persistence_pct": 31.58,
-        "paired_persistence_mae_usd": 2126.9842,
-        "mae_improvement_vs_persistence_pct": -3.3597
+        "n": 20,
+        "mae_usd": 2142.9371,
+        "median_ae_usd": 1312.509,
+        "wins_vs_persistence": 7,
+        "win_rate_vs_persistence_pct": 35.0,
+        "paired_persistence_mae_usd": 2075.275,
+        "mae_improvement_vs_persistence_pct": -3.2604
       }
     },
     "alignment": {
-      "median_absolute_gap_vs_generic_horizon_hours": 0.5986,
-      "median_settlement_proxy_timestamp_error_minutes": 18.37
+      "median_absolute_gap_vs_generic_horizon_hours": 0.5081,
+      "median_settlement_proxy_timestamp_error_minutes": 18.75
     }
   },
   "monthly": {
@@ -811,6 +811,36 @@
         "similarity_v2": 4560.6707,
         "mean_reversion_48h_full": 367.7416,
         "mean_reversion_48h_shrunk_0p13": 1946.4944
+      }
+    },
+    {
+      "challenge_type": "weekly",
+      "cutoff_utc": "2026-10-14T12:00:00+00:00",
+      "settlement_utc": "2026-10-16T12:00:00+00:00",
+      "reference_horizon_h": 48,
+      "entry_snapshot_utc": "2026-10-14T11:34:57+00:00",
+      "entry_snapshot_minutes_before_cutoff": 25.05,
+      "entry_price": 83423.7,
+      "settlement_proxy_snapshot_utc": "2026-10-16T12:19:07+00:00",
+      "settlement_proxy_diff_minutes": 19.12,
+      "settlement_proxy_price": 82330.9,
+      "actual_return_pct": -1.30994,
+      "actual_hours_from_entry_snapshot": 48.4175,
+      "horizon_alignment_gap_hours": 0.4175,
+      "similarity_prediction_created_utc": "2026-10-14T11:34:56.991792+00:00",
+      "feature_snapshot_utc": "2026-10-14T11:34:57+00:00",
+      "ret48_at_entry_pct": 0.0414,
+      "forecasts": {
+        "persistence": 83423.7,
+        "similarity_v2": 84069.4829,
+        "mean_reversion_48h_full": 83389.1626,
+        "mean_reversion_48h_shrunk_0p13": 83419.2101
+      },
+      "absolute_errors": {
+        "persistence": 1092.8,
+        "similarity_v2": 1738.5829,
+        "mean_reversion_48h_full": 1058.2626,
+        "mean_reversion_48h_shrunk_0p13": 1088.3101
       }
     }
   ],
