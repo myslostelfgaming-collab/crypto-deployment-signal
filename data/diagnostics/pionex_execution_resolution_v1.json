@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-10-18T01:31:57.603276+00:00",
+  "generated_at_utc": "2026-10-18T07:25:40.296456+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 19194,
+    "persisted_5m_rows": 19265,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-10-18T01:20:00+00:00",
+    "persisted_5m_last_utc": "2026-10-18T07:15:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -31,31 +31,31 @@
   "resolution_metrics": {
     "1hour": {
       "windows": 54,
-      "profit_mae_usdt": 0.05052176,
-      "rounds_mae": 2.0,
-      "mean_profit_relative_error": 0.245308,
-      "mean_rounds_relative_error": 0.252747,
-      "combined_relative_error_score": 0.249028,
-      "rounds_within_path_ambiguity_pct": 44.4444,
-      "profit_within_path_ambiguity_pct": 44.4444
+      "profit_mae_usdt": 0.05077511,
+      "rounds_mae": 2.01851852,
+      "mean_profit_relative_error": 0.245975,
+      "mean_rounds_relative_error": 0.253409,
+      "combined_relative_error_score": 0.249692,
+      "rounds_within_path_ambiguity_pct": 42.5926,
+      "profit_within_path_ambiguity_pct": 42.5926
     },
     "15min": {
       "windows": 54,
-      "profit_mae_usdt": 0.04504129,
+      "profit_mae_usdt": 0.04504159,
       "rounds_mae": 2.5462963,
-      "mean_profit_relative_error": 0.219509,
-      "mean_rounds_relative_error": 0.232098,
-      "combined_relative_error_score": 0.225804,
+      "mean_profit_relative_error": 0.217927,
+      "mean_rounds_relative_error": 0.230511,
+      "combined_relative_error_score": 0.224219,
       "rounds_within_path_ambiguity_pct": 29.6296,
       "profit_within_path_ambiguity_pct": 29.6296
     },
     "5min": {
       "windows": 54,
-      "profit_mae_usdt": 0.03718434,
+      "profit_mae_usdt": 0.03718464,
       "rounds_mae": 1.94444444,
-      "mean_profit_relative_error": 0.172441,
-      "mean_rounds_relative_error": 0.184139,
-      "combined_relative_error_score": 0.17829,
+      "mean_profit_relative_error": 0.171254,
+      "mean_rounds_relative_error": 0.182948,
+      "combined_relative_error_score": 0.177101,
       "rounds_within_path_ambiguity_pct": 33.3333,
       "profit_within_path_ambiguity_pct": 35.1852
     }
@@ -67,7 +67,7 @@
     "active_execution_resolution": "5min",
     "windows_evaluated": 54,
     "minimum_windows_to_promote": 3,
-    "candidate_improvement_vs_1hour_pct": 28.405641,
+    "candidate_improvement_vs_1hour_pct": 29.072217,
     "minimum_required_improvement_vs_1hour_pct": 10.0,
     "coarsest_within_best_tolerance_pct": 5.0,
     "hard_execution_resolution_floor": "5min",
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 1598,
+    "n": 1603,
     "mean_abs_pct_diff": {
       "open": 0.0,
       "high": 0.0,
       "low": 0.0,
-      "close": 1.56e-05
+      "close": 4.635e-05
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -97,13 +97,13 @@
       "open": 0.0,
       "high": 0.0,
       "low": 0.0,
-      "close": 0.02493527
+      "close": 0.07429482
     },
     "worst_close": {
-      "timestamp_utc": "2026-10-18T00:00:00+00:00",
-      "derived_close": 2405.63,
-      "reference_close": 2406.23,
-      "abs_pct_diff": 0.02493527
+      "timestamp_utc": "2026-10-18T05:00:00+00:00",
+      "derived_close": 2411.11,
+      "reference_close": 2409.32,
+      "abs_pct_diff": 0.07429482
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
