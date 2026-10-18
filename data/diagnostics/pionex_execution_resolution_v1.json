@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-10-18T17:33:06.304286+00:00",
+  "generated_at_utc": "2026-10-18T19:41:15.175916+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 19386,
+    "persisted_5m_rows": 19412,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-10-18T17:20:00+00:00",
+    "persisted_5m_last_utc": "2026-10-18T19:30:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 1612,
+    "n": 1616,
     "mean_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
-      "low": 0.0,
-      "close": 1.357e-05
+      "high": 3.445e-05,
+      "low": 0.00021872,
+      "close": 7.334e-05
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -95,15 +95,15 @@
     },
     "max_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
-      "low": 0.0,
-      "close": 0.02186877
+      "high": 0.055676,
+      "low": 0.35345824,
+      "close": 0.11852239
     },
     "worst_close": {
-      "timestamp_utc": "2026-10-18T14:00:00+00:00",
-      "derived_close": 2377.3,
-      "reference_close": 2377.82,
-      "abs_pct_diff": 0.02186877
+      "timestamp_utc": "2026-10-18T18:00:00+00:00",
+      "derived_close": 2368.05,
+      "reference_close": 2370.86,
+      "abs_pct_diff": 0.11852239
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
