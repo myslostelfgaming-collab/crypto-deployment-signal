@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-10-20T02:04:52.282645+00:00",
+  "generated_at_utc": "2026-10-20T07:55:48.228282+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 19776,
+    "persisted_5m_rows": 19847,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-10-20T01:50:00+00:00",
+    "persisted_5m_last_utc": "2026-10-20T07:45:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -31,31 +31,31 @@
   "resolution_metrics": {
     "1hour": {
       "windows": 56,
-      "profit_mae_usdt": 0.0498214,
-      "rounds_mae": 2.00892857,
-      "mean_profit_relative_error": 0.241374,
-      "mean_rounds_relative_error": 0.248518,
-      "combined_relative_error_score": 0.244946,
+      "profit_mae_usdt": 0.05018572,
+      "rounds_mae": 2.03571429,
+      "mean_profit_relative_error": 0.243528,
+      "mean_rounds_relative_error": 0.250683,
+      "combined_relative_error_score": 0.247106,
       "rounds_within_path_ambiguity_pct": 42.8571,
       "profit_within_path_ambiguity_pct": 42.8571
     },
     "15min": {
       "windows": 56,
-      "profit_mae_usdt": 0.0442909,
+      "profit_mae_usdt": 0.04429079,
       "rounds_mae": 2.51785714,
-      "mean_profit_relative_error": 0.214318,
-      "mean_rounds_relative_error": 0.226438,
-      "combined_relative_error_score": 0.220378,
+      "mean_profit_relative_error": 0.21425,
+      "mean_rounds_relative_error": 0.226371,
+      "combined_relative_error_score": 0.22031,
       "rounds_within_path_ambiguity_pct": 30.3571,
       "profit_within_path_ambiguity_pct": 30.3571
     },
     "5min": {
       "windows": 56,
-      "profit_mae_usdt": 0.03610198,
+      "profit_mae_usdt": 0.03610187,
       "rounds_mae": 1.89285714,
-      "mean_profit_relative_error": 0.166259,
+      "mean_profit_relative_error": 0.166258,
       "mean_rounds_relative_error": 0.17753,
-      "combined_relative_error_score": 0.171895,
+      "combined_relative_error_score": 0.171894,
       "rounds_within_path_ambiguity_pct": 35.7143,
       "profit_within_path_ambiguity_pct": 37.5
     }
@@ -67,7 +67,7 @@
     "active_execution_resolution": "5min",
     "windows_evaluated": 56,
     "minimum_windows_to_promote": 3,
-    "candidate_improvement_vs_1hour_pct": 29.823308,
+    "candidate_improvement_vs_1hour_pct": 30.43714,
     "minimum_required_improvement_vs_1hour_pct": 10.0,
     "coarsest_within_best_tolerance_pct": 5.0,
     "hard_execution_resolution_floor": "5min",
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 1646,
+    "n": 1651,
     "mean_abs_pct_diff": {
       "open": 0.0,
       "high": 0.0,
-      "low": 0.00020893,
-      "close": 4.81e-06
+      "low": 5.422e-05,
+      "close": 0.00012457
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -96,14 +96,14 @@
     "max_abs_pct_diff": {
       "open": 0.0,
       "high": 0.0,
-      "low": 0.34389585,
-      "close": 0.00791044
+      "low": 0.08951061,
+      "close": 0.20566623
     },
     "worst_close": {
-      "timestamp_utc": "2026-10-20T00:00:00+00:00",
-      "derived_close": 2401.7,
-      "reference_close": 2401.89,
-      "abs_pct_diff": 0.00791044
+      "timestamp_utc": "2026-10-20T05:00:00+00:00",
+      "derived_close": 2397.01,
+      "reference_close": 2401.95,
+      "abs_pct_diff": 0.20566623
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
