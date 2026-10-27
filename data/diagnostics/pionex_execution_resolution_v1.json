@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-10-27T08:22:51.019183+00:00",
+  "generated_at_utc": "2026-10-27T14:55:06.902249+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,45 +19,45 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 21868,
+    "persisted_5m_rows": 21947,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-10-27T08:10:00+00:00",
+    "persisted_5m_last_utc": "2026-10-27T14:45:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
-    "usable_window_count": 60,
+    "usable_window_count": 61,
     "window_rule": "14-30h consecutive same-geometry manual Pionex screenshots"
   },
   "resolution_metrics": {
     "1hour": {
-      "windows": 60,
-      "profit_mae_usdt": 0.04961548,
-      "rounds_mae": 2.10833333,
-      "mean_profit_relative_error": 0.239244,
-      "mean_rounds_relative_error": 0.246725,
-      "combined_relative_error_score": 0.242984,
-      "rounds_within_path_ambiguity_pct": 41.6667,
-      "profit_within_path_ambiguity_pct": 41.6667
+      "windows": 61,
+      "profit_mae_usdt": 0.04946378,
+      "rounds_mae": 2.1147541,
+      "mean_profit_relative_error": 0.239429,
+      "mean_rounds_relative_error": 0.246778,
+      "combined_relative_error_score": 0.243104,
+      "rounds_within_path_ambiguity_pct": 40.9836,
+      "profit_within_path_ambiguity_pct": 40.9836
     },
     "15min": {
-      "windows": 60,
-      "profit_mae_usdt": 0.04415149,
-      "rounds_mae": 2.55833333,
-      "mean_profit_relative_error": 0.210825,
-      "mean_rounds_relative_error": 0.222956,
-      "combined_relative_error_score": 0.216891,
-      "rounds_within_path_ambiguity_pct": 28.3333,
-      "profit_within_path_ambiguity_pct": 28.3333
+      "windows": 61,
+      "profit_mae_usdt": 0.04369286,
+      "rounds_mae": 2.53278689,
+      "mean_profit_relative_error": 0.209015,
+      "mean_rounds_relative_error": 0.220941,
+      "combined_relative_error_score": 0.214978,
+      "rounds_within_path_ambiguity_pct": 29.5082,
+      "profit_within_path_ambiguity_pct": 29.5082
     },
     "5min": {
-      "windows": 60,
-      "profit_mae_usdt": 0.03529159,
-      "rounds_mae": 1.89166667,
-      "mean_profit_relative_error": 0.161487,
-      "mean_rounds_relative_error": 0.17279,
-      "combined_relative_error_score": 0.167138,
-      "rounds_within_path_ambiguity_pct": 35.0,
-      "profit_within_path_ambiguity_pct": 36.6667
+      "windows": 61,
+      "profit_mae_usdt": 0.03497786,
+      "rounds_mae": 1.87704918,
+      "mean_profit_relative_error": 0.160484,
+      "mean_rounds_relative_error": 0.171596,
+      "combined_relative_error_score": 0.16604,
+      "rounds_within_path_ambiguity_pct": 34.4262,
+      "profit_within_path_ambiguity_pct": 36.0656
     }
   },
   "selection_policy": {
@@ -65,9 +65,9 @@
     "research_best_resolution": "5min",
     "promotion_candidate": "5min",
     "active_execution_resolution": "5min",
-    "windows_evaluated": 60,
+    "windows_evaluated": 61,
     "minimum_windows_to_promote": 3,
-    "candidate_improvement_vs_1hour_pct": 31.214401,
+    "candidate_improvement_vs_1hour_pct": 31.700013,
     "minimum_required_improvement_vs_1hour_pct": 10.0,
     "coarsest_within_best_tolerance_pct": 5.0,
     "hard_execution_resolution_floor": "5min",
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 1818,
+    "n": 1824,
     "mean_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
+      "high": 0.00026839,
       "low": 0.0,
-      "close": 5.712e-05
+      "close": 0.00033936
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -95,15 +95,15 @@
     },
     "max_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0,
+      "high": 0.48955089,
       "low": 0.0,
-      "close": 0.10385249
+      "close": 0.61899735
     },
     "worst_close": {
-      "timestamp_utc": "2026-10-27T04:00:00+00:00",
-      "derived_close": 2313.37,
-      "reference_close": 2310.97,
-      "abs_pct_diff": 0.10385249
+      "timestamp_utc": "2026-10-27T10:00:00+00:00",
+      "derived_close": 2316.36,
+      "reference_close": 2302.11,
+      "abs_pct_diff": 0.61899735
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
