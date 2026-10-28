@@ -1,6 +1,6 @@
 {
   "schema": "model_readiness_v2",
-  "generated_at_utc": "2026-10-28T17:20:27.577211+00:00",
+  "generated_at_utc": "2026-10-28T20:59:00.889132+00:00",
   "source_files": {
     "model_dataset_v1": "data/model/model_dataset_v1.csv",
     "predictions_v1": "data/model/predictions_v1.csv",
@@ -34,34 +34,203 @@
   },
   "prediction_summary_brief": {
     "available": true,
-    "total_rows": 14057,
+    "total_rows": 14065,
     "by_asset": {
-      "ETH-USDT": 8025,
-      "BTC-USDT": 6032
+      "ETH-USDT": 8029,
+      "BTC-USDT": 6036
     },
     "by_status": {
-      "evaluated": 13769,
-      "pending": 288
+      "evaluated": 13775,
+      "pending": 290
     }
   },
   "by_asset": {
     "ETH-USDT": {
       "asset": "ETH-USDT",
       "active_prediction_asset": true,
-      "model_rows": 3870,
-      "prediction_rows_total": 8029,
-      "prediction_rows_pending": 145,
-      "prediction_rows_evaluated": 7884,
-      "latest_entry_ts_utc": "1793206800",
+      "model_rows": 3871,
+      "prediction_rows_total": 8033,
+      "prediction_rows_pending": 146,
+      "prediction_rows_evaluated": 7887,
+      "latest_entry_ts_utc": "1793217600",
       "summary": {
         "overall_readiness": "READY",
         "readiness_counts": {
           "READY": 2,
           "LIMITED": 2
         },
-        "mean_score": 9.88,
+        "mean_score": 10.0,
         "notes": [
           "One or more horizons have weak recent directional accuracy."
+        ]
+      },
+      "horizons": {
+        "24": {
+          "horizon_h": 24,
+          "readiness": "READY",
+          "score": 11.0,
+          "score_components": {
+            "label_depth": 2.0,
+            "prediction_history": 2.0,
+            "evaluation_maturity": 2.0,
+            "performance": 1.0,
+            "similarity_quality": 2.0,
+            "neighbor_support": 1.0,
+            "actionability": 1.0
+          },
+          "label_rows": 3871,
+          "prediction_rows": 2009,
+          "evaluated_prediction_rows": 2003,
+          "pending_prediction_rows": 6,
+          "direction_accuracy_pct": 50.72,
+          "best_distance": 0.579967,
+          "neighbors_used": 20,
+          "actionability": "ACTIONABLE",
+          "hard_blocks": [],
+          "caution_flags": [],
+          "latest_prediction": {
+            "horizon_h": 24,
+            "entry_ts_utc": "1793217600",
+            "target_ts_utc": "2026-10-29T20:00:00+00:00",
+            "predicted_close_change_pct": 1.2149,
+            "predicted_price": 2388.8536,
+            "confidence": "medium",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 0.579967,
+            "status": "pending"
+          }
+        },
+        "48": {
+          "horizon_h": 48,
+          "readiness": "READY",
+          "score": 10.0,
+          "score_components": {
+            "label_depth": 2.0,
+            "prediction_history": 2.0,
+            "evaluation_maturity": 2.0,
+            "performance": 0.5,
+            "similarity_quality": 2.0,
+            "neighbor_support": 1.0,
+            "actionability": 0.5
+          },
+          "label_rows": 3871,
+          "prediction_rows": 2008,
+          "evaluated_prediction_rows": 1998,
+          "pending_prediction_rows": 10,
+          "direction_accuracy_pct": 48.35,
+          "best_distance": 0.579967,
+          "neighbors_used": 20,
+          "actionability": "CAUTION",
+          "hard_blocks": [],
+          "caution_flags": [],
+          "latest_prediction": {
+            "horizon_h": 48,
+            "entry_ts_utc": "1793217600",
+            "target_ts_utc": "2026-10-30T20:00:00+00:00",
+            "predicted_close_change_pct": -0.3025,
+            "predicted_price": 2353.0414,
+            "confidence": "low",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 0.579967,
+            "status": "pending"
+          }
+        },
+        "168": {
+          "horizon_h": 168,
+          "readiness": "LIMITED",
+          "score": 9.5,
+          "score_components": {
+            "label_depth": 2.0,
+            "prediction_history": 2.0,
+            "evaluation_maturity": 2.0,
+            "performance": 0.0,
+            "similarity_quality": 2.0,
+            "neighbor_support": 1.0,
+            "actionability": 0.5
+          },
+          "label_rows": 3871,
+          "prediction_rows": 2008,
+          "evaluated_prediction_rows": 1966,
+          "pending_prediction_rows": 42,
+          "direction_accuracy_pct": 44.66,
+          "best_distance": 0.579967,
+          "neighbors_used": 20,
+          "actionability": "CAUTION",
+          "hard_blocks": [],
+          "caution_flags": [
+            "weak_directional_accuracy"
+          ],
+          "latest_prediction": {
+            "horizon_h": 168,
+            "entry_ts_utc": "1793217600",
+            "target_ts_utc": "2026-11-04T20:00:00+00:00",
+            "predicted_close_change_pct": -1.5178,
+            "predicted_price": 2324.3577,
+            "confidence": "medium",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 0.579967,
+            "status": "pending"
+          }
+        },
+        "336": {
+          "horizon_h": 336,
+          "readiness": "LIMITED",
+          "score": 9.5,
+          "score_components": {
+            "label_depth": 2.0,
+            "prediction_history": 2.0,
+            "evaluation_maturity": 2.0,
+            "performance": 0.0,
+            "similarity_quality": 2.0,
+            "neighbor_support": 1.0,
+            "actionability": 0.5
+          },
+          "label_rows": 3871,
+          "prediction_rows": 2008,
+          "evaluated_prediction_rows": 1920,
+          "pending_prediction_rows": 88,
+          "direction_accuracy_pct": 43.28,
+          "best_distance": 0.579967,
+          "neighbors_used": 20,
+          "actionability": "CAUTION",
+          "hard_blocks": [],
+          "caution_flags": [
+            "weak_directional_accuracy"
+          ],
+          "latest_prediction": {
+            "horizon_h": 336,
+            "entry_ts_utc": "1793217600",
+            "target_ts_utc": "2026-11-11T20:00:00+00:00",
+            "predicted_close_change_pct": 0.1872,
+            "predicted_price": 2364.5973,
+            "confidence": "low",
+            "analogue_quality": "strong",
+            "neighbors_used": 20,
+            "best_distance": 0.579967,
+            "status": "pending"
+          }
+        }
+      }
+    },
+    "BTC-USDT": {
+      "asset": "BTC-USDT",
+      "active_prediction_asset": true,
+      "model_rows": 1947,
+      "prediction_rows_total": 6040,
+      "prediction_rows_pending": 146,
+      "prediction_rows_evaluated": 5894,
+      "latest_entry_ts_utc": "1793217600",
+      "summary": {
+        "overall_readiness": "READY",
+        "readiness_counts": {
+          "READY": 4
+        },
+        "mean_score": 10.25,
+        "notes": [
+          "No major readiness blockers detected under current rules."
         ]
       },
       "horizons": {
@@ -78,202 +247,33 @@
             "neighbor_support": 1.0,
             "actionability": 0.5
           },
-          "label_rows": 3870,
-          "prediction_rows": 2008,
-          "evaluated_prediction_rows": 2003,
-          "pending_prediction_rows": 5,
-          "direction_accuracy_pct": 50.72,
-          "best_distance": 0.543425,
-          "neighbors_used": 20,
-          "actionability": "CAUTION",
-          "hard_blocks": [],
-          "caution_flags": [],
-          "latest_prediction": {
-            "horizon_h": 24,
-            "entry_ts_utc": "1793206800",
-            "target_ts_utc": "2026-10-29T17:00:00+00:00",
-            "predicted_close_change_pct": 0.994,
-            "predicted_price": 2354.5448,
-            "confidence": "low",
-            "analogue_quality": "strong",
-            "neighbors_used": 20,
-            "best_distance": 0.543425,
-            "status": "pending"
-          }
-        },
-        "48": {
-          "horizon_h": 48,
-          "readiness": "READY",
-          "score": 10.0,
-          "score_components": {
-            "label_depth": 2.0,
-            "prediction_history": 2.0,
-            "evaluation_maturity": 2.0,
-            "performance": 0.5,
-            "similarity_quality": 2.0,
-            "neighbor_support": 1.0,
-            "actionability": 0.5
-          },
-          "label_rows": 3870,
-          "prediction_rows": 2007,
-          "evaluated_prediction_rows": 1997,
-          "pending_prediction_rows": 10,
-          "direction_accuracy_pct": 48.32,
-          "best_distance": 0.543425,
-          "neighbors_used": 20,
-          "actionability": "CAUTION",
-          "hard_blocks": [],
-          "caution_flags": [],
-          "latest_prediction": {
-            "horizon_h": 48,
-            "entry_ts_utc": "1793206800",
-            "target_ts_utc": "2026-10-30T17:00:00+00:00",
-            "predicted_close_change_pct": 0.2123,
-            "predicted_price": 2336.3204,
-            "confidence": "low",
-            "analogue_quality": "strong",
-            "neighbors_used": 20,
-            "best_distance": 0.543425,
-            "status": "pending"
-          }
-        },
-        "168": {
-          "horizon_h": 168,
-          "readiness": "LIMITED",
-          "score": 9.5,
-          "score_components": {
-            "label_depth": 2.0,
-            "prediction_history": 2.0,
-            "evaluation_maturity": 2.0,
-            "performance": 0.0,
-            "similarity_quality": 2.0,
-            "neighbor_support": 1.0,
-            "actionability": 0.5
-          },
-          "label_rows": 3870,
-          "prediction_rows": 2007,
-          "evaluated_prediction_rows": 1965,
-          "pending_prediction_rows": 42,
-          "direction_accuracy_pct": 44.68,
-          "best_distance": 0.543425,
-          "neighbors_used": 20,
-          "actionability": "CAUTION",
-          "hard_blocks": [],
-          "caution_flags": [
-            "weak_directional_accuracy"
-          ],
-          "latest_prediction": {
-            "horizon_h": 168,
-            "entry_ts_utc": "1793206800",
-            "target_ts_utc": "2026-11-04T17:00:00+00:00",
-            "predicted_close_change_pct": 2.3649,
-            "predicted_price": 2386.5055,
-            "confidence": "low",
-            "analogue_quality": "strong",
-            "neighbors_used": 20,
-            "best_distance": 0.543425,
-            "status": "pending"
-          }
-        },
-        "336": {
-          "horizon_h": 336,
-          "readiness": "LIMITED",
-          "score": 9.5,
-          "score_components": {
-            "label_depth": 2.0,
-            "prediction_history": 2.0,
-            "evaluation_maturity": 2.0,
-            "performance": 0.0,
-            "similarity_quality": 2.0,
-            "neighbor_support": 1.0,
-            "actionability": 0.5
-          },
-          "label_rows": 3870,
-          "prediction_rows": 2007,
-          "evaluated_prediction_rows": 1919,
-          "pending_prediction_rows": 88,
-          "direction_accuracy_pct": 43.25,
-          "best_distance": 0.543425,
-          "neighbors_used": 20,
-          "actionability": "CAUTION",
-          "hard_blocks": [],
-          "caution_flags": [
-            "weak_directional_accuracy"
-          ],
-          "latest_prediction": {
-            "horizon_h": 336,
-            "entry_ts_utc": "1793206800",
-            "target_ts_utc": "2026-11-11T17:00:00+00:00",
-            "predicted_close_change_pct": 4.2853,
-            "predicted_price": 2431.2762,
-            "confidence": "low",
-            "analogue_quality": "strong",
-            "neighbors_used": 20,
-            "best_distance": 0.543425,
-            "status": "pending"
-          }
-        }
-      }
-    },
-    "BTC-USDT": {
-      "asset": "BTC-USDT",
-      "active_prediction_asset": true,
-      "model_rows": 1946,
-      "prediction_rows_total": 6036,
-      "prediction_rows_pending": 145,
-      "prediction_rows_evaluated": 5891,
-      "latest_entry_ts_utc": "1793206800",
-      "summary": {
-        "overall_readiness": "READY",
-        "readiness_counts": {
-          "READY": 4
-        },
-        "mean_score": 10.5,
-        "notes": [
-          "No major readiness blockers detected under current rules."
-        ]
-      },
-      "horizons": {
-        "24": {
-          "horizon_h": 24,
-          "readiness": "READY",
-          "score": 11.0,
-          "score_components": {
-            "label_depth": 2.0,
-            "prediction_history": 2.0,
-            "evaluation_maturity": 2.0,
-            "performance": 1.0,
-            "similarity_quality": 2.0,
-            "neighbor_support": 1.0,
-            "actionability": 1.0
-          },
-          "label_rows": 1946,
-          "prediction_rows": 1509,
+          "label_rows": 1947,
+          "prediction_rows": 1510,
           "evaluated_prediction_rows": 1504,
-          "pending_prediction_rows": 5,
+          "pending_prediction_rows": 6,
           "direction_accuracy_pct": 50.66,
-          "best_distance": 0.60026,
+          "best_distance": 0.626248,
           "neighbors_used": 20,
-          "actionability": "ACTIONABLE",
+          "actionability": "CAUTION",
           "hard_blocks": [],
           "caution_flags": [],
           "latest_prediction": {
             "horizon_h": 24,
-            "entry_ts_utc": "1793206800",
-            "target_ts_utc": "2026-10-29T17:00:00+00:00",
-            "predicted_close_change_pct": 0.5529,
-            "predicted_price": 80955.1398,
+            "entry_ts_utc": "1793217600",
+            "target_ts_utc": "2026-10-29T20:00:00+00:00",
+            "predicted_close_change_pct": -0.1492,
+            "predicted_price": 81185.849,
             "confidence": "medium",
             "analogue_quality": "strong",
             "neighbors_used": 20,
-            "best_distance": 0.60026,
+            "best_distance": 0.626248,
             "status": "pending"
           }
         },
         "48": {
           "horizon_h": 48,
           "readiness": "READY",
-          "score": 11.0,
+          "score": 10.5,
           "score_components": {
             "label_depth": 2.0,
             "prediction_history": 2.0,
@@ -281,28 +281,28 @@
             "performance": 1.0,
             "similarity_quality": 2.0,
             "neighbor_support": 1.0,
-            "actionability": 1.0
+            "actionability": 0.5
           },
-          "label_rows": 1946,
-          "prediction_rows": 1509,
-          "evaluated_prediction_rows": 1499,
+          "label_rows": 1947,
+          "prediction_rows": 1510,
+          "evaluated_prediction_rows": 1500,
           "pending_prediction_rows": 10,
-          "direction_accuracy_pct": 50.03,
-          "best_distance": 0.60026,
+          "direction_accuracy_pct": 50.07,
+          "best_distance": 0.626248,
           "neighbors_used": 20,
-          "actionability": "ACTIONABLE",
+          "actionability": "CAUTION",
           "hard_blocks": [],
           "caution_flags": [],
           "latest_prediction": {
             "horizon_h": 48,
-            "entry_ts_utc": "1793206800",
-            "target_ts_utc": "2026-10-30T17:00:00+00:00",
-            "predicted_close_change_pct": -0.6888,
-            "predicted_price": 79955.4471,
+            "entry_ts_utc": "1793217600",
+            "target_ts_utc": "2026-10-30T20:00:00+00:00",
+            "predicted_close_change_pct": 0.1222,
+            "predicted_price": 81406.5493,
             "confidence": "medium",
             "analogue_quality": "strong",
             "neighbors_used": 20,
-            "best_distance": 0.60026,
+            "best_distance": 0.626248,
             "status": "pending"
           }
         },
@@ -319,26 +319,26 @@
             "neighbor_support": 1.0,
             "actionability": 0.5
           },
-          "label_rows": 1946,
-          "prediction_rows": 1509,
-          "evaluated_prediction_rows": 1467,
+          "label_rows": 1947,
+          "prediction_rows": 1510,
+          "evaluated_prediction_rows": 1468,
           "pending_prediction_rows": 42,
-          "direction_accuracy_pct": 46.28,
-          "best_distance": 0.60026,
+          "direction_accuracy_pct": 46.32,
+          "best_distance": 0.626248,
           "neighbors_used": 20,
           "actionability": "CAUTION",
           "hard_blocks": [],
           "caution_flags": [],
           "latest_prediction": {
             "horizon_h": 168,
-            "entry_ts_utc": "1793206800",
-            "target_ts_utc": "2026-11-04T17:00:00+00:00",
-            "predicted_close_change_pct": -1.13,
-            "predicted_price": 79600.2692,
+            "entry_ts_utc": "1793217600",
+            "target_ts_utc": "2026-11-04T20:00:00+00:00",
+            "predicted_close_change_pct": -0.5704,
+            "predicted_price": 80843.4319,
             "confidence": "low",
             "analogue_quality": "strong",
             "neighbors_used": 20,
-            "best_distance": 0.60026,
+            "best_distance": 0.626248,
             "status": "pending"
           }
         },
@@ -355,26 +355,26 @@
             "neighbor_support": 1.0,
             "actionability": 0.5
           },
-          "label_rows": 1946,
-          "prediction_rows": 1509,
-          "evaluated_prediction_rows": 1421,
+          "label_rows": 1947,
+          "prediction_rows": 1510,
+          "evaluated_prediction_rows": 1422,
           "pending_prediction_rows": 88,
-          "direction_accuracy_pct": 48.21,
-          "best_distance": 0.60026,
+          "direction_accuracy_pct": 48.24,
+          "best_distance": 0.626248,
           "neighbors_used": 20,
           "actionability": "CAUTION",
           "hard_blocks": [],
           "caution_flags": [],
           "latest_prediction": {
             "horizon_h": 336,
-            "entry_ts_utc": "1793206800",
-            "target_ts_utc": "2026-11-11T17:00:00+00:00",
-            "predicted_close_change_pct": -1.9759,
-            "predicted_price": 78919.1868,
+            "entry_ts_utc": "1793217600",
+            "target_ts_utc": "2026-11-11T20:00:00+00:00",
+            "predicted_close_change_pct": 0.2969,
+            "predicted_price": 81548.6011,
             "confidence": "low",
             "analogue_quality": "strong",
             "neighbors_used": 20,
-            "best_distance": 0.60026,
+            "best_distance": 0.626248,
             "status": "pending"
           }
         }
