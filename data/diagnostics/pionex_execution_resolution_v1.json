@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-10-31T20:40:28.626326+00:00",
+  "generated_at_utc": "2026-10-31T23:46:29.038171+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 23168,
+    "persisted_5m_rows": 23205,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-10-31T20:30:00+00:00",
+    "persisted_5m_last_utc": "2026-10-31T23:35:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 1927,
+    "n": 1931,
     "mean_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.0001108,
+      "high": 1.907e-05,
       "low": 0.0,
-      "close": 4.653e-05
+      "close": 4.229e-05
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -95,15 +95,15 @@
     },
     "max_abs_pct_diff": {
       "open": 0.0,
-      "high": 0.21350639,
+      "high": 0.03683372,
       "low": 0.0,
-      "close": 0.08966381
+      "close": 0.08165548
     },
     "worst_close": {
-      "timestamp_utc": "2026-10-31T17:00:00+00:00",
-      "derived_close": 2254.88,
-      "reference_close": 2252.86,
-      "abs_pct_diff": 0.08966381
+      "timestamp_utc": "2026-10-31T21:00:00+00:00",
+      "derived_close": 2255.21,
+      "reference_close": 2253.37,
+      "abs_pct_diff": 0.08165548
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
