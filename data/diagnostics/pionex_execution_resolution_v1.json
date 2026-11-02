@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-11-02T13:51:06.406276+00:00",
+  "generated_at_utc": "2026-11-02T22:53:43.360409+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 23662,
+    "persisted_5m_rows": 23770,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-11-02T13:40:00+00:00",
+    "persisted_5m_last_utc": "2026-11-02T22:40:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -31,33 +31,33 @@
   "resolution_metrics": {
     "1hour": {
       "windows": 66,
-      "profit_mae_usdt": 0.0479038,
-      "rounds_mae": 2.10606061,
-      "mean_profit_relative_error": 0.229146,
-      "mean_rounds_relative_error": 0.238185,
-      "combined_relative_error_score": 0.233665,
-      "rounds_within_path_ambiguity_pct": 42.4242,
-      "profit_within_path_ambiguity_pct": 40.9091
+      "profit_mae_usdt": 0.04850614,
+      "rounds_mae": 2.15151515,
+      "mean_profit_relative_error": 0.231802,
+      "mean_rounds_relative_error": 0.240807,
+      "combined_relative_error_score": 0.236305,
+      "rounds_within_path_ambiguity_pct": 40.9091,
+      "profit_within_path_ambiguity_pct": 39.3939
     },
     "15min": {
       "windows": 66,
-      "profit_mae_usdt": 0.04286635,
-      "rounds_mae": 2.5530303,
-      "mean_profit_relative_error": 0.202929,
-      "mean_rounds_relative_error": 0.217003,
-      "combined_relative_error_score": 0.209966,
+      "profit_mae_usdt": 0.04336899,
+      "rounds_mae": 2.59090909,
+      "mean_profit_relative_error": 0.204639,
+      "mean_rounds_relative_error": 0.218605,
+      "combined_relative_error_score": 0.211622,
       "rounds_within_path_ambiguity_pct": 27.2727,
       "profit_within_path_ambiguity_pct": 27.2727
     },
     "5min": {
       "windows": 66,
-      "profit_mae_usdt": 0.03433948,
-      "rounds_mae": 1.90909091,
-      "mean_profit_relative_error": 0.154089,
-      "mean_rounds_relative_error": 0.167274,
-      "combined_relative_error_score": 0.160682,
+      "profit_mae_usdt": 0.0345402,
+      "rounds_mae": 1.92424242,
+      "mean_profit_relative_error": 0.154737,
+      "mean_rounds_relative_error": 0.167784,
+      "combined_relative_error_score": 0.16126,
       "rounds_within_path_ambiguity_pct": 31.8182,
-      "profit_within_path_ambiguity_pct": 34.8485
+      "profit_within_path_ambiguity_pct": 33.3333
     }
   },
   "selection_policy": {
@@ -67,7 +67,7 @@
     "active_execution_resolution": "5min",
     "windows_evaluated": 66,
     "minimum_windows_to_promote": 3,
-    "candidate_improvement_vs_1hour_pct": 31.234032,
+    "candidate_improvement_vs_1hour_pct": 31.757686,
     "minimum_required_improvement_vs_1hour_pct": 10.0,
     "coarsest_within_best_tolerance_pct": 5.0,
     "hard_execution_resolution_floor": "5min",
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 1963,
+    "n": 1978,
     "mean_abs_pct_diff": {
       "open": 0.0,
       "high": 0.0,
       "low": 0.0,
-      "close": 1.555e-05
+      "close": 3.416e-05
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -97,13 +97,13 @@
       "open": 0.0,
       "high": 0.0,
       "low": 0.0,
-      "close": 0.03052929
+      "close": 0.06756366
     },
     "worst_close": {
-      "timestamp_utc": "2026-11-02T05:00:00+00:00",
-      "derived_close": 2292.18,
-      "reference_close": 2292.88,
-      "abs_pct_diff": 0.03052929
+      "timestamp_utc": "2026-11-02T20:00:00+00:00",
+      "derived_close": 2248.21,
+      "reference_close": 2249.73,
+      "abs_pct_diff": 0.06756366
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
