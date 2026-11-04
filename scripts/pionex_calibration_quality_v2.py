@@ -552,6 +552,77 @@ def legacy_global_holdout_metrics(
     return {"profit_scale": _round(ps), "rounds_scale": _round(rs), **_metric_pair(holdout, pp, pr)}
 
 
+def select_calibration_model(
+    challenger_metrics: dict[str, Any],
+    champion_metrics: dict[str, Any],
+) -> dict[str, Any]:
+    """Promote cohort calibration only when it Pareto-dominates the legacy holdout.
+
+    The gate is deliberately non-tuned: profit/rounds WAPE and MAE must show no
+    degradation, and at least one of the four metrics must improve.  The newest
+    prospective windows are never used for model selection.
+    """
+    comparisons: dict[str, Any] = {}
+    no_degradation = True
+    any_improvement = False
+    for section in ("profit", "rounds"):
+        comparisons[section] = {}
+        challenger_section = challenger_metrics.get(section) or {}
+        champion_section = champion_metrics.get(section) or {}
+        for metric in ("wape_pct", "mae"):
+            challenger = _f(challenger_section.get(metric))
+            champion = _f(champion_section.get(metric))
+            improvement_pct: Optional[float]
+            if challenger is None or champion is None:
+                no_degradation = False
+                improvement_pct = None
+            else:
+                if challenger > champion + EPS:
+                    no_degradation = False
+                if challenger < champion - EPS:
+                    any_improvement = True
+                improvement_pct = (
+                    None
+                    if abs(champion) < EPS
+                    else round((champion - challenger) / abs(champion) * 100.0, 4)
+                )
+            comparisons[section][metric] = {
+                "challenger": _round(challenger),
+                "champion": _round(champion),
+                "improvement_pct": improvement_pct,
+                "non_degrading": (
+                    challenger is not None
+                    and champion is not None
+                    and challenger <= champion + EPS
+                ),
+            }
+
+    promote = bool(no_degradation and any_improvement)
+    return {
+        "gate": "PARETO_HOLDOUT_NO_DEGRADATION",
+        "selected_model": (
+            "V2_COHORT_TWO_STAGE"
+            if promote
+            else "LEGACY_GLOBAL_MEDIAN"
+        ),
+        "challenger_promoted": promote,
+        "prospective_used_for_selection": False,
+        "requirements": {
+            "profit_wape_non_degrading": True,
+            "profit_mae_non_degrading": True,
+            "rounds_wape_non_degrading": True,
+            "rounds_mae_non_degrading": True,
+            "at_least_one_metric_improves": True,
+        },
+        "comparisons": comparisons,
+        "reason": (
+            "Cohort/regime challenger Pareto-dominates the legacy global holdout."
+            if promote
+            else "Legacy global calibration remains champion because the cohort/regime challenger degrades at least one holdout metric or lacks complete evidence."
+        ),
+    }
+
+
 def quality_status(
     metrics: dict[str, Any],
     *,
@@ -670,9 +741,20 @@ def upgrade_calibration(
     for w in windows:
         counts[w.get("activity_status", "NORMAL_ACTIVITY")] += 1
     low_share = (counts["LOW_ACTIVITY"] + counts["ZERO_ACTIVITY"]) / max(1, len(windows))
-    fallbacks = [m["cohort"].get("fallback_level") for m in hold_meta]
+
+    model_selection = select_calibration_model(hold_metrics, legacy_holdout)
+    if model_selection["challenger_promoted"]:
+        selected_holdout = hold_metrics
+        fallbacks = [m["cohort"].get("fallback_level") for m in hold_meta]
+    else:
+        selected_holdout = {
+            "profit": legacy_holdout.get("profit") or {},
+            "rounds": legacy_holdout.get("rounds") or {},
+        }
+        fallbacks = []
+
     q = quality_status(
-        hold_metrics,
+        selected_holdout,
         fit_n=len(fit),
         holdout_n=len(holdout),
         low_share=low_share,
@@ -693,7 +775,7 @@ def upgrade_calibration(
         "schema": "pionex_paired_cycle_calibration_v2",
         "version": "2.0",
         "status": q["status"],
-        "method": "chronological_walk_forward_cohort_calibration_with_activity_productivity_decomposition",
+        "method": "champion_challenger_chronological_walk_forward_cohort_calibration_with_activity_productivity_decomposition",
         "primary_percentage_metric": "WAPE",
         "secondary_percentage_metric": "GUARDED_MAPE_NORMAL_ACTIVITY_ONLY",
         "activity_thresholds": activity_thresholds,
@@ -716,8 +798,10 @@ def upgrade_calibration(
         },
         "regime_thresholds_fit_only": regime_thresholds,
         "holdout": hold_metrics,
+        "selected_holdout": selected_holdout,
         "prospective": prospective_metrics,
         "legacy_global_holdout_comparison": legacy_holdout,
+        "model_selection": model_selection,
         "latest_legacy_holdout_backtest": {
             "window_count": len(latest_eval),
             "range": [latest_eval[0].get("start_utc"), latest_eval[-1].get("end_utc")] if latest_eval else None,
@@ -740,6 +824,15 @@ def upgrade_calibration(
         },
         "current_reference_cohort": current_cohort_meta,
         "current_reference_factors": current_factors,
+        "current_reference_selected_factors": (
+            current_factors
+            if model_selection["challenger_promoted"]
+            else {
+                "profit_scale": _round(_f(legacy.get("profit_scale_applied"), 1.0) or 1.0),
+                "rounds_scale": _round(_f(legacy.get("rounds_scale_applied"), 1.0) or 1.0),
+                "method": "legacy_global_guarded_by_holdout",
+            }
+        ),
         "holdout_window_calibration": hold_meta,
         "prospective_window_calibration": pros_meta,
         "recency_weighting": {
@@ -755,10 +848,12 @@ def upgrade_calibration(
     out["calibration_v2"] = v2
     out["calibration_quality_v2"] = {
         **q,
-        "profit": hold_metrics.get("profit"),
-        "rounds": hold_metrics.get("rounds"),
+        "profit": selected_holdout.get("profit"),
+        "rounds": selected_holdout.get("rounds"),
         "activity": v2["activity"],
         "validation": v2["validation"],
+        "model_selection": model_selection,
+        "challenger_holdout": hold_metrics,
         "cohort": current_cohort_meta,
         "legacy_mape": {
             "profit_mape_pct": (legacy.get("holdout_validation") or {}).get("profit_mape_pct"),
@@ -866,4 +961,31 @@ def target_factors(
     target2["regime"] = assign_regime(target2, v2.get("regime_thresholds_fit_only") or {})
     cohort, meta = choose_cohort(windows, target2, min_n=min_cohort_n)
     factors = fit_two_stage_factors(cohort, bounds=bounds)
-    return {**factors, "cohort": meta, "method": "v2_cohort_two_stage"}
+    model_selection = v2.get("model_selection") or {}
+    if model_selection.get("selected_model") == "LEGACY_GLOBAL_MEDIAN":
+        legacy_profit = float(calibration.get("profit_scale_applied") or 1.0)
+        legacy_rounds = float(calibration.get("rounds_scale_applied") or 1.0)
+        return {
+            "profit_scale": legacy_profit,
+            "rounds_scale": legacy_rounds,
+            "productivity_scale": 1.0,
+            "direct_profit_scale": legacy_profit,
+            "sample_n": len(windows),
+            "active_productivity_n": 0,
+            "cohort": {
+                "fallback_level": "LEGACY_GLOBAL_GUARDED",
+                "sample_n": len(windows),
+            },
+            "method": "legacy_global_guarded_by_holdout",
+            "model_selection": model_selection,
+            "challenger": {
+                "cohort": meta,
+                "factors": factors,
+            },
+        }
+    return {
+        **factors,
+        "cohort": meta,
+        "method": "v2_cohort_two_stage",
+        "model_selection": model_selection,
+    }
