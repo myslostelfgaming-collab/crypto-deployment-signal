@@ -6,8 +6,8 @@
   "primary_percentage_metric": "WAPE",
   "secondary_percentage_metric": "GUARDED_MAPE_NORMAL_ACTIVITY_ONLY",
   "activity_thresholds": {
-    "zero_rounds_epsilon": 1e-9,
-    "zero_profit_epsilon_usdt": 1e-9,
+    "zero_rounds_epsilon": 1e-09,
+    "zero_profit_epsilon_usdt": 1e-09,
     "low_rounds_max": 2.5,
     "low_profit_max_usdt": 0.08,
     "derivation": "lower_20pct_of_positive_fit_activity_with_practical_caps",
@@ -37,7 +37,7 @@
       "2026-11-03T20:39:18.530044+00:00"
     ],
     "same_geometry_windows": 63,
-    "excluded_geometry_change_windows": 3,
+    "excluded_geometry_change_windows": 26,
     "chronological_no_shuffle": true
   },
   "regime_thresholds_fit_only": {
@@ -81,6 +81,38 @@
       "weighted_mae": 8.612037,
       "weighted_wape_pct": 45.2249,
       "weighted_bias": -6.703361,
+      "secondary_percentage_metric": "MAPE_GUARDED",
+      "primary_percentage_metric": "WAPE"
+    }
+  },
+  "selected_holdout": {
+    "profit": {
+      "n": 6,
+      "mae": 0.132288,
+      "median_absolute_error": 0.054395,
+      "wape_pct": 44.8391,
+      "mape_pct": 33.5833,
+      "mape_n": 6,
+      "bias": -0.112408,
+      "rmse": 0.208907,
+      "weighted_mae": 0.13897,
+      "weighted_wape_pct": 45.9704,
+      "weighted_bias": -0.119557,
+      "secondary_percentage_metric": "MAPE_GUARDED",
+      "primary_percentage_metric": "WAPE"
+    },
+    "rounds": {
+      "n": 6,
+      "mae": 8.00063,
+      "median_absolute_error": 3.334806,
+      "wape_pct": 42.8742,
+      "mape_pct": 32.7861,
+      "mape_n": 6,
+      "bias": -6.654035,
+      "rmse": 12.509507,
+      "weighted_mae": 8.393053,
+      "weighted_wape_pct": 44.0749,
+      "weighted_bias": -7.08532,
       "secondary_percentage_metric": "MAPE_GUARDED",
       "primary_percentage_metric": "WAPE"
     }
@@ -150,6 +182,50 @@
       "secondary_percentage_metric": "MAPE_GUARDED",
       "primary_percentage_metric": "WAPE"
     }
+  },
+  "model_selection": {
+    "gate": "PARETO_HOLDOUT_NO_DEGRADATION",
+    "selected_model": "LEGACY_GLOBAL_MEDIAN",
+    "challenger_promoted": false,
+    "prospective_used_for_selection": false,
+    "requirements": {
+      "profit_wape_non_degrading": true,
+      "profit_mae_non_degrading": true,
+      "rounds_wape_non_degrading": true,
+      "rounds_mae_non_degrading": true,
+      "at_least_one_metric_improves": true
+    },
+    "comparisons": {
+      "profit": {
+        "wape_pct": {
+          "challenger": 45.7693,
+          "champion": 44.8391,
+          "improvement_pct": -2.0745,
+          "non_degrading": false
+        },
+        "mae": {
+          "challenger": 0.135033,
+          "champion": 0.132288,
+          "improvement_pct": -2.075,
+          "non_degrading": false
+        }
+      },
+      "rounds": {
+        "wape_pct": {
+          "challenger": 44.1155,
+          "champion": 42.8742,
+          "improvement_pct": -2.8952,
+          "non_degrading": false
+        },
+        "mae": {
+          "challenger": 8.232259,
+          "champion": 8.00063,
+          "improvement_pct": -2.8951,
+          "non_degrading": false
+        }
+      }
+    },
+    "reason": "Legacy global calibration remains champion because the cohort/regime challenger degrades at least one holdout metric or lacks complete evidence."
   },
   "latest_legacy_holdout_backtest": {
     "window_count": 6,
@@ -234,8 +310,8 @@
           "center_skew": "UPPER_SKEW"
         },
         "target_geometry": {
-          "lower_usdt": 2200,
-          "upper_usdt": 2550,
+          "lower_usdt": 2200.0,
+          "upper_usdt": 2550.0,
           "grids": 35,
           "width_pct_of_market": 15.1372,
           "center_skew": "UPPER_SKEW"
@@ -252,8 +328,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2200,
-          "upper_usdt": 2550,
+          "lower_usdt": 2200.0,
+          "upper_usdt": 2550.0,
           "grids": 35,
           "width_pct_of_market": 14.9414,
           "center_skew": "NEAR_CENTRE"
@@ -270,8 +346,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2175,
-          "upper_usdt": 2525,
+          "lower_usdt": 2175.0,
+          "upper_usdt": 2525.0,
           "grids": 35,
           "width_pct_of_market": 15.1737,
           "center_skew": "NEAR_CENTRE"
@@ -288,8 +364,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2125,
-          "upper_usdt": 2425,
+          "lower_usdt": 2125.0,
+          "upper_usdt": 2425.0,
           "grids": 35,
           "width_pct_of_market": 13.4605,
           "center_skew": "NEAR_CENTRE"
@@ -306,8 +382,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2125,
-          "upper_usdt": 2425,
+          "lower_usdt": 2125.0,
+          "upper_usdt": 2425.0,
           "grids": 35,
           "width_pct_of_market": 13.2129,
           "center_skew": "NEAR_CENTRE"
@@ -324,8 +400,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2125,
-          "upper_usdt": 2425,
+          "lower_usdt": 2125.0,
+          "upper_usdt": 2425.0,
           "grids": 35,
           "width_pct_of_market": 13.2478,
           "center_skew": "NEAR_CENTRE"
@@ -357,8 +433,8 @@
       "center_skew": "NEAR_CENTRE"
     },
     "target_geometry": {
-      "lower_usdt": 2125,
-      "upper_usdt": 2425,
+      "lower_usdt": 2125.0,
+      "upper_usdt": 2425.0,
       "grids": 35,
       "width_pct_of_market": 13.2478,
       "center_skew": "NEAR_CENTRE"
@@ -375,16 +451,21 @@
     "unclipped_direct_profit_scale": 1.001509,
     "sample_n": 11,
     "active_productivity_n": 11,
-    "recency_half_life_days": 30,
+    "recency_half_life_days": 30.0,
     "recency_floor": 0.25,
     "activity_distribution_pct": {
-      "ZERO": 0,
+      "ZERO": 0.0,
       "1_TO_5": 18.1818,
       "5_TO_15": 63.6364,
       "15_TO_25": 9.0909,
       "25_PLUS": 9.0909
     },
     "method": "two_stage_activity_scale_times_conditional_profit_per_cycle_scale"
+  },
+  "current_reference_selected_factors": {
+    "profit_scale": 0.940215,
+    "rounds_scale": 0.937005,
+    "method": "legacy_global_guarded_by_holdout"
   },
   "holdout_window_calibration": [
     {
@@ -398,8 +479,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2275,
-          "upper_usdt": 2675,
+          "lower_usdt": 2275.0,
+          "upper_usdt": 2675.0,
           "grids": 40,
           "width_pct_of_market": 16.2897,
           "center_skew": "NEAR_CENTRE"
@@ -416,14 +497,14 @@
         "unclipped_direct_profit_scale": 0.927066,
         "sample_n": 20,
         "active_productivity_n": 20,
-        "recency_half_life_days": 30,
+        "recency_half_life_days": 30.0,
         "recency_floor": 0.25,
         "activity_distribution_pct": {
-          "ZERO": 0,
-          "1_TO_5": 15,
-          "5_TO_15": 25,
-          "15_TO_25": 30,
-          "25_PLUS": 30
+          "ZERO": 0.0,
+          "1_TO_5": 15.0,
+          "5_TO_15": 25.0,
+          "15_TO_25": 30.0,
+          "25_PLUS": 30.0
         },
         "method": "two_stage_activity_scale_times_conditional_profit_per_cycle_scale"
       }
@@ -439,8 +520,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2275,
-          "upper_usdt": 2675,
+          "lower_usdt": 2275.0,
+          "upper_usdt": 2675.0,
           "grids": 40,
           "width_pct_of_market": 16.4611,
           "center_skew": "NEAR_CENTRE"
@@ -457,10 +538,10 @@
         "unclipped_direct_profit_scale": 1.118242,
         "sample_n": 14,
         "active_productivity_n": 14,
-        "recency_half_life_days": 30,
+        "recency_half_life_days": 30.0,
         "recency_floor": 0.25,
         "activity_distribution_pct": {
-          "ZERO": 0,
+          "ZERO": 0.0,
           "1_TO_5": 14.2857,
           "5_TO_15": 28.5714,
           "15_TO_25": 35.7143,
@@ -480,8 +561,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2200,
-          "upper_usdt": 2550,
+          "lower_usdt": 2200.0,
+          "upper_usdt": 2550.0,
           "grids": 35,
           "width_pct_of_market": 14.9234,
           "center_skew": "NEAR_CENTRE"
@@ -498,14 +579,14 @@
         "unclipped_direct_profit_scale": 1.213048,
         "sample_n": 10,
         "active_productivity_n": 10,
-        "recency_half_life_days": 30,
+        "recency_half_life_days": 30.0,
         "recency_floor": 0.25,
         "activity_distribution_pct": {
-          "ZERO": 0,
-          "1_TO_5": 20,
-          "5_TO_15": 60,
-          "15_TO_25": 10,
-          "25_PLUS": 10
+          "ZERO": 0.0,
+          "1_TO_5": 20.0,
+          "5_TO_15": 60.0,
+          "15_TO_25": 10.0,
+          "25_PLUS": 10.0
         },
         "method": "two_stage_activity_scale_times_conditional_profit_per_cycle_scale"
       }
@@ -521,8 +602,8 @@
           "center_skew": "UPPER_SKEW"
         },
         "target_geometry": {
-          "lower_usdt": 2200,
-          "upper_usdt": 2550,
+          "lower_usdt": 2200.0,
+          "upper_usdt": 2550.0,
           "grids": 35,
           "width_pct_of_market": 15.1372,
           "center_skew": "UPPER_SKEW"
@@ -539,10 +620,10 @@
         "unclipped_direct_profit_scale": 0.927066,
         "sample_n": 12,
         "active_productivity_n": 12,
-        "recency_half_life_days": 30,
+        "recency_half_life_days": 30.0,
         "recency_floor": 0.25,
         "activity_distribution_pct": {
-          "ZERO": 0,
+          "ZERO": 0.0,
           "1_TO_5": 16.6667,
           "5_TO_15": 41.6667,
           "15_TO_25": 8.3333,
@@ -562,8 +643,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2200,
-          "upper_usdt": 2550,
+          "lower_usdt": 2200.0,
+          "upper_usdt": 2550.0,
           "grids": 35,
           "width_pct_of_market": 14.9414,
           "center_skew": "NEAR_CENTRE"
@@ -580,13 +661,13 @@
         "unclipped_direct_profit_scale": 0.813445,
         "sample_n": 32,
         "active_productivity_n": 32,
-        "recency_half_life_days": 30,
+        "recency_half_life_days": 30.0,
         "recency_floor": 0.25,
         "activity_distribution_pct": {
-          "ZERO": 0,
+          "ZERO": 0.0,
           "1_TO_5": 18.75,
           "5_TO_15": 37.5,
-          "15_TO_25": 25,
+          "15_TO_25": 25.0,
           "25_PLUS": 18.75
         },
         "method": "two_stage_activity_scale_times_conditional_profit_per_cycle_scale"
@@ -603,8 +684,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2175,
-          "upper_usdt": 2525,
+          "lower_usdt": 2175.0,
+          "upper_usdt": 2525.0,
           "grids": 35,
           "width_pct_of_market": 15.1737,
           "center_skew": "NEAR_CENTRE"
@@ -621,10 +702,10 @@
         "unclipped_direct_profit_scale": 0.919169,
         "sample_n": 33,
         "active_productivity_n": 33,
-        "recency_half_life_days": 30,
+        "recency_half_life_days": 30.0,
         "recency_floor": 0.25,
         "activity_distribution_pct": {
-          "ZERO": 0,
+          "ZERO": 0.0,
           "1_TO_5": 18.1818,
           "5_TO_15": 39.3939,
           "15_TO_25": 24.2424,
@@ -646,8 +727,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2125,
-          "upper_usdt": 2425,
+          "lower_usdt": 2125.0,
+          "upper_usdt": 2425.0,
           "grids": 35,
           "width_pct_of_market": 13.4605,
           "center_skew": "NEAR_CENTRE"
@@ -664,10 +745,10 @@
         "unclipped_direct_profit_scale": 0.927066,
         "sample_n": 33,
         "active_productivity_n": 33,
-        "recency_half_life_days": 30,
+        "recency_half_life_days": 30.0,
         "recency_floor": 0.25,
         "activity_distribution_pct": {
-          "ZERO": 0,
+          "ZERO": 0.0,
           "1_TO_5": 15.1515,
           "5_TO_15": 39.3939,
           "15_TO_25": 24.2424,
@@ -687,8 +768,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2125,
-          "upper_usdt": 2425,
+          "lower_usdt": 2125.0,
+          "upper_usdt": 2425.0,
           "grids": 35,
           "width_pct_of_market": 13.2129,
           "center_skew": "NEAR_CENTRE"
@@ -705,10 +786,10 @@
         "unclipped_direct_profit_scale": 0.813445,
         "sample_n": 33,
         "active_productivity_n": 33,
-        "recency_half_life_days": 30,
+        "recency_half_life_days": 30.0,
         "recency_floor": 0.25,
         "activity_distribution_pct": {
-          "ZERO": 0,
+          "ZERO": 0.0,
           "1_TO_5": 15.1515,
           "5_TO_15": 39.3939,
           "15_TO_25": 24.2424,
@@ -728,8 +809,8 @@
           "center_skew": "NEAR_CENTRE"
         },
         "target_geometry": {
-          "lower_usdt": 2125,
-          "upper_usdt": 2425,
+          "lower_usdt": 2125.0,
+          "upper_usdt": 2425.0,
           "grids": 35,
           "width_pct_of_market": 13.2478,
           "center_skew": "NEAR_CENTRE"
@@ -746,14 +827,14 @@
         "unclipped_direct_profit_scale": 1.213048,
         "sample_n": 10,
         "active_productivity_n": 10,
-        "recency_half_life_days": 30,
+        "recency_half_life_days": 30.0,
         "recency_floor": 0.25,
         "activity_distribution_pct": {
-          "ZERO": 0,
-          "1_TO_5": 20,
-          "5_TO_15": 60,
-          "15_TO_25": 10,
-          "25_PLUS": 10
+          "ZERO": 0.0,
+          "1_TO_5": 20.0,
+          "5_TO_15": 60.0,
+          "15_TO_25": 10.0,
+          "25_PLUS": 10.0
         },
         "method": "two_stage_activity_scale_times_conditional_profit_per_cycle_scale"
       }
@@ -761,7 +842,7 @@
   ],
   "recency_weighting": {
     "enabled": true,
-    "half_life_days": 30,
+    "half_life_days": 30.0,
     "minimum_weight": 0.25,
     "unweighted_and_weighted_metrics_reported": true
   },
@@ -819,6 +900,311 @@
         "quantity_per_grid_eth"
       ],
       "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-08-21T02:01:26.951911+00:00",
+      "end_utc": "2026-08-21T04:34:05.398790+00:00",
+      "elapsed_h": 2.544,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "grids",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-08-21T04:34:05.398790+00:00",
+      "end_utc": "2026-08-22T04:00:28.828727+00:00",
+      "elapsed_h": 23.4398,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "grids",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-08-22T04:00:28.828727+00:00",
+      "end_utc": "2026-08-22T12:21:47.592028+00:00",
+      "elapsed_h": 8.3552,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "grids",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-08-24T10:57:35.314767+00:00",
+      "end_utc": "2026-08-25T04:04:45.517531+00:00",
+      "elapsed_h": 17.1195,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "grids",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-09-11T07:29:01.888793+00:00",
+      "end_utc": "2026-09-11T14:30:02.827026+00:00",
+      "elapsed_h": 7.0169,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-09-11T14:30:02.827026+00:00",
+      "end_utc": "2026-09-12T05:55:13.257513+00:00",
+      "elapsed_h": 15.4196,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "grids",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-09-13T06:18:15.551494+00:00",
+      "end_utc": "2026-09-13T13:28:05.910659+00:00",
+      "elapsed_h": 7.164,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "upper_limit_usdt",
+        "grids",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-09-14T14:13:51.679181+00:00",
+      "end_utc": "2026-09-15T07:52:10.603809+00:00",
+      "elapsed_h": 17.6386,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-09-19T07:32:20.599948+00:00",
+      "end_utc": "2026-09-19T11:10:51.414236+00:00",
+      "elapsed_h": 3.6419,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-09-20T12:28:42.881224+00:00",
+      "end_utc": "2026-09-21T14:19:07.817886+00:00",
+      "elapsed_h": 25.8403,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-09-21T14:19:07.817886+00:00",
+      "end_utc": "2026-09-21T19:34:59.657367+00:00",
+      "elapsed_h": 5.2644,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-10-01T22:00:16.470187+00:00",
+      "end_utc": "2026-10-02T08:27:49.139085+00:00",
+      "elapsed_h": 10.4591,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "grids",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-10-07T08:50:38.864643+00:00",
+      "end_utc": "2026-10-07T16:38:45.278610+00:00",
+      "elapsed_h": 7.8018,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-10-07T16:38:45.278610+00:00",
+      "end_utc": "2026-10-08T16:37:17.051852+00:00",
+      "elapsed_h": 23.9755,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-10-10T16:23:12.397536+00:00",
+      "end_utc": "2026-10-11T09:02:48.231080+00:00",
+      "elapsed_h": 16.66,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "grids",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-10-12T09:46:20.591082+00:00",
+      "end_utc": "2026-10-13T07:48:54.353301+00:00",
+      "elapsed_h": 22.0427,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-10-15T07:43:54.823233+00:00",
+      "end_utc": "2026-10-16T07:19:38.588330+00:00",
+      "elapsed_h": 23.5955,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-10-23T07:56:14.746931+00:00",
+      "end_utc": "2026-10-24T07:24:57.996865+00:00",
+      "elapsed_h": 23.4787,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "upper_limit_usdt",
+        "grids",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-10-24T07:24:57.996865+00:00",
+      "end_utc": "2026-10-25T06:15:53.307902+00:00",
+      "elapsed_h": 22.8487,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
+    },
+    {
+      "start_utc": "2026-10-25T06:15:53.307902+00:00",
+      "end_utc": "2026-10-25T16:33:55.717884+00:00",
+      "elapsed_h": 10.3007,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-10-28T21:43:43.756808+00:00",
+      "end_utc": "2026-10-29T02:52:16.602891+00:00",
+      "elapsed_h": 5.1425,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-10-30T07:16:34.954399+00:00",
+      "end_utc": "2026-10-30T08:59:01.494012+00:00",
+      "elapsed_h": 1.7074,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": false
+    },
+    {
+      "start_utc": "2026-11-03T20:39:18.530044+00:00",
+      "end_utc": "2026-11-04T18:04:37.631976+00:00",
+      "elapsed_h": 21.422,
+      "eligible": false,
+      "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+      "changed_geometry_fields": [
+        "lower_limit_usdt",
+        "upper_limit_usdt",
+        "quantity_per_grid_eth"
+      ],
+      "duration_eligible": true
     }
   ],
   "windows": [
@@ -827,8 +1213,8 @@
       "end_utc": "2026-08-13T02:23:00+00:00",
       "elapsed_h": 16.4167,
       "grids": 30,
-      "lower_usdt": 1750,
-      "upper_usdt": 2000,
+      "lower_usdt": 1750.0,
+      "upper_usdt": 2000.0,
       "current_price_usdt": 1905.24,
       "quantity_per_grid_eth": 0.00318,
       "analogue_paths": 60,
@@ -862,8 +1248,8 @@
       "end_utc": "2026-08-14T02:16:00+00:00",
       "elapsed_h": 23.8833,
       "grids": 30,
-      "lower_usdt": 1750,
-      "upper_usdt": 2000,
+      "lower_usdt": 1750.0,
+      "upper_usdt": 2000.0,
       "current_price_usdt": 1876.36,
       "quantity_per_grid_eth": 0.00318,
       "analogue_paths": 60,
@@ -897,8 +1283,8 @@
       "end_utc": "2026-08-17T02:18:00+00:00",
       "elapsed_h": 23.8333,
       "grids": 30,
-      "lower_usdt": 1750,
-      "upper_usdt": 2000,
+      "lower_usdt": 1750.0,
+      "upper_usdt": 2000.0,
       "current_price_usdt": 1884.44,
       "quantity_per_grid_eth": 0.00318,
       "analogue_paths": 60,
@@ -932,8 +1318,8 @@
       "end_utc": "2026-08-18T02:27:00+00:00",
       "elapsed_h": 24.15,
       "grids": 30,
-      "lower_usdt": 1750,
-      "upper_usdt": 2000,
+      "lower_usdt": 1750.0,
+      "upper_usdt": 2000.0,
       "current_price_usdt": 1888.97,
       "quantity_per_grid_eth": 0.00318,
       "analogue_paths": 60,
@@ -965,17 +1351,17 @@
     {
       "start_utc": "2026-08-18T02:27:00+00:00",
       "end_utc": "2026-08-19T02:27:00+00:00",
-      "elapsed_h": 24,
+      "elapsed_h": 24.0,
       "grids": 30,
-      "lower_usdt": 1750,
-      "upper_usdt": 2000,
+      "lower_usdt": 1750.0,
+      "upper_usdt": 2000.0,
       "current_price_usdt": 1897.79,
       "quantity_per_grid_eth": 0.00318,
       "analogue_paths": 60,
       "predicted_paired_profit_24h_raw_usdt": 0.193606,
       "actual_grid_profit_24h_equiv_usdt": 0.13,
       "predicted_paired_rounds_24h_raw": 9.041667,
-      "actual_rounds_24h_equiv": 6,
+      "actual_rounds_24h_equiv": 6.0,
       "profit_ratio": 0.671466,
       "rounds_ratio": 0.663594,
       "width_pct_of_market": 13.173217268507054,
@@ -1002,8 +1388,8 @@
       "end_utc": "2026-08-21T02:01:26.951911+00:00",
       "elapsed_h": 23.5408,
       "grids": 30,
-      "lower_usdt": 2050,
-      "upper_usdt": 2300,
+      "lower_usdt": 2050.0,
+      "upper_usdt": 2300.0,
       "current_price_usdt": 2257.89,
       "quantity_per_grid_eth": 0.00275,
       "analogue_paths": 60,
@@ -1037,8 +1423,8 @@
       "end_utc": "2026-08-23T11:40:01.812970+00:00",
       "elapsed_h": 23.304,
       "grids": 21,
-      "lower_usdt": 2185,
-      "upper_usdt": 2585,
+      "lower_usdt": 2185.0,
+      "upper_usdt": 2585.0,
       "current_price_usdt": 2434.98,
       "quantity_per_grid_eth": 0.00371,
       "analogue_paths": 60,
@@ -1050,7 +1436,7 @@
       "rounds_ratio": 0.827203,
       "width_pct_of_market": 16.427239648785616,
       "center_offset_pct_of_market": -2.0525835941157644,
-      "grid_spacing_usdt": 20,
+      "grid_spacing_usdt": 20.0,
       "density_score": 1.2783645000000001,
       "center_skew": "NEAR_CENTRE",
       "path_length_pct": 14.547667792794938,
@@ -1072,8 +1458,8 @@
       "end_utc": "2026-08-24T10:57:35.314767+00:00",
       "elapsed_h": 23.2926,
       "grids": 21,
-      "lower_usdt": 2185,
-      "upper_usdt": 2585,
+      "lower_usdt": 2185.0,
+      "upper_usdt": 2585.0,
       "current_price_usdt": 2437.8,
       "quantity_per_grid_eth": 0.00371,
       "analogue_paths": 60,
@@ -1085,7 +1471,7 @@
       "rounds_ratio": 2.773328,
       "width_pct_of_market": 16.40823693494134,
       "center_offset_pct_of_market": -2.1658872754122593,
-      "grid_spacing_usdt": 20,
+      "grid_spacing_usdt": 20.0,
       "density_score": 1.2798450000000001,
       "center_skew": "NEAR_CENTRE",
       "path_length_pct": 8.643109068360921,
@@ -1107,8 +1493,8 @@
       "end_utc": "2026-08-26T03:28:39.523170+00:00",
       "elapsed_h": 23.3983,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2497.84,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1142,8 +1528,8 @@
       "end_utc": "2026-08-27T02:29:50.968238+00:00",
       "elapsed_h": 23.0198,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2463.32,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1177,8 +1563,8 @@
       "end_utc": "2026-08-28T02:28:31.584808+00:00",
       "elapsed_h": 23.9779,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2495.86,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1212,8 +1598,8 @@
       "end_utc": "2026-08-30T01:39:42.242191+00:00",
       "elapsed_h": 23.3656,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2440.56,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1247,8 +1633,8 @@
       "end_utc": "2026-08-31T01:36:37.324539+00:00",
       "elapsed_h": 23.9486,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2457.34,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1282,8 +1668,8 @@
       "end_utc": "2026-09-01T02:30:14.368042+00:00",
       "elapsed_h": 24.8936,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2419.79,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1317,8 +1703,8 @@
       "end_utc": "2026-09-02T04:46:30.894517+00:00",
       "elapsed_h": 26.2713,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2459.3,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1352,8 +1738,8 @@
       "end_utc": "2026-09-03T04:44:31.041520+00:00",
       "elapsed_h": 23.9667,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2415.88,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1387,8 +1773,8 @@
       "end_utc": "2026-09-04T04:43:09.481569+00:00",
       "elapsed_h": 23.9773,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2397.83,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1422,8 +1808,8 @@
       "end_utc": "2026-09-05T04:38:53.610935+00:00",
       "elapsed_h": 23.9289,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2515.12,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1457,8 +1843,8 @@
       "end_utc": "2026-09-06T06:03:00.269976+00:00",
       "elapsed_h": 25.4018,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2450.62,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1492,8 +1878,8 @@
       "end_utc": "2026-09-07T07:32:40.843666+00:00",
       "elapsed_h": 25.4946,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2511.32,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1527,8 +1913,8 @@
       "end_utc": "2026-09-08T07:25:52.766750+00:00",
       "elapsed_h": 23.8866,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2493.05,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1562,8 +1948,8 @@
       "end_utc": "2026-09-09T07:34:21.229391+00:00",
       "elapsed_h": 24.1412,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2478.69,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1597,8 +1983,8 @@
       "end_utc": "2026-09-10T07:30:51.056094+00:00",
       "elapsed_h": 23.9416,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2513.66,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1632,8 +2018,8 @@
       "end_utc": "2026-09-11T07:29:01.888793+00:00",
       "elapsed_h": 23.9697,
       "grids": 22,
-      "lower_usdt": 2190,
-      "upper_usdt": 2630,
+      "lower_usdt": 2190.0,
+      "upper_usdt": 2630.0,
       "current_price_usdt": 2468.44,
       "quantity_per_grid_eth": 0.00351,
       "analogue_paths": 60,
@@ -1667,8 +2053,8 @@
       "end_utc": "2026-09-13T06:18:15.551494+00:00",
       "elapsed_h": 24.384,
       "grids": 39,
-      "lower_usdt": 2240,
-      "upper_usdt": 2680,
+      "lower_usdt": 2240.0,
+      "upper_usdt": 2680.0,
       "current_price_usdt": 2512.22,
       "quantity_per_grid_eth": 0.00189,
       "analogue_paths": 60,
@@ -1702,8 +2088,8 @@
       "end_utc": "2026-09-14T14:13:51.679181+00:00",
       "elapsed_h": 24.7627,
       "grids": 40,
-      "lower_usdt": 2240,
-      "upper_usdt": 2600,
+      "lower_usdt": 2240.0,
+      "upper_usdt": 2600.0,
       "current_price_usdt": 2466.29,
       "quantity_per_grid_eth": 0.00185,
       "analogue_paths": 60,
@@ -1737,14 +2123,14 @@
       "end_utc": "2026-09-16T07:54:58.509681+00:00",
       "elapsed_h": 24.0466,
       "grids": 40,
-      "lower_usdt": 2300,
-      "upper_usdt": 2650,
+      "lower_usdt": 2300.0,
+      "upper_usdt": 2650.0,
       "current_price_usdt": 2474.41,
       "quantity_per_grid_eth": 0.00182,
       "analogue_paths": 60,
       "predicted_paired_profit_24h_raw_usdt": 0.284621,
       "actual_grid_profit_24h_equiv_usdt": 0.441236,
-      "predicted_paired_rounds_24h_raw": 24,
+      "predicted_paired_rounds_24h_raw": 24.0,
       "actual_rounds_24h_equiv": 36.928235,
       "profit_ratio": 1.550256,
       "rounds_ratio": 1.538676,
@@ -1772,8 +2158,8 @@
       "end_utc": "2026-09-17T07:47:58.893905+00:00",
       "elapsed_h": 23.8834,
       "grids": 40,
-      "lower_usdt": 2300,
-      "upper_usdt": 2650,
+      "lower_usdt": 2300.0,
+      "upper_usdt": 2650.0,
       "current_price_usdt": 2397.7,
       "quantity_per_grid_eth": 0.00182,
       "analogue_paths": 60,
@@ -1807,8 +2193,8 @@
       "end_utc": "2026-09-18T07:37:10.823906+00:00",
       "elapsed_h": 23.82,
       "grids": 40,
-      "lower_usdt": 2300,
-      "upper_usdt": 2650,
+      "lower_usdt": 2300.0,
+      "upper_usdt": 2650.0,
       "current_price_usdt": 2447.32,
       "quantity_per_grid_eth": 0.00182,
       "analogue_paths": 60,
@@ -1842,8 +2228,8 @@
       "end_utc": "2026-09-19T07:32:20.599948+00:00",
       "elapsed_h": 23.9194,
       "grids": 40,
-      "lower_usdt": 2300,
-      "upper_usdt": 2650,
+      "lower_usdt": 2300.0,
+      "upper_usdt": 2650.0,
       "current_price_usdt": 2492.31,
       "quantity_per_grid_eth": 0.00182,
       "analogue_paths": 60,
@@ -1877,8 +2263,8 @@
       "end_utc": "2026-09-20T12:28:42.881224+00:00",
       "elapsed_h": 25.2976,
       "grids": 40,
-      "lower_usdt": 2400,
-      "upper_usdt": 2750,
+      "lower_usdt": 2400.0,
+      "upper_usdt": 2750.0,
       "current_price_usdt": 2641.26,
       "quantity_per_grid_eth": 0.00175,
       "analogue_paths": 60,
@@ -1912,8 +2298,8 @@
       "end_utc": "2026-09-22T21:27:19.651024+00:00",
       "elapsed_h": 25.8722,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2774.46,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -1947,8 +2333,8 @@
       "end_utc": "2026-09-23T20:29:36.226105+00:00",
       "elapsed_h": 23.0379,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2749.77,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -1982,8 +2368,8 @@
       "end_utc": "2026-09-24T22:30:37.501543+00:00",
       "elapsed_h": 26.017,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2670.17,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -2017,8 +2403,8 @@
       "end_utc": "2026-09-25T22:29:22.891249+00:00",
       "elapsed_h": 23.9793,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2680.32,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -2052,8 +2438,8 @@
       "end_utc": "2026-09-26T22:57:57.185794+00:00",
       "elapsed_h": 24.4762,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2688.43,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -2087,8 +2473,8 @@
       "end_utc": "2026-09-27T22:19:48.423426+00:00",
       "elapsed_h": 23.3642,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2688.87,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -2122,8 +2508,8 @@
       "end_utc": "2026-09-28T22:08:26.585431+00:00",
       "elapsed_h": 23.8106,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2679.06,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -2157,8 +2543,8 @@
       "end_utc": "2026-09-29T21:32:14.797873+00:00",
       "elapsed_h": 23.3967,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2670.45,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -2192,8 +2578,8 @@
       "end_utc": "2026-09-30T21:32:22.297183+00:00",
       "elapsed_h": 24.0021,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2679.63,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -2227,8 +2613,8 @@
       "end_utc": "2026-10-01T22:00:16.470187+00:00",
       "elapsed_h": 24.465,
       "grids": 40,
-      "lower_usdt": 2475,
-      "upper_usdt": 2825,
+      "lower_usdt": 2475.0,
+      "upper_usdt": 2825.0,
       "current_price_usdt": 2684.63,
       "quantity_per_grid_eth": 0.00171,
       "analogue_paths": 60,
@@ -2262,8 +2648,8 @@
       "end_utc": "2026-10-04T07:29:35.579459+00:00",
       "elapsed_h": 23.2175,
       "grids": 35,
-      "lower_usdt": 2500,
-      "upper_usdt": 2850,
+      "lower_usdt": 2500.0,
+      "upper_usdt": 2850.0,
       "current_price_usdt": 2681.65,
       "quantity_per_grid_eth": 0.00195,
       "analogue_paths": 60,
@@ -2297,8 +2683,8 @@
       "end_utc": "2026-10-05T07:11:21.013839+00:00",
       "elapsed_h": 23.696,
       "grids": 35,
-      "lower_usdt": 2500,
-      "upper_usdt": 2850,
+      "lower_usdt": 2500.0,
+      "upper_usdt": 2850.0,
       "current_price_usdt": 2693.56,
       "quantity_per_grid_eth": 0.00195,
       "analogue_paths": 60,
@@ -2332,8 +2718,8 @@
       "end_utc": "2026-10-06T09:25:11.335681+00:00",
       "elapsed_h": 26.2306,
       "grids": 35,
-      "lower_usdt": 2500,
-      "upper_usdt": 2850,
+      "lower_usdt": 2500.0,
+      "upper_usdt": 2850.0,
       "current_price_usdt": 2726.58,
       "quantity_per_grid_eth": 0.00195,
       "analogue_paths": 60,
@@ -2367,8 +2753,8 @@
       "end_utc": "2026-10-09T16:19:51.649587+00:00",
       "elapsed_h": 23.7096,
       "grids": 35,
-      "lower_usdt": 2350,
-      "upper_usdt": 2700,
+      "lower_usdt": 2350.0,
+      "upper_usdt": 2700.0,
       "current_price_usdt": 2430.52,
       "quantity_per_grid_eth": 0.00197,
       "analogue_paths": 60,
@@ -2402,8 +2788,8 @@
       "end_utc": "2026-10-10T16:23:12.397536+00:00",
       "elapsed_h": 24.0558,
       "grids": 35,
-      "lower_usdt": 2350,
-      "upper_usdt": 2700,
+      "lower_usdt": 2350.0,
+      "upper_usdt": 2700.0,
       "current_price_usdt": 2495.55,
       "quantity_per_grid_eth": 0.00197,
       "analogue_paths": 60,
@@ -2437,8 +2823,8 @@
       "end_utc": "2026-10-12T09:46:20.591082+00:00",
       "elapsed_h": 24.7257,
       "grids": 40,
-      "lower_usdt": 2325,
-      "upper_usdt": 2725,
+      "lower_usdt": 2325.0,
+      "upper_usdt": 2725.0,
       "current_price_usdt": 2502.04,
       "quantity_per_grid_eth": 0.00172,
       "analogue_paths": 60,
@@ -2472,8 +2858,8 @@
       "end_utc": "2026-10-14T08:01:33.146755+00:00",
       "elapsed_h": 24.2108,
       "grids": 40,
-      "lower_usdt": 2300,
-      "upper_usdt": 2700,
+      "lower_usdt": 2300.0,
+      "upper_usdt": 2700.0,
       "current_price_usdt": 2534.09,
       "quantity_per_grid_eth": 0.00173,
       "analogue_paths": 60,
@@ -2507,8 +2893,8 @@
       "end_utc": "2026-10-15T07:43:54.823233+00:00",
       "elapsed_h": 23.706,
       "grids": 40,
-      "lower_usdt": 2300,
-      "upper_usdt": 2700,
+      "lower_usdt": 2300.0,
+      "upper_usdt": 2700.0,
       "current_price_usdt": 2513.61,
       "quantity_per_grid_eth": 0.00173,
       "analogue_paths": 60,
@@ -2542,8 +2928,8 @@
       "end_utc": "2026-10-17T07:11:43.811727+00:00",
       "elapsed_h": 23.8681,
       "grids": 40,
-      "lower_usdt": 2275,
-      "upper_usdt": 2675,
+      "lower_usdt": 2275.0,
+      "upper_usdt": 2675.0,
       "current_price_usdt": 2458.06,
       "quantity_per_grid_eth": 0.00174,
       "analogue_paths": 60,
@@ -2577,8 +2963,8 @@
       "end_utc": "2026-10-18T07:25:35.664515+00:00",
       "elapsed_h": 24.2311,
       "grids": 40,
-      "lower_usdt": 2275,
-      "upper_usdt": 2675,
+      "lower_usdt": 2275.0,
+      "upper_usdt": 2675.0,
       "current_price_usdt": 2433.08,
       "quantity_per_grid_eth": 0.00174,
       "analogue_paths": 60,
@@ -2612,8 +2998,8 @@
       "end_utc": "2026-10-19T07:54:52.441352+00:00",
       "elapsed_h": 24.488,
       "grids": 40,
-      "lower_usdt": 2275,
-      "upper_usdt": 2675,
+      "lower_usdt": 2275.0,
+      "upper_usdt": 2675.0,
       "current_price_usdt": 2409.48,
       "quantity_per_grid_eth": 0.00174,
       "analogue_paths": 60,
@@ -2647,8 +3033,8 @@
       "end_utc": "2026-10-20T07:55:44.890799+00:00",
       "elapsed_h": 24.0146,
       "grids": 40,
-      "lower_usdt": 2275,
-      "upper_usdt": 2675,
+      "lower_usdt": 2275.0,
+      "upper_usdt": 2675.0,
       "current_price_usdt": 2430.81,
       "quantity_per_grid_eth": 0.00174,
       "analogue_paths": 60,
@@ -2682,8 +3068,8 @@
       "end_utc": "2026-10-21T07:59:47.870087+00:00",
       "elapsed_h": 24.0675,
       "grids": 40,
-      "lower_usdt": 2275,
-      "upper_usdt": 2675,
+      "lower_usdt": 2275.0,
+      "upper_usdt": 2675.0,
       "current_price_usdt": 2390.88,
       "quantity_per_grid_eth": 0.00174,
       "analogue_paths": 60,
@@ -2717,8 +3103,8 @@
       "end_utc": "2026-10-22T07:57:51.365288+00:00",
       "elapsed_h": 23.9676,
       "grids": 40,
-      "lower_usdt": 2275,
-      "upper_usdt": 2675,
+      "lower_usdt": 2275.0,
+      "upper_usdt": 2675.0,
       "current_price_usdt": 2455.54,
       "quantity_per_grid_eth": 0.00174,
       "analogue_paths": 60,
@@ -2752,8 +3138,8 @@
       "end_utc": "2026-10-23T07:56:14.746931+00:00",
       "elapsed_h": 23.9732,
       "grids": 40,
-      "lower_usdt": 2275,
-      "upper_usdt": 2675,
+      "lower_usdt": 2275.0,
+      "upper_usdt": 2675.0,
       "current_price_usdt": 2429.97,
       "quantity_per_grid_eth": 0.00174,
       "analogue_paths": 60,
@@ -2787,8 +3173,8 @@
       "end_utc": "2026-10-26T20:36:03.627740+00:00",
       "elapsed_h": 28.0355,
       "grids": 35,
-      "lower_usdt": 2200,
-      "upper_usdt": 2550,
+      "lower_usdt": 2200.0,
+      "upper_usdt": 2550.0,
       "current_price_usdt": 2345.31,
       "quantity_per_grid_eth": 0.00202,
       "analogue_paths": 60,
@@ -2822,8 +3208,8 @@
       "end_utc": "2026-10-27T21:29:03.486013+00:00",
       "elapsed_h": 24.8833,
       "grids": 35,
-      "lower_usdt": 2200,
-      "upper_usdt": 2550,
+      "lower_usdt": 2200.0,
+      "upper_usdt": 2550.0,
       "current_price_usdt": 2312.19,
       "quantity_per_grid_eth": 0.00202,
       "analogue_paths": 60,
@@ -2857,8 +3243,8 @@
       "end_utc": "2026-10-28T21:43:43.756808+00:00",
       "elapsed_h": 24.2445,
       "grids": 35,
-      "lower_usdt": 2200,
-      "upper_usdt": 2550,
+      "lower_usdt": 2200.0,
+      "upper_usdt": 2550.0,
       "current_price_usdt": 2342.49,
       "quantity_per_grid_eth": 0.00202,
       "analogue_paths": 60,
@@ -2892,8 +3278,8 @@
       "end_utc": "2026-10-30T07:16:34.954399+00:00",
       "elapsed_h": 28.4051,
       "grids": 35,
-      "lower_usdt": 2175,
-      "upper_usdt": 2525,
+      "lower_usdt": 2175.0,
+      "upper_usdt": 2525.0,
       "current_price_usdt": 2306.62,
       "quantity_per_grid_eth": 0.00202,
       "analogue_paths": 60,
@@ -2927,8 +3313,8 @@
       "end_utc": "2026-10-31T11:14:26.196353+00:00",
       "elapsed_h": 26.2569,
       "grids": 35,
-      "lower_usdt": 2125,
-      "upper_usdt": 2425,
+      "lower_usdt": 2125.0,
+      "upper_usdt": 2425.0,
       "current_price_usdt": 2228.75,
       "quantity_per_grid_eth": 0.00203,
       "analogue_paths": 60,
@@ -2962,8 +3348,8 @@
       "end_utc": "2026-11-02T17:13:05.760713+00:00",
       "elapsed_h": 25.9382,
       "grids": 35,
-      "lower_usdt": 2125,
-      "upper_usdt": 2425,
+      "lower_usdt": 2125.0,
+      "upper_usdt": 2425.0,
       "current_price_usdt": 2270.5,
       "quantity_per_grid_eth": 0.00203,
       "analogue_paths": 60,
@@ -2997,8 +3383,8 @@
       "end_utc": "2026-11-03T20:39:18.530044+00:00",
       "elapsed_h": 27.4369,
       "grids": 35,
-      "lower_usdt": 2125,
-      "upper_usdt": 2425,
+      "lower_usdt": 2125.0,
+      "upper_usdt": 2425.0,
       "current_price_usdt": 2264.52,
       "quantity_per_grid_eth": 0.00203,
       "analogue_paths": 60,
@@ -3029,9 +3415,9 @@
     }
   ],
   "state_pair_audit": {
-    "pair_audit_n": 10,
-    "same_geometry_eligible_pair_count": 5,
-    "excluded_geometry_change_count": 3,
+    "pair_audit_n": 96,
+    "same_geometry_eligible_pair_count": 67,
+    "excluded_geometry_change_count": 26,
     "geometry_change_exclusions": [
       {
         "start_utc": "2026-08-19T09:22:00+00:00",
@@ -3071,6 +3457,311 @@
           "quantity_per_grid_eth"
         ],
         "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-08-21T02:01:26.951911+00:00",
+        "end_utc": "2026-08-21T04:34:05.398790+00:00",
+        "elapsed_h": 2.544,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-08-21T04:34:05.398790+00:00",
+        "end_utc": "2026-08-22T04:00:28.828727+00:00",
+        "elapsed_h": 23.4398,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-08-22T04:00:28.828727+00:00",
+        "end_utc": "2026-08-22T12:21:47.592028+00:00",
+        "elapsed_h": 8.3552,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-08-24T10:57:35.314767+00:00",
+        "end_utc": "2026-08-25T04:04:45.517531+00:00",
+        "elapsed_h": 17.1195,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-09-11T07:29:01.888793+00:00",
+        "end_utc": "2026-09-11T14:30:02.827026+00:00",
+        "elapsed_h": 7.0169,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-09-11T14:30:02.827026+00:00",
+        "end_utc": "2026-09-12T05:55:13.257513+00:00",
+        "elapsed_h": 15.4196,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-09-13T06:18:15.551494+00:00",
+        "end_utc": "2026-09-13T13:28:05.910659+00:00",
+        "elapsed_h": 7.164,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-09-14T14:13:51.679181+00:00",
+        "end_utc": "2026-09-15T07:52:10.603809+00:00",
+        "elapsed_h": 17.6386,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-09-19T07:32:20.599948+00:00",
+        "end_utc": "2026-09-19T11:10:51.414236+00:00",
+        "elapsed_h": 3.6419,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-09-20T12:28:42.881224+00:00",
+        "end_utc": "2026-09-21T14:19:07.817886+00:00",
+        "elapsed_h": 25.8403,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-09-21T14:19:07.817886+00:00",
+        "end_utc": "2026-09-21T19:34:59.657367+00:00",
+        "elapsed_h": 5.2644,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-01T22:00:16.470187+00:00",
+        "end_utc": "2026-10-02T08:27:49.139085+00:00",
+        "elapsed_h": 10.4591,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-07T08:50:38.864643+00:00",
+        "end_utc": "2026-10-07T16:38:45.278610+00:00",
+        "elapsed_h": 7.8018,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-07T16:38:45.278610+00:00",
+        "end_utc": "2026-10-08T16:37:17.051852+00:00",
+        "elapsed_h": 23.9755,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-10T16:23:12.397536+00:00",
+        "end_utc": "2026-10-11T09:02:48.231080+00:00",
+        "elapsed_h": 16.66,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-12T09:46:20.591082+00:00",
+        "end_utc": "2026-10-13T07:48:54.353301+00:00",
+        "elapsed_h": 22.0427,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-15T07:43:54.823233+00:00",
+        "end_utc": "2026-10-16T07:19:38.588330+00:00",
+        "elapsed_h": 23.5955,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-23T07:56:14.746931+00:00",
+        "end_utc": "2026-10-24T07:24:57.996865+00:00",
+        "elapsed_h": 23.4787,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-24T07:24:57.996865+00:00",
+        "end_utc": "2026-10-25T06:15:53.307902+00:00",
+        "elapsed_h": 22.8487,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-25T06:15:53.307902+00:00",
+        "end_utc": "2026-10-25T16:33:55.717884+00:00",
+        "elapsed_h": 10.3007,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-28T21:43:43.756808+00:00",
+        "end_utc": "2026-10-29T02:52:16.602891+00:00",
+        "elapsed_h": 5.1425,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-30T07:16:34.954399+00:00",
+        "end_utc": "2026-10-30T08:59:01.494012+00:00",
+        "elapsed_h": 1.7074,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-11-03T20:39:18.530044+00:00",
+        "end_utc": "2026-11-04T18:04:37.631976+00:00",
+        "elapsed_h": 21.422,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
       }
     ],
     "all_pair_classifications": [
@@ -3112,7 +3803,7 @@
       {
         "start_utc": "2026-08-18T02:27:00+00:00",
         "end_utc": "2026-08-19T02:27:00+00:00",
-        "elapsed_h": 24,
+        "elapsed_h": 24.0,
         "eligible": true,
         "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
       },
@@ -3161,88 +3852,753 @@
           "quantity_per_grid_eth"
         ],
         "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-08-20T02:29:00+00:00",
+        "end_utc": "2026-08-21T02:01:26.951911+00:00",
+        "elapsed_h": 23.5408,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-08-21T02:01:26.951911+00:00",
+        "end_utc": "2026-08-21T04:34:05.398790+00:00",
+        "elapsed_h": 2.544,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-08-21T04:34:05.398790+00:00",
+        "end_utc": "2026-08-22T04:00:28.828727+00:00",
+        "elapsed_h": 23.4398,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-08-22T04:00:28.828727+00:00",
+        "end_utc": "2026-08-22T12:21:47.592028+00:00",
+        "elapsed_h": 8.3552,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-08-22T12:21:47.592028+00:00",
+        "end_utc": "2026-08-23T11:40:01.812970+00:00",
+        "elapsed_h": 23.304,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-08-23T11:40:01.812970+00:00",
+        "end_utc": "2026-08-24T10:57:35.314767+00:00",
+        "elapsed_h": 23.2926,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-08-24T10:57:35.314767+00:00",
+        "end_utc": "2026-08-25T04:04:45.517531+00:00",
+        "elapsed_h": 17.1195,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-08-25T04:04:45.517531+00:00",
+        "end_utc": "2026-08-26T03:28:39.523170+00:00",
+        "elapsed_h": 23.3983,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-08-26T03:28:39.523170+00:00",
+        "end_utc": "2026-08-27T02:29:50.968238+00:00",
+        "elapsed_h": 23.0198,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-08-27T02:29:50.968238+00:00",
+        "end_utc": "2026-08-28T02:28:31.584808+00:00",
+        "elapsed_h": 23.9779,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-08-28T02:28:31.584808+00:00",
+        "end_utc": "2026-08-29T02:17:46.055767+00:00",
+        "elapsed_h": 23.8207,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-08-29T02:17:46.055767+00:00",
+        "end_utc": "2026-08-30T01:39:42.242191+00:00",
+        "elapsed_h": 23.3656,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-08-30T01:39:42.242191+00:00",
+        "end_utc": "2026-08-31T01:36:37.324539+00:00",
+        "elapsed_h": 23.9486,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-08-31T01:36:37.324539+00:00",
+        "end_utc": "2026-09-01T02:30:14.368042+00:00",
+        "elapsed_h": 24.8936,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-01T02:30:14.368042+00:00",
+        "end_utc": "2026-09-02T04:46:30.894517+00:00",
+        "elapsed_h": 26.2713,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-02T04:46:30.894517+00:00",
+        "end_utc": "2026-09-03T04:44:31.041520+00:00",
+        "elapsed_h": 23.9667,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-03T04:44:31.041520+00:00",
+        "end_utc": "2026-09-04T04:43:09.481569+00:00",
+        "elapsed_h": 23.9773,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-04T04:43:09.481569+00:00",
+        "end_utc": "2026-09-05T04:38:53.610935+00:00",
+        "elapsed_h": 23.9289,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-05T04:38:53.610935+00:00",
+        "end_utc": "2026-09-06T06:03:00.269976+00:00",
+        "elapsed_h": 25.4018,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-06T06:03:00.269976+00:00",
+        "end_utc": "2026-09-07T07:32:40.843666+00:00",
+        "elapsed_h": 25.4946,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-07T07:32:40.843666+00:00",
+        "end_utc": "2026-09-08T07:25:52.766750+00:00",
+        "elapsed_h": 23.8866,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-08T07:25:52.766750+00:00",
+        "end_utc": "2026-09-09T07:34:21.229391+00:00",
+        "elapsed_h": 24.1412,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-09T07:34:21.229391+00:00",
+        "end_utc": "2026-09-10T07:30:51.056094+00:00",
+        "elapsed_h": 23.9416,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-10T07:30:51.056094+00:00",
+        "end_utc": "2026-09-11T07:29:01.888793+00:00",
+        "elapsed_h": 23.9697,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-11T07:29:01.888793+00:00",
+        "end_utc": "2026-09-11T14:30:02.827026+00:00",
+        "elapsed_h": 7.0169,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-09-11T14:30:02.827026+00:00",
+        "end_utc": "2026-09-12T05:55:13.257513+00:00",
+        "elapsed_h": 15.4196,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-09-12T05:55:13.257513+00:00",
+        "end_utc": "2026-09-13T06:18:15.551494+00:00",
+        "elapsed_h": 24.384,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-13T06:18:15.551494+00:00",
+        "end_utc": "2026-09-13T13:28:05.910659+00:00",
+        "elapsed_h": 7.164,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-09-13T13:28:05.910659+00:00",
+        "end_utc": "2026-09-14T14:13:51.679181+00:00",
+        "elapsed_h": 24.7627,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-14T14:13:51.679181+00:00",
+        "end_utc": "2026-09-15T07:52:10.603809+00:00",
+        "elapsed_h": 17.6386,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-09-15T07:52:10.603809+00:00",
+        "end_utc": "2026-09-16T07:54:58.509681+00:00",
+        "elapsed_h": 24.0466,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-16T07:54:58.509681+00:00",
+        "end_utc": "2026-09-17T07:47:58.893905+00:00",
+        "elapsed_h": 23.8834,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-17T07:47:58.893905+00:00",
+        "end_utc": "2026-09-18T07:37:10.823906+00:00",
+        "elapsed_h": 23.82,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-18T07:37:10.823906+00:00",
+        "end_utc": "2026-09-19T07:32:20.599948+00:00",
+        "elapsed_h": 23.9194,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-19T07:32:20.599948+00:00",
+        "end_utc": "2026-09-19T11:10:51.414236+00:00",
+        "elapsed_h": 3.6419,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-09-19T11:10:51.414236+00:00",
+        "end_utc": "2026-09-20T12:28:42.881224+00:00",
+        "elapsed_h": 25.2976,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-20T12:28:42.881224+00:00",
+        "end_utc": "2026-09-21T14:19:07.817886+00:00",
+        "elapsed_h": 25.8403,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-09-21T14:19:07.817886+00:00",
+        "end_utc": "2026-09-21T19:34:59.657367+00:00",
+        "elapsed_h": 5.2644,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-09-21T19:34:59.657367+00:00",
+        "end_utc": "2026-09-22T21:27:19.651024+00:00",
+        "elapsed_h": 25.8722,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-22T21:27:19.651024+00:00",
+        "end_utc": "2026-09-23T20:29:36.226105+00:00",
+        "elapsed_h": 23.0379,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-23T20:29:36.226105+00:00",
+        "end_utc": "2026-09-24T22:30:37.501543+00:00",
+        "elapsed_h": 26.017,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-24T22:30:37.501543+00:00",
+        "end_utc": "2026-09-25T22:29:22.891249+00:00",
+        "elapsed_h": 23.9793,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-25T22:29:22.891249+00:00",
+        "end_utc": "2026-09-26T22:57:57.185794+00:00",
+        "elapsed_h": 24.4762,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-26T22:57:57.185794+00:00",
+        "end_utc": "2026-09-27T22:19:48.423426+00:00",
+        "elapsed_h": 23.3642,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-27T22:19:48.423426+00:00",
+        "end_utc": "2026-09-28T22:08:26.585431+00:00",
+        "elapsed_h": 23.8106,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-28T22:08:26.585431+00:00",
+        "end_utc": "2026-09-29T21:32:14.797873+00:00",
+        "elapsed_h": 23.3967,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-29T21:32:14.797873+00:00",
+        "end_utc": "2026-09-30T21:32:22.297183+00:00",
+        "elapsed_h": 24.0021,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-09-30T21:32:22.297183+00:00",
+        "end_utc": "2026-10-01T22:00:16.470187+00:00",
+        "elapsed_h": 24.465,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-01T22:00:16.470187+00:00",
+        "end_utc": "2026-10-02T08:27:49.139085+00:00",
+        "elapsed_h": 10.4591,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-02T08:27:49.139085+00:00",
+        "end_utc": "2026-10-03T08:16:32.455876+00:00",
+        "elapsed_h": 23.812,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-03T08:16:32.455876+00:00",
+        "end_utc": "2026-10-04T07:29:35.579459+00:00",
+        "elapsed_h": 23.2175,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-04T07:29:35.579459+00:00",
+        "end_utc": "2026-10-05T07:11:21.013839+00:00",
+        "elapsed_h": 23.696,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-05T07:11:21.013839+00:00",
+        "end_utc": "2026-10-06T09:25:11.335681+00:00",
+        "elapsed_h": 26.2306,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-06T09:25:11.335681+00:00",
+        "end_utc": "2026-10-07T08:50:38.864643+00:00",
+        "elapsed_h": 23.4243,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-07T08:50:38.864643+00:00",
+        "end_utc": "2026-10-07T16:38:45.278610+00:00",
+        "elapsed_h": 7.8018,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-07T16:38:45.278610+00:00",
+        "end_utc": "2026-10-08T16:37:17.051852+00:00",
+        "elapsed_h": 23.9755,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-08T16:37:17.051852+00:00",
+        "end_utc": "2026-10-09T16:19:51.649587+00:00",
+        "elapsed_h": 23.7096,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-09T16:19:51.649587+00:00",
+        "end_utc": "2026-10-10T16:23:12.397536+00:00",
+        "elapsed_h": 24.0558,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-10T16:23:12.397536+00:00",
+        "end_utc": "2026-10-11T09:02:48.231080+00:00",
+        "elapsed_h": 16.66,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-11T09:02:48.231080+00:00",
+        "end_utc": "2026-10-12T09:46:20.591082+00:00",
+        "elapsed_h": 24.7257,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-12T09:46:20.591082+00:00",
+        "end_utc": "2026-10-13T07:48:54.353301+00:00",
+        "elapsed_h": 22.0427,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-13T07:48:54.353301+00:00",
+        "end_utc": "2026-10-14T08:01:33.146755+00:00",
+        "elapsed_h": 24.2108,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-14T08:01:33.146755+00:00",
+        "end_utc": "2026-10-15T07:43:54.823233+00:00",
+        "elapsed_h": 23.706,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-15T07:43:54.823233+00:00",
+        "end_utc": "2026-10-16T07:19:38.588330+00:00",
+        "elapsed_h": 23.5955,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-16T07:19:38.588330+00:00",
+        "end_utc": "2026-10-17T07:11:43.811727+00:00",
+        "elapsed_h": 23.8681,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-17T07:11:43.811727+00:00",
+        "end_utc": "2026-10-18T07:25:35.664515+00:00",
+        "elapsed_h": 24.2311,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-18T07:25:35.664515+00:00",
+        "end_utc": "2026-10-19T07:54:52.441352+00:00",
+        "elapsed_h": 24.488,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-19T07:54:52.441352+00:00",
+        "end_utc": "2026-10-20T07:55:44.890799+00:00",
+        "elapsed_h": 24.0146,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-20T07:55:44.890799+00:00",
+        "end_utc": "2026-10-21T07:59:47.870087+00:00",
+        "elapsed_h": 24.0675,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-21T07:59:47.870087+00:00",
+        "end_utc": "2026-10-22T07:57:51.365288+00:00",
+        "elapsed_h": 23.9676,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-22T07:57:51.365288+00:00",
+        "end_utc": "2026-10-23T07:56:14.746931+00:00",
+        "elapsed_h": 23.9732,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-23T07:56:14.746931+00:00",
+        "end_utc": "2026-10-24T07:24:57.996865+00:00",
+        "elapsed_h": 23.4787,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "upper_limit_usdt",
+          "grids",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-24T07:24:57.996865+00:00",
+        "end_utc": "2026-10-25T06:15:53.307902+00:00",
+        "elapsed_h": 22.8487,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-10-25T06:15:53.307902+00:00",
+        "end_utc": "2026-10-25T16:33:55.717884+00:00",
+        "elapsed_h": 10.3007,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-25T16:33:55.717884+00:00",
+        "end_utc": "2026-10-26T20:36:03.627740+00:00",
+        "elapsed_h": 28.0355,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-26T20:36:03.627740+00:00",
+        "end_utc": "2026-10-27T21:29:03.486013+00:00",
+        "elapsed_h": 24.8833,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-27T21:29:03.486013+00:00",
+        "end_utc": "2026-10-28T21:43:43.756808+00:00",
+        "elapsed_h": 24.2445,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-28T21:43:43.756808+00:00",
+        "end_utc": "2026-10-29T02:52:16.602891+00:00",
+        "elapsed_h": 5.1425,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-29T02:52:16.602891+00:00",
+        "end_utc": "2026-10-30T07:16:34.954399+00:00",
+        "elapsed_h": 28.4051,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-30T07:16:34.954399+00:00",
+        "end_utc": "2026-10-30T08:59:01.494012+00:00",
+        "elapsed_h": 1.7074,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": false
+      },
+      {
+        "start_utc": "2026-10-30T08:59:01.494012+00:00",
+        "end_utc": "2026-10-31T11:14:26.196353+00:00",
+        "elapsed_h": 26.2569,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-10-31T11:14:26.196353+00:00",
+        "end_utc": "2026-11-01T15:16:48.129144+00:00",
+        "elapsed_h": 28.0394,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-11-01T15:16:48.129144+00:00",
+        "end_utc": "2026-11-02T17:13:05.760713+00:00",
+        "elapsed_h": 25.9382,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-11-02T17:13:05.760713+00:00",
+        "end_utc": "2026-11-03T20:39:18.530044+00:00",
+        "elapsed_h": 27.4369,
+        "eligible": true,
+        "reason": "CALIBRATION_WINDOW_ELIGIBLE_SAME_GEOMETRY"
+      },
+      {
+        "start_utc": "2026-11-03T20:39:18.530044+00:00",
+        "end_utc": "2026-11-04T18:04:37.631976+00:00",
+        "elapsed_h": 21.422,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE",
+        "changed_geometry_fields": [
+          "lower_limit_usdt",
+          "upper_limit_usdt",
+          "quantity_per_grid_eth"
+        ],
+        "duration_eligible": true
+      },
+      {
+        "start_utc": "2026-11-04T18:04:37.631976+00:00",
+        "end_utc": "2026-11-04T18:52:05.324778+00:00",
+        "elapsed_h": 0.791,
+        "eligible": false,
+        "reason": "CALIBRATION_WINDOW_EXCLUDED_DURATION"
       }
     ]
-  },
-  "model_selection": {
-    "gate": "PARETO_HOLDOUT_NO_DEGRADATION",
-    "selected_model": "LEGACY_GLOBAL_MEDIAN",
-    "challenger_promoted": false,
-    "prospective_used_for_selection": false,
-    "requirements": {
-      "profit_wape_non_degrading": true,
-      "profit_mae_non_degrading": true,
-      "rounds_wape_non_degrading": true,
-      "rounds_mae_non_degrading": true,
-      "at_least_one_metric_improves": true
-    },
-    "comparisons": {
-      "profit": {
-        "wape_pct": {
-          "challenger": 45.7693,
-          "champion": 44.8391,
-          "improvement_pct": -2.0745,
-          "non_degrading": false
-        },
-        "mae": {
-          "challenger": 0.135033,
-          "champion": 0.132288,
-          "improvement_pct": -2.075,
-          "non_degrading": false
-        }
-      },
-      "rounds": {
-        "wape_pct": {
-          "challenger": 44.1155,
-          "champion": 42.8742,
-          "improvement_pct": -2.8952,
-          "non_degrading": false
-        },
-        "mae": {
-          "challenger": 8.232259,
-          "champion": 8.00063,
-          "improvement_pct": -2.8951,
-          "non_degrading": false
-        }
-      }
-    },
-    "reason": "Legacy global calibration remains champion because the cohort/regime challenger degrades at least one holdout metric or lacks complete evidence."
-  },
-  "selected_holdout": {
-    "profit": {
-      "n": 6,
-      "mae": 0.132288,
-      "median_absolute_error": 0.054395,
-      "wape_pct": 44.8391,
-      "mape_pct": 33.5833,
-      "mape_n": 6,
-      "bias": -0.112408,
-      "rmse": 0.208907,
-      "weighted_mae": 0.13897,
-      "weighted_wape_pct": 45.9704,
-      "weighted_bias": -0.119557,
-      "secondary_percentage_metric": "MAPE_GUARDED",
-      "primary_percentage_metric": "WAPE"
-    },
-    "rounds": {
-      "n": 6,
-      "mae": 8.00063,
-      "median_absolute_error": 3.334806,
-      "wape_pct": 42.8742,
-      "mape_pct": 32.7861,
-      "mape_n": 6,
-      "bias": -6.654035,
-      "rmse": 12.509507,
-      "weighted_mae": 8.393053,
-      "weighted_wape_pct": 44.0749,
-      "weighted_bias": -7.08532,
-      "secondary_percentage_metric": "MAPE_GUARDED",
-      "primary_percentage_metric": "WAPE"
-    }
-  },
-  "current_reference_selected_factors": {
-    "profit_scale": 0.940215,
-    "rounds_scale": 0.937005,
-    "method": "legacy_global_guarded_by_holdout"
   }
 }
