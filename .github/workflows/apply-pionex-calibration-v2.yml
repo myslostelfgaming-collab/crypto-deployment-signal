@@ -5,7 +5,7 @@ on:
     branches:
       - feat/pionex-calibration-v2
     paths:
-      - ".calibration-upgrade/bundle.b64"
+      - ".calibration-upgrade/READY"
 
 permissions:
   contents: write
@@ -35,7 +35,7 @@ jobs:
         run: |
           rm -rf /tmp/pionex-calibration-v2
           mkdir -p /tmp/pionex-calibration-v2
-          base64 -d .calibration-upgrade/bundle.b64 > /tmp/pionex-calibration-v2.zip
+          cat .calibration-upgrade/part*.b64 | base64 -d > /tmp/pionex-calibration-v2.zip
           unzip -q /tmp/pionex-calibration-v2.zip -d /tmp/pionex-calibration-v2
 
           cp /tmp/pionex-calibration-v2/scripts/pionex_calibration_quality_v2.py scripts/
