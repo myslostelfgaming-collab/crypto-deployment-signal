@@ -115,6 +115,58 @@ class CalibrationV2Tests(unittest.TestCase):
         self.assertIn("calibration_v2", out)
         self.assertEqual(out["calibration_quality_v2"]["mape_role"], "SECONDARY_DIAGNOSTIC_ONLY")
 
+
+    def test_challenger_must_pareto_dominate_legacy_holdout(self):
+        challenger = {
+            "profit": {"wape_pct": 46.0, "mae": 0.14},
+            "rounds": {"wape_pct": 44.0, "mae": 8.2},
+        }
+        champion = {
+            "profit": {"wape_pct": 44.0, "mae": 0.13},
+            "rounds": {"wape_pct": 43.0, "mae": 8.0},
+        }
+        gate = q.select_calibration_model(challenger, champion)
+        self.assertFalse(gate["challenger_promoted"])
+        self.assertEqual(gate["selected_model"], "LEGACY_GLOBAL_MEDIAN")
+        self.assertFalse(gate["prospective_used_for_selection"])
+
+        better = {
+            "profit": {"wape_pct": 40.0, "mae": 0.12},
+            "rounds": {"wape_pct": 41.0, "mae": 7.5},
+        }
+        gate2 = q.select_calibration_model(better, champion)
+        self.assertTrue(gate2["challenger_promoted"])
+        self.assertEqual(gate2["selected_model"], "V2_COHORT_TWO_STAGE")
+
+    def test_target_factors_respect_legacy_champion_gate(self):
+        rows = [
+            q.add_geometry_descriptors(
+                w(f"2026-01-{i+1:02d}T00:00:00+00:00", .2, .2, 10, 10)
+            )
+            for i in range(10)
+        ]
+        calibration = {
+            "profit_scale_applied": 0.9,
+            "rounds_scale_applied": 0.8,
+            "calibration_v2": {
+                "windows": rows,
+                "regime_thresholds_fit_only": {},
+                "model_selection": {
+                    "selected_model": "LEGACY_GLOBAL_MEDIAN",
+                    "challenger_promoted": False,
+                },
+            },
+        }
+        factors = q.target_factors(
+            calibration,
+            w("2026-02-01T00:00:00+00:00", .2, .2, 10, 10),
+        )
+        self.assertEqual(factors["profit_scale"], 0.9)
+        self.assertEqual(factors["rounds_scale"], 0.8)
+        self.assertEqual(factors["method"], "legacy_global_guarded_by_holdout")
+        self.assertEqual(factors["cohort"]["fallback_level"], "LEGACY_GLOBAL_GUARDED")
+        self.assertIn("challenger", factors)
+
     def test_mape_alone_does_not_force_weak_status(self):
         metrics = {
             "profit": {"wape_pct": 30.0, "mae": 0.04, "bias": 0.01, "mape_pct": 500.0},
