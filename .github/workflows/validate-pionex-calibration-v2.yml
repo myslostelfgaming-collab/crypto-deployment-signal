@@ -1,0 +1,65 @@
+name: Validate Pionex Calibration v2 Branch
+
+on:
+  push:
+    branches:
+      - feat/pionex-calibration-v2
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run calibration tests
+        run: python -m unittest discover -s tests -p 'test_pionex_calibration_quality_v2.py' -v
+      - name: Replay current calibration history
+        run: |
+          python scripts/replay_pionex_calibration_v2.py
+          python scripts/build_pionex_calibration_quality_v2.py
+      - name: Validate champion gate and safety
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("data/diagnostics/pionex_calibration_quality_v2.json").read_text()
+          )
+          decision = json.loads(
+              Path("data/diagnostics/pionex_full_decision_v1.json").read_text()
+          )
+          joint = json.loads(
+              Path("data/diagnostics/pionex_joint_paired_geometry_v1.json").read_text()
+          )
+
+          assert report["schema"] == "pionex_paired_cycle_calibration_v2"
+          assert report["primary_percentage_metric"] == "WAPE"
+          assert report["secondary_percentage_metric"] == "GUARDED_MAPE_NORMAL_ACTIVITY_ONLY"
+          gate = report["model_selection"]
+          assert gate["gate"] == "PARETO_HOLDOUT_NO_DEGRADATION"
+          assert gate["prospective_used_for_selection"] is False
+          assert gate["selected_model"] in {
+              "V2_COHORT_TWO_STAGE", "LEGACY_GLOBAL_MEDIAN"
+          }
+          assert decision["forecast_calibration_confidence"]["magnitude_estimate_reliable"] is False
+          assert (
+              decision["paired_cycle_validation"]["phase4_5"]
+              ["automatic_joint_promotion_allowed"] is False
+          )
+          assert joint["version"] == "4.5"
+          print("Model selection:", gate)
+          print("Quality:", report["quality"])
+          print("Selected holdout:", report["selected_holdout"])
+          print("Prospective:", report["prospective"])
+          PY
