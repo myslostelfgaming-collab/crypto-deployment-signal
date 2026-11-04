@@ -56,58 +56,77 @@ Then add validation that `data/diagnostics/pionex_calibration_quality_v2.json` e
 
 Add `data/diagnostics/pionex_calibration_quality_v2.json` to the uploaded/committed diagnostic bundle.
 
-## Current historical replay findings (2026-10-05 data)
+## Current historical replay findings (2026-11-04 repo data)
 
-The current paired history contains 43 usable same-geometry performance windows. Inspection of the canonical state history identifies 15 explicit structural geometry-change transitions; the runtime state-pair audit records these separately rather than silently dropping them.
+The current repository replay contains **63 usable same-geometry performance windows**. The current canonical state-pair audit also records **3 explicit geometry-change exclusions** with reason `CALIBRATION_WINDOW_EXCLUDED_GEOMETRY_CHANGE`; they are retained as audit evidence rather than silently disappearing.
 
-Activity classification on the 43 usable windows:
+Activity classification on the 63 usable windows:
 
-- normal: 35
-- low activity: 8
+- normal: 54
+- low activity: 9
 - zero activity: 0
+- low/zero share: 14.29%
 
-Fit-derived low-activity thresholds in the offline replay were `rounds <= 2.5` or `profit <= $0.08/day` (with near-zero activity treated separately). These are derived from the lower tail of fit-only history with conservative caps, not hard-coded as performance targets.
+Chronological governance split:
 
-### Exact latest-six legacy validation span
+- fit: 54 windows
+- holdout: 6 windows
+- newest prospective: 3 windows
+- random shuffle: disabled
 
-Legacy global-scalar replay:
+### Champion/challenger result
 
-- Profit MAE: 0.096081 USDT/day
-- Profit WAPE: 52.6814%
-- Profit bias: +0.053474 USDT/day (overprediction)
-- Rounds MAE: 7.740838/day
-- Rounds WAPE: 47.3076%
-- Rounds bias: +3.790924/day (overprediction)
+The geometry/regime-aware two-stage calibration is now a **challenger**, not an automatic replacement. It can only replace the legacy global calibration when it Pareto-dominates the legacy model on the holdout: profit WAPE, profit MAE, rounds WAPE and rounds MAE must all be non-degrading, and at least one must improve. Prospective windows are never used to select the winner.
 
-Calibration v2 strict walk-forward replay on the same six windows:
+On the current 6-window holdout:
 
-- Profit MAE: 0.084122 USDT/day
-- Profit WAPE: 46.1242%
-- Profit guarded MAPE: 30.5768% over normal-activity windows
-- Profit bias: +0.038103 USDT/day
-- Rounds MAE: 6.877605/day
-- Rounds WAPE: 42.0321%
-- Rounds guarded MAPE: 30.4052% over normal-activity windows
-- Rounds bias: +2.623418/day
+Legacy global champion:
 
-Improvement versus the same legacy validation span:
+- Profit MAE: 0.132288 USDT/day
+- Profit WAPE: 44.8391%
+- Profit bias: -0.112408 USDT/day
+- Rounds MAE: 8.000630/day
+- Rounds WAPE: 42.8742%
+- Rounds bias: -6.654035/day
 
-- Profit WAPE/MAE: ~12.45% improvement
-- Rounds WAPE/MAE: ~11.15% improvement
-- Profit overprediction bias reduced by ~28.7%
-- Rounds overprediction bias reduced by ~30.8%
+Geometry/regime challenger:
 
-The current evidence therefore supports geometry-aware/two-stage calibration as a real improvement, but not a precise magnitude forecaster. Current policy should be approximately:
+- Profit MAE: 0.135033 USDT/day
+- Profit WAPE: 45.7693%
+- Rounds MAE: 8.232259/day
+- Rounds WAPE: 44.1155%
+
+The challenger therefore degrades holdout profit WAPE/MAE by about **2.07%** and rounds WAPE/MAE by about **2.90%**. The gate correctly selects:
 
 ```json
 {
+  "selected_model": "LEGACY_GLOBAL_MEDIAN",
+  "challenger_promoted": false,
+  "gate": "PARETO_HOLDOUT_NO_DEGRADATION",
+  "prospective_used_for_selection": false
+}
+```
+
+The newest 3 prospective windows are still reported separately. The cohort challenger reaches about **38.17% profit WAPE** and **38.17% rounds WAPE** there, which is useful evidence but is deliberately not allowed to override the holdout governance decision.
+
+The exact newest-six replay also does not justify promotion: cohort v2 is about **7.43% worse on profit WAPE/MAE** and **7.68% worse on rounds WAPE/MAE** than the refit global comparator.
+
+This is the intended calibration behavior: regime/geometry complexity must earn promotion with out-of-sample evidence. The system does not tune thresholds or suppress warnings to make the challenger look better.
+
+### Current confidence policy
+
+Current quality remains:
+
+```json
+{
+  "status": "CALIBRATION_ACCEPTABLE",
   "forecast_confidence": "MEDIUM",
   "directional_signal_reliable": true,
   "magnitude_estimate_reliable": false
 }
 ```
 
-The full volatility/path-regime enrichment is implemented but could not be replayed outside the repository workflow because the generated feature/candle context is not available in this local patch environment. Its incremental benefit must therefore be measured honestly in CI before any claim that *regime* awareness itself improves holdout accuracy. Until then, the demonstrated uplift is specifically from geometry-aware cohorting + recency weighting + activity/productivity decomposition.
+That means the direction of a geometry recommendation may still be useful, but an exact uplift such as `+17%` should not be treated as numerically precise. Calibration quality alone cannot promote a live bot change, and `automatic_joint_promotion_allowed` remains `false`.
 
 ## Recommended primary metric
 
