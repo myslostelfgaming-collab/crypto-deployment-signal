@@ -11,25 +11,32 @@
     ],
     "purpose": "Keep prospective 14-30h calibration windows statistically usable while allowing raw API capture to run hourly."
   },
-  "canonical_rows": 103,
-  "canonical_rows_appended_this_run": [],
+  "canonical_rows": 104,
+  "canonical_rows_appended_this_run": [
+    {
+      "captured_at_utc": "2026-11-11T12:57:20.783848+00:00",
+      "elapsed_h_from_previous_canonical": 26.9501,
+      "geometry_changed": false,
+      "reason": "DAILY_CANONICAL_GE_23H"
+    }
+  ],
   "counter_semantics": {
     "exchangeOrderPairedCount": "CONFIRMED_PIONEX_UI_HISTORY_COMPLETED_ROUNDS",
     "rounds_24h_policy": "Prefer paired-count delta against nearest raw API observation 24h +/-1.5h; fallback to ~daily canonical paired-count delta for 22-26h intervals.",
     "trx24h": "NOT_UI_24H_ROUNDS"
   },
-  "generated_at_utc": "2026-11-11T03:00:30.499581+00:00",
+  "generated_at_utc": "2026-11-11T12:57:20.891088+00:00",
   "historic_manual_archive": "data/pionex/manual_grid_states_v1.csv",
   "latest_runtime_state": {
-    "captured_at_local": "2026-11-11T05:00:30.378182+02:00",
-    "captured_at_utc": "2026-11-11T03:00:30.378182+00:00",
-    "current_price_usdt": 2058.59,
+    "captured_at_local": "2026-11-11T14:57:20.783848+02:00",
+    "captured_at_utc": "2026-11-11T12:57:20.783848+00:00",
+    "current_price_usdt": 2053.59,
     "grids": 35,
     "lower_limit_usdt": 2000.0,
     "quantity_per_grid_eth": 0.00198,
-    "rounds_24h": 34,
-    "rounds_total": 5648,
-    "source_note": "Automated read-only Pionex Bot API state; canonical_reason=RUNTIME_LATEST_NOT_CANONICAL; rounds_total is confirmed exchangeOrderPairedCount; total/trend P&L are mark-to-market reconstructions from bot balances and ETH/USDT ticker.",
+    "rounds_24h": 24,
+    "rounds_total": 5652,
+    "source_note": "Automated read-only Pionex Bot API state; canonical_reason=DAILY_CANONICAL_GE_23H; rounds_total is confirmed exchangeOrderPairedCount; total/trend P&L are mark-to-market reconstructions from bot balances and ETH/USDT ticker.",
     "upper_limit_usdt": 2300.0
   },
   "manual_archive_mutated": false,
