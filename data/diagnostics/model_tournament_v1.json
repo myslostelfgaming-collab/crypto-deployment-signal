@@ -1,6 +1,6 @@
 {
   "schema": "model_tournament_v1",
-  "generated_at_utc": "2026-11-13T00:11:07.758099+00:00",
+  "generated_at_utc": "2026-11-13T07:50:10.502914+00:00",
   "available": true,
   "status": "EXPERIMENTAL_DIAGNOSTIC_ONLY",
   "source_files": {
@@ -8,9 +8,9 @@
     "features": "data/features/features_v1.csv"
   },
   "data_quality": {
-    "evaluated_feature_matched_rows": 14419,
-    "independent_rows": 675,
-    "short_horizon_independent_rows": 590
+    "evaluated_feature_matched_rows": 14427,
+    "independent_rows": 677,
+    "short_horizon_independent_rows": 592
   },
   "regime_definition": {
     "trend": "sign(ret_48h_pct) == sign(close_vs_sma_48_pct) and abs(ret_48h_pct) >= 2 * atr14_pct",
@@ -33,354 +33,354 @@
     "overall_full": {
       "rules": {
         "similarity_v2": {
-          "n": 14418,
-          "correct": 6855,
-          "accuracy_pct": 47.5447,
-          "predicted_up": 8265,
-          "predicted_down": 6153,
+          "n": 14426,
+          "correct": 6857,
+          "accuracy_pct": 47.5322,
+          "predicted_up": 8271,
+          "predicted_down": 6155,
           "actual_up": 7686,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         "momentum_24h": {
-          "n": 14415,
-          "correct": 7127,
-          "accuracy_pct": 49.4416,
-          "predicted_up": 7784,
-          "predicted_down": 6631,
+          "n": 14423,
+          "correct": 7134,
+          "accuracy_pct": 49.4627,
+          "predicted_up": 7785,
+          "predicted_down": 6638,
           "actual_up": 7684,
-          "actual_down": 6731
+          "actual_down": 6739
         },
         "momentum_48h": {
-          "n": 14419,
-          "correct": 7069,
-          "accuracy_pct": 49.0256,
+          "n": 14427,
+          "correct": 7077,
+          "accuracy_pct": 49.0539,
           "predicted_up": 7663,
-          "predicted_down": 6756,
+          "predicted_down": 6764,
           "actual_up": 7687,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         "mean_reversion_24h": {
-          "n": 14415,
-          "correct": 7288,
-          "accuracy_pct": 50.5584,
-          "predicted_up": 6631,
-          "predicted_down": 7784,
+          "n": 14423,
+          "correct": 7289,
+          "accuracy_pct": 50.5373,
+          "predicted_up": 6638,
+          "predicted_down": 7785,
           "actual_up": 7684,
-          "actual_down": 6731
+          "actual_down": 6739
         },
         "mean_reversion_48h": {
-          "n": 14419,
+          "n": 14427,
           "correct": 7350,
-          "accuracy_pct": 50.9744,
-          "predicted_up": 6756,
+          "accuracy_pct": 50.9461,
+          "predicted_up": 6764,
           "predicted_down": 7663,
           "actual_up": 7687,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         "sma24_trend": {
-          "n": 14415,
-          "correct": 7105,
-          "accuracy_pct": 49.2889,
+          "n": 14423,
+          "correct": 7113,
+          "accuracy_pct": 49.3171,
           "predicted_up": 7589,
-          "predicted_down": 6826,
+          "predicted_down": 6834,
           "actual_up": 7683,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         "sma48_trend": {
-          "n": 14419,
-          "correct": 7135,
-          "accuracy_pct": 49.4833,
+          "n": 14427,
+          "correct": 7143,
+          "accuracy_pct": 49.5113,
           "predicted_up": 7627,
-          "predicted_down": 6792,
+          "predicted_down": 6800,
           "actual_up": 7687,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         "sma24_reversion": {
-          "n": 14415,
+          "n": 14423,
           "correct": 7310,
-          "accuracy_pct": 50.7111,
-          "predicted_up": 6826,
+          "accuracy_pct": 50.6829,
+          "predicted_up": 6834,
           "predicted_down": 7589,
           "actual_up": 7683,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         "sma48_reversion": {
-          "n": 14419,
+          "n": 14427,
           "correct": 7284,
-          "accuracy_pct": 50.5167,
-          "predicted_up": 6792,
+          "accuracy_pct": 50.4887,
+          "predicted_up": 6800,
           "predicted_down": 7627,
           "actual_up": 7687,
-          "actual_down": 6732
+          "actual_down": 6740
         }
       },
       "ranking": [
         {
           "rule": "mean_reversion_48h",
-          "n": 14419,
+          "n": 14427,
           "correct": 7350,
-          "accuracy_pct": 50.9744,
-          "predicted_up": 6756,
+          "accuracy_pct": 50.9461,
+          "predicted_up": 6764,
           "predicted_down": 7663,
           "actual_up": 7687,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         {
           "rule": "sma24_reversion",
-          "n": 14415,
+          "n": 14423,
           "correct": 7310,
-          "accuracy_pct": 50.7111,
-          "predicted_up": 6826,
+          "accuracy_pct": 50.6829,
+          "predicted_up": 6834,
           "predicted_down": 7589,
           "actual_up": 7683,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         {
           "rule": "mean_reversion_24h",
-          "n": 14415,
-          "correct": 7288,
-          "accuracy_pct": 50.5584,
-          "predicted_up": 6631,
-          "predicted_down": 7784,
+          "n": 14423,
+          "correct": 7289,
+          "accuracy_pct": 50.5373,
+          "predicted_up": 6638,
+          "predicted_down": 7785,
           "actual_up": 7684,
-          "actual_down": 6731
+          "actual_down": 6739
         },
         {
           "rule": "sma48_reversion",
-          "n": 14419,
+          "n": 14427,
           "correct": 7284,
-          "accuracy_pct": 50.5167,
-          "predicted_up": 6792,
+          "accuracy_pct": 50.4887,
+          "predicted_up": 6800,
           "predicted_down": 7627,
           "actual_up": 7687,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         {
           "rule": "sma48_trend",
-          "n": 14419,
-          "correct": 7135,
-          "accuracy_pct": 49.4833,
+          "n": 14427,
+          "correct": 7143,
+          "accuracy_pct": 49.5113,
           "predicted_up": 7627,
-          "predicted_down": 6792,
+          "predicted_down": 6800,
           "actual_up": 7687,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         {
           "rule": "momentum_24h",
-          "n": 14415,
-          "correct": 7127,
-          "accuracy_pct": 49.4416,
-          "predicted_up": 7784,
-          "predicted_down": 6631,
+          "n": 14423,
+          "correct": 7134,
+          "accuracy_pct": 49.4627,
+          "predicted_up": 7785,
+          "predicted_down": 6638,
           "actual_up": 7684,
-          "actual_down": 6731
+          "actual_down": 6739
         },
         {
           "rule": "sma24_trend",
-          "n": 14415,
-          "correct": 7105,
-          "accuracy_pct": 49.2889,
+          "n": 14423,
+          "correct": 7113,
+          "accuracy_pct": 49.3171,
           "predicted_up": 7589,
-          "predicted_down": 6826,
+          "predicted_down": 6834,
           "actual_up": 7683,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         {
           "rule": "momentum_48h",
-          "n": 14419,
-          "correct": 7069,
-          "accuracy_pct": 49.0256,
+          "n": 14427,
+          "correct": 7077,
+          "accuracy_pct": 49.0539,
           "predicted_up": 7663,
-          "predicted_down": 6756,
+          "predicted_down": 6764,
           "actual_up": 7687,
-          "actual_down": 6732
+          "actual_down": 6740
         },
         {
           "rule": "similarity_v2",
-          "n": 14418,
-          "correct": 6855,
-          "accuracy_pct": 47.5447,
-          "predicted_up": 8265,
-          "predicted_down": 6153,
+          "n": 14426,
+          "correct": 6857,
+          "accuracy_pct": 47.5322,
+          "predicted_up": 8271,
+          "predicted_down": 6155,
           "actual_up": 7686,
-          "actual_down": 6732
+          "actual_down": 6740
         }
       ]
     },
     "overall_independent": {
       "rules": {
         "similarity_v2": {
-          "n": 675,
+          "n": 677,
           "correct": 336,
-          "accuracy_pct": 49.7778,
-          "predicted_up": 390,
+          "accuracy_pct": 49.6307,
+          "predicted_up": 392,
           "predicted_down": 285,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         "momentum_24h": {
-          "n": 675,
-          "correct": 326,
-          "accuracy_pct": 48.2963,
+          "n": 677,
+          "correct": 328,
+          "accuracy_pct": 48.449,
           "predicted_up": 354,
-          "predicted_down": 321,
+          "predicted_down": 323,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         "momentum_48h": {
-          "n": 675,
-          "correct": 304,
-          "accuracy_pct": 45.037,
+          "n": 677,
+          "correct": 306,
+          "accuracy_pct": 45.1994,
           "predicted_up": 334,
-          "predicted_down": 341,
+          "predicted_down": 343,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         "mean_reversion_24h": {
-          "n": 675,
+          "n": 677,
           "correct": 349,
-          "accuracy_pct": 51.7037,
-          "predicted_up": 321,
+          "accuracy_pct": 51.551,
+          "predicted_up": 323,
           "predicted_down": 354,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         "mean_reversion_48h": {
-          "n": 675,
+          "n": 677,
           "correct": 371,
-          "accuracy_pct": 54.963,
-          "predicted_up": 341,
+          "accuracy_pct": 54.8006,
+          "predicted_up": 343,
           "predicted_down": 334,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         "sma24_trend": {
-          "n": 675,
-          "correct": 319,
-          "accuracy_pct": 47.2593,
+          "n": 677,
+          "correct": 321,
+          "accuracy_pct": 47.4151,
           "predicted_up": 315,
-          "predicted_down": 360,
+          "predicted_down": 362,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         "sma48_trend": {
-          "n": 675,
-          "correct": 311,
-          "accuracy_pct": 46.0741,
+          "n": 677,
+          "correct": 313,
+          "accuracy_pct": 46.2334,
           "predicted_up": 317,
-          "predicted_down": 358,
+          "predicted_down": 360,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         "sma24_reversion": {
-          "n": 675,
+          "n": 677,
           "correct": 356,
-          "accuracy_pct": 52.7407,
-          "predicted_up": 360,
+          "accuracy_pct": 52.5849,
+          "predicted_up": 362,
           "predicted_down": 315,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         "sma48_reversion": {
-          "n": 675,
+          "n": 677,
           "correct": 364,
-          "accuracy_pct": 53.9259,
-          "predicted_up": 358,
+          "accuracy_pct": 53.7666,
+          "predicted_up": 360,
           "predicted_down": 317,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         }
       },
       "ranking": [
         {
           "rule": "mean_reversion_48h",
-          "n": 675,
+          "n": 677,
           "correct": 371,
-          "accuracy_pct": 54.963,
-          "predicted_up": 341,
+          "accuracy_pct": 54.8006,
+          "predicted_up": 343,
           "predicted_down": 334,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         {
           "rule": "sma48_reversion",
-          "n": 675,
+          "n": 677,
           "correct": 364,
-          "accuracy_pct": 53.9259,
-          "predicted_up": 358,
+          "accuracy_pct": 53.7666,
+          "predicted_up": 360,
           "predicted_down": 317,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         {
           "rule": "sma24_reversion",
-          "n": 675,
+          "n": 677,
           "correct": 356,
-          "accuracy_pct": 52.7407,
-          "predicted_up": 360,
+          "accuracy_pct": 52.5849,
+          "predicted_up": 362,
           "predicted_down": 315,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         {
           "rule": "mean_reversion_24h",
-          "n": 675,
+          "n": 677,
           "correct": 349,
-          "accuracy_pct": 51.7037,
-          "predicted_up": 321,
+          "accuracy_pct": 51.551,
+          "predicted_up": 323,
           "predicted_down": 354,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         {
           "rule": "similarity_v2",
-          "n": 675,
+          "n": 677,
           "correct": 336,
-          "accuracy_pct": 49.7778,
-          "predicted_up": 390,
+          "accuracy_pct": 49.6307,
+          "predicted_up": 392,
           "predicted_down": 285,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         {
           "rule": "momentum_24h",
-          "n": 675,
-          "correct": 326,
-          "accuracy_pct": 48.2963,
+          "n": 677,
+          "correct": 328,
+          "accuracy_pct": 48.449,
           "predicted_up": 354,
-          "predicted_down": 321,
+          "predicted_down": 323,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         {
           "rule": "sma24_trend",
-          "n": 675,
-          "correct": 319,
-          "accuracy_pct": 47.2593,
+          "n": 677,
+          "correct": 321,
+          "accuracy_pct": 47.4151,
           "predicted_up": 315,
-          "predicted_down": 360,
+          "predicted_down": 362,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         {
           "rule": "sma48_trend",
-          "n": 675,
-          "correct": 311,
-          "accuracy_pct": 46.0741,
+          "n": 677,
+          "correct": 313,
+          "accuracy_pct": 46.2334,
           "predicted_up": 317,
-          "predicted_down": 358,
+          "predicted_down": 360,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         },
         {
           "rule": "momentum_48h",
-          "n": 675,
-          "correct": 304,
-          "accuracy_pct": 45.037,
+          "n": 677,
+          "correct": 306,
+          "accuracy_pct": 45.1994,
           "predicted_up": 334,
-          "predicted_down": 341,
+          "predicted_down": 343,
           "actual_up": 361,
-          "actual_down": 314
+          "actual_down": 316
         }
       ]
     },
@@ -388,708 +388,708 @@
       "24": {
         "rules": {
           "similarity_v2": {
-            "n": 3650,
+            "n": 3652,
             "correct": 1856,
-            "accuracy_pct": 50.8493,
-            "predicted_up": 2116,
+            "accuracy_pct": 50.8215,
+            "predicted_up": 2118,
             "predicted_down": 1534,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           "momentum_24h": {
-            "n": 3649,
-            "correct": 1749,
-            "accuracy_pct": 47.9309,
-            "predicted_up": 1963,
-            "predicted_down": 1686,
+            "n": 3651,
+            "correct": 1750,
+            "accuracy_pct": 47.9321,
+            "predicted_up": 1964,
+            "predicted_down": 1687,
             "actual_up": 1979,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           "momentum_48h": {
-            "n": 3650,
-            "correct": 1683,
-            "accuracy_pct": 46.1096,
+            "n": 3652,
+            "correct": 1685,
+            "accuracy_pct": 46.1391,
             "predicted_up": 1927,
-            "predicted_down": 1723,
+            "predicted_down": 1725,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           "mean_reversion_24h": {
-            "n": 3649,
-            "correct": 1900,
-            "accuracy_pct": 52.0691,
-            "predicted_up": 1686,
-            "predicted_down": 1963,
+            "n": 3651,
+            "correct": 1901,
+            "accuracy_pct": 52.0679,
+            "predicted_up": 1687,
+            "predicted_down": 1964,
             "actual_up": 1979,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           "mean_reversion_48h": {
-            "n": 3650,
+            "n": 3652,
             "correct": 1967,
-            "accuracy_pct": 53.8904,
-            "predicted_up": 1723,
+            "accuracy_pct": 53.8609,
+            "predicted_up": 1725,
             "predicted_down": 1927,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           "sma24_trend": {
-            "n": 3649,
-            "correct": 1743,
-            "accuracy_pct": 47.7665,
+            "n": 3651,
+            "correct": 1745,
+            "accuracy_pct": 47.7951,
             "predicted_up": 1917,
-            "predicted_down": 1732,
+            "predicted_down": 1734,
             "actual_up": 1979,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           "sma48_trend": {
-            "n": 3650,
-            "correct": 1720,
-            "accuracy_pct": 47.1233,
+            "n": 3652,
+            "correct": 1722,
+            "accuracy_pct": 47.1522,
             "predicted_up": 1920,
-            "predicted_down": 1730,
+            "predicted_down": 1732,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           "sma24_reversion": {
-            "n": 3649,
+            "n": 3651,
             "correct": 1906,
-            "accuracy_pct": 52.2335,
-            "predicted_up": 1732,
+            "accuracy_pct": 52.2049,
+            "predicted_up": 1734,
             "predicted_down": 1917,
             "actual_up": 1979,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           "sma48_reversion": {
-            "n": 3650,
+            "n": 3652,
             "correct": 1930,
-            "accuracy_pct": 52.8767,
-            "predicted_up": 1730,
+            "accuracy_pct": 52.8478,
+            "predicted_up": 1732,
             "predicted_down": 1920,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           }
         },
         "ranking": [
           {
             "rule": "mean_reversion_48h",
-            "n": 3650,
+            "n": 3652,
             "correct": 1967,
-            "accuracy_pct": 53.8904,
-            "predicted_up": 1723,
+            "accuracy_pct": 53.8609,
+            "predicted_up": 1725,
             "predicted_down": 1927,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           {
             "rule": "sma48_reversion",
-            "n": 3650,
+            "n": 3652,
             "correct": 1930,
-            "accuracy_pct": 52.8767,
-            "predicted_up": 1730,
+            "accuracy_pct": 52.8478,
+            "predicted_up": 1732,
             "predicted_down": 1920,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           {
             "rule": "sma24_reversion",
-            "n": 3649,
+            "n": 3651,
             "correct": 1906,
-            "accuracy_pct": 52.2335,
-            "predicted_up": 1732,
+            "accuracy_pct": 52.2049,
+            "predicted_up": 1734,
             "predicted_down": 1917,
             "actual_up": 1979,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           {
             "rule": "mean_reversion_24h",
-            "n": 3649,
-            "correct": 1900,
-            "accuracy_pct": 52.0691,
-            "predicted_up": 1686,
-            "predicted_down": 1963,
+            "n": 3651,
+            "correct": 1901,
+            "accuracy_pct": 52.0679,
+            "predicted_up": 1687,
+            "predicted_down": 1964,
             "actual_up": 1979,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           {
             "rule": "similarity_v2",
-            "n": 3650,
+            "n": 3652,
             "correct": 1856,
-            "accuracy_pct": 50.8493,
-            "predicted_up": 2116,
+            "accuracy_pct": 50.8215,
+            "predicted_up": 2118,
             "predicted_down": 1534,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           {
             "rule": "momentum_24h",
-            "n": 3649,
-            "correct": 1749,
-            "accuracy_pct": 47.9309,
-            "predicted_up": 1963,
-            "predicted_down": 1686,
+            "n": 3651,
+            "correct": 1750,
+            "accuracy_pct": 47.9321,
+            "predicted_up": 1964,
+            "predicted_down": 1687,
             "actual_up": 1979,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           {
             "rule": "sma24_trend",
-            "n": 3649,
-            "correct": 1743,
-            "accuracy_pct": 47.7665,
+            "n": 3651,
+            "correct": 1745,
+            "accuracy_pct": 47.7951,
             "predicted_up": 1917,
-            "predicted_down": 1732,
+            "predicted_down": 1734,
             "actual_up": 1979,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           {
             "rule": "sma48_trend",
-            "n": 3650,
-            "correct": 1720,
-            "accuracy_pct": 47.1233,
+            "n": 3652,
+            "correct": 1722,
+            "accuracy_pct": 47.1522,
             "predicted_up": 1920,
-            "predicted_down": 1730,
+            "predicted_down": 1732,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           },
           {
             "rule": "momentum_48h",
-            "n": 3650,
-            "correct": 1683,
-            "accuracy_pct": 46.1096,
+            "n": 3652,
+            "correct": 1685,
+            "accuracy_pct": 46.1391,
             "predicted_up": 1927,
-            "predicted_down": 1723,
+            "predicted_down": 1725,
             "actual_up": 1980,
-            "actual_down": 1670
+            "actual_down": 1672
           }
         ]
       },
       "48": {
         "rules": {
           "similarity_v2": {
-            "n": 3642,
+            "n": 3644,
             "correct": 1790,
-            "accuracy_pct": 49.1488,
-            "predicted_up": 2193,
+            "accuracy_pct": 49.1218,
+            "predicted_up": 2195,
             "predicted_down": 1449,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           "momentum_24h": {
-            "n": 3642,
-            "correct": 1786,
-            "accuracy_pct": 49.039,
+            "n": 3644,
+            "correct": 1788,
+            "accuracy_pct": 49.067,
             "predicted_up": 1961,
-            "predicted_down": 1681,
+            "predicted_down": 1683,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           "momentum_48h": {
-            "n": 3643,
-            "correct": 1713,
-            "accuracy_pct": 47.0217,
+            "n": 3645,
+            "correct": 1715,
+            "accuracy_pct": 47.0508,
             "predicted_up": 1926,
-            "predicted_down": 1717,
+            "predicted_down": 1719,
             "actual_up": 1930,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           "mean_reversion_24h": {
-            "n": 3642,
+            "n": 3644,
             "correct": 1856,
-            "accuracy_pct": 50.961,
-            "predicted_up": 1681,
+            "accuracy_pct": 50.933,
+            "predicted_up": 1683,
             "predicted_down": 1961,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           "mean_reversion_48h": {
-            "n": 3643,
+            "n": 3645,
             "correct": 1930,
-            "accuracy_pct": 52.9783,
-            "predicted_up": 1717,
+            "accuracy_pct": 52.9492,
+            "predicted_up": 1719,
             "predicted_down": 1926,
             "actual_up": 1930,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           "sma24_trend": {
-            "n": 3642,
-            "correct": 1782,
-            "accuracy_pct": 48.9292,
+            "n": 3644,
+            "correct": 1784,
+            "accuracy_pct": 48.9572,
             "predicted_up": 1913,
-            "predicted_down": 1729,
+            "predicted_down": 1731,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           "sma48_trend": {
-            "n": 3643,
-            "correct": 1777,
-            "accuracy_pct": 48.7785,
+            "n": 3645,
+            "correct": 1779,
+            "accuracy_pct": 48.8066,
             "predicted_up": 1918,
-            "predicted_down": 1725,
+            "predicted_down": 1727,
             "actual_up": 1930,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           "sma24_reversion": {
-            "n": 3642,
+            "n": 3644,
             "correct": 1860,
-            "accuracy_pct": 51.0708,
-            "predicted_up": 1729,
+            "accuracy_pct": 51.0428,
+            "predicted_up": 1731,
             "predicted_down": 1913,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           "sma48_reversion": {
-            "n": 3643,
+            "n": 3645,
             "correct": 1866,
-            "accuracy_pct": 51.2215,
-            "predicted_up": 1725,
+            "accuracy_pct": 51.1934,
+            "predicted_up": 1727,
             "predicted_down": 1918,
             "actual_up": 1930,
-            "actual_down": 1713
+            "actual_down": 1715
           }
         },
         "ranking": [
           {
             "rule": "mean_reversion_48h",
-            "n": 3643,
+            "n": 3645,
             "correct": 1930,
-            "accuracy_pct": 52.9783,
-            "predicted_up": 1717,
+            "accuracy_pct": 52.9492,
+            "predicted_up": 1719,
             "predicted_down": 1926,
             "actual_up": 1930,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           {
             "rule": "sma48_reversion",
-            "n": 3643,
+            "n": 3645,
             "correct": 1866,
-            "accuracy_pct": 51.2215,
-            "predicted_up": 1725,
+            "accuracy_pct": 51.1934,
+            "predicted_up": 1727,
             "predicted_down": 1918,
             "actual_up": 1930,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           {
             "rule": "sma24_reversion",
-            "n": 3642,
+            "n": 3644,
             "correct": 1860,
-            "accuracy_pct": 51.0708,
-            "predicted_up": 1729,
+            "accuracy_pct": 51.0428,
+            "predicted_up": 1731,
             "predicted_down": 1913,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           {
             "rule": "mean_reversion_24h",
-            "n": 3642,
+            "n": 3644,
             "correct": 1856,
-            "accuracy_pct": 50.961,
-            "predicted_up": 1681,
+            "accuracy_pct": 50.933,
+            "predicted_up": 1683,
             "predicted_down": 1961,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           {
             "rule": "similarity_v2",
-            "n": 3642,
+            "n": 3644,
             "correct": 1790,
-            "accuracy_pct": 49.1488,
-            "predicted_up": 2193,
+            "accuracy_pct": 49.1218,
+            "predicted_up": 2195,
             "predicted_down": 1449,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           {
             "rule": "momentum_24h",
-            "n": 3642,
-            "correct": 1786,
-            "accuracy_pct": 49.039,
+            "n": 3644,
+            "correct": 1788,
+            "accuracy_pct": 49.067,
             "predicted_up": 1961,
-            "predicted_down": 1681,
+            "predicted_down": 1683,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           {
             "rule": "sma24_trend",
-            "n": 3642,
-            "correct": 1782,
-            "accuracy_pct": 48.9292,
+            "n": 3644,
+            "correct": 1784,
+            "accuracy_pct": 48.9572,
             "predicted_up": 1913,
-            "predicted_down": 1729,
+            "predicted_down": 1731,
             "actual_up": 1929,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           {
             "rule": "sma48_trend",
-            "n": 3643,
-            "correct": 1777,
-            "accuracy_pct": 48.7785,
+            "n": 3645,
+            "correct": 1779,
+            "accuracy_pct": 48.8066,
             "predicted_up": 1918,
-            "predicted_down": 1725,
+            "predicted_down": 1727,
             "actual_up": 1930,
-            "actual_down": 1713
+            "actual_down": 1715
           },
           {
             "rule": "momentum_48h",
-            "n": 3643,
-            "correct": 1713,
-            "accuracy_pct": 47.0217,
+            "n": 3645,
+            "correct": 1715,
+            "accuracy_pct": 47.0508,
             "predicted_up": 1926,
-            "predicted_down": 1717,
+            "predicted_down": 1719,
             "actual_up": 1930,
-            "actual_down": 1713
+            "actual_down": 1715
           }
         ]
       },
       "168": {
         "rules": {
           "similarity_v2": {
-            "n": 3597,
-            "correct": 1621,
-            "accuracy_pct": 45.0653,
+            "n": 3599,
+            "correct": 1623,
+            "accuracy_pct": 45.0959,
             "predicted_up": 2043,
-            "predicted_down": 1554,
+            "predicted_down": 1556,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           "momentum_24h": {
-            "n": 3596,
-            "correct": 1758,
-            "accuracy_pct": 48.8877,
+            "n": 3598,
+            "correct": 1760,
+            "accuracy_pct": 48.9161,
             "predicted_up": 1952,
-            "predicted_down": 1644,
+            "predicted_down": 1646,
             "actual_up": 1850,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           "momentum_48h": {
-            "n": 3597,
-            "correct": 1789,
-            "accuracy_pct": 49.7359,
+            "n": 3599,
+            "correct": 1791,
+            "accuracy_pct": 49.7638,
             "predicted_up": 1921,
-            "predicted_down": 1676,
+            "predicted_down": 1678,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           "mean_reversion_24h": {
-            "n": 3596,
+            "n": 3598,
             "correct": 1838,
-            "accuracy_pct": 51.1123,
-            "predicted_up": 1644,
+            "accuracy_pct": 51.0839,
+            "predicted_up": 1646,
             "predicted_down": 1952,
             "actual_up": 1850,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           "mean_reversion_48h": {
-            "n": 3597,
+            "n": 3599,
             "correct": 1808,
-            "accuracy_pct": 50.2641,
-            "predicted_up": 1676,
+            "accuracy_pct": 50.2362,
+            "predicted_up": 1678,
             "predicted_down": 1921,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           "sma24_trend": {
-            "n": 3596,
-            "correct": 1772,
-            "accuracy_pct": 49.277,
+            "n": 3598,
+            "correct": 1774,
+            "accuracy_pct": 49.3052,
             "predicted_up": 1900,
-            "predicted_down": 1696,
+            "predicted_down": 1698,
             "actual_up": 1850,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           "sma48_trend": {
-            "n": 3597,
-            "correct": 1795,
-            "accuracy_pct": 49.9027,
+            "n": 3599,
+            "correct": 1797,
+            "accuracy_pct": 49.9305,
             "predicted_up": 1913,
-            "predicted_down": 1684,
+            "predicted_down": 1686,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           "sma24_reversion": {
-            "n": 3596,
+            "n": 3598,
             "correct": 1824,
-            "accuracy_pct": 50.723,
-            "predicted_up": 1696,
+            "accuracy_pct": 50.6948,
+            "predicted_up": 1698,
             "predicted_down": 1900,
             "actual_up": 1850,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           "sma48_reversion": {
-            "n": 3597,
+            "n": 3599,
             "correct": 1802,
-            "accuracy_pct": 50.0973,
-            "predicted_up": 1684,
+            "accuracy_pct": 50.0695,
+            "predicted_up": 1686,
             "predicted_down": 1913,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           }
         },
         "ranking": [
           {
             "rule": "mean_reversion_24h",
-            "n": 3596,
+            "n": 3598,
             "correct": 1838,
-            "accuracy_pct": 51.1123,
-            "predicted_up": 1644,
+            "accuracy_pct": 51.0839,
+            "predicted_up": 1646,
             "predicted_down": 1952,
             "actual_up": 1850,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           {
             "rule": "sma24_reversion",
-            "n": 3596,
+            "n": 3598,
             "correct": 1824,
-            "accuracy_pct": 50.723,
-            "predicted_up": 1696,
+            "accuracy_pct": 50.6948,
+            "predicted_up": 1698,
             "predicted_down": 1900,
             "actual_up": 1850,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           {
             "rule": "mean_reversion_48h",
-            "n": 3597,
+            "n": 3599,
             "correct": 1808,
-            "accuracy_pct": 50.2641,
-            "predicted_up": 1676,
+            "accuracy_pct": 50.2362,
+            "predicted_up": 1678,
             "predicted_down": 1921,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           {
             "rule": "sma48_reversion",
-            "n": 3597,
+            "n": 3599,
             "correct": 1802,
-            "accuracy_pct": 50.0973,
-            "predicted_up": 1684,
+            "accuracy_pct": 50.0695,
+            "predicted_up": 1686,
             "predicted_down": 1913,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           {
             "rule": "sma48_trend",
-            "n": 3597,
-            "correct": 1795,
-            "accuracy_pct": 49.9027,
+            "n": 3599,
+            "correct": 1797,
+            "accuracy_pct": 49.9305,
             "predicted_up": 1913,
-            "predicted_down": 1684,
+            "predicted_down": 1686,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           {
             "rule": "momentum_48h",
-            "n": 3597,
-            "correct": 1789,
-            "accuracy_pct": 49.7359,
+            "n": 3599,
+            "correct": 1791,
+            "accuracy_pct": 49.7638,
             "predicted_up": 1921,
-            "predicted_down": 1676,
+            "predicted_down": 1678,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           {
             "rule": "sma24_trend",
-            "n": 3596,
-            "correct": 1772,
-            "accuracy_pct": 49.277,
+            "n": 3598,
+            "correct": 1774,
+            "accuracy_pct": 49.3052,
             "predicted_up": 1900,
-            "predicted_down": 1696,
+            "predicted_down": 1698,
             "actual_up": 1850,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           {
             "rule": "momentum_24h",
-            "n": 3596,
-            "correct": 1758,
-            "accuracy_pct": 48.8877,
+            "n": 3598,
+            "correct": 1760,
+            "accuracy_pct": 48.9161,
             "predicted_up": 1952,
-            "predicted_down": 1644,
+            "predicted_down": 1646,
             "actual_up": 1850,
-            "actual_down": 1746
+            "actual_down": 1748
           },
           {
             "rule": "similarity_v2",
-            "n": 3597,
-            "correct": 1621,
-            "accuracy_pct": 45.0653,
+            "n": 3599,
+            "correct": 1623,
+            "accuracy_pct": 45.0959,
             "predicted_up": 2043,
-            "predicted_down": 1554,
+            "predicted_down": 1556,
             "actual_up": 1851,
-            "actual_down": 1746
+            "actual_down": 1748
           }
         ]
       },
       "336": {
         "rules": {
           "similarity_v2": {
-            "n": 3529,
+            "n": 3531,
             "correct": 1588,
-            "accuracy_pct": 44.9986,
-            "predicted_up": 1913,
+            "accuracy_pct": 44.9731,
+            "predicted_up": 1915,
             "predicted_down": 1616,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           "momentum_24h": {
-            "n": 3528,
-            "correct": 1834,
-            "accuracy_pct": 51.9841,
+            "n": 3530,
+            "correct": 1836,
+            "accuracy_pct": 52.0113,
             "predicted_up": 1908,
-            "predicted_down": 1620,
+            "predicted_down": 1622,
             "actual_up": 1926,
-            "actual_down": 1602
+            "actual_down": 1604
           },
           "momentum_48h": {
-            "n": 3529,
-            "correct": 1884,
-            "accuracy_pct": 53.3862,
+            "n": 3531,
+            "correct": 1886,
+            "accuracy_pct": 53.4126,
             "predicted_up": 1889,
-            "predicted_down": 1640,
+            "predicted_down": 1642,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           "mean_reversion_24h": {
-            "n": 3528,
+            "n": 3530,
             "correct": 1694,
-            "accuracy_pct": 48.0159,
-            "predicted_up": 1620,
+            "accuracy_pct": 47.9887,
+            "predicted_up": 1622,
             "predicted_down": 1908,
             "actual_up": 1926,
-            "actual_down": 1602
+            "actual_down": 1604
           },
           "mean_reversion_48h": {
-            "n": 3529,
+            "n": 3531,
             "correct": 1645,
-            "accuracy_pct": 46.6138,
-            "predicted_up": 1640,
+            "accuracy_pct": 46.5874,
+            "predicted_up": 1642,
             "predicted_down": 1889,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           "sma24_trend": {
-            "n": 3528,
-            "correct": 1808,
-            "accuracy_pct": 51.2472,
+            "n": 3530,
+            "correct": 1810,
+            "accuracy_pct": 51.2748,
             "predicted_up": 1859,
-            "predicted_down": 1669,
+            "predicted_down": 1671,
             "actual_up": 1925,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           "sma48_trend": {
-            "n": 3529,
-            "correct": 1843,
-            "accuracy_pct": 52.2244,
+            "n": 3531,
+            "correct": 1845,
+            "accuracy_pct": 52.2515,
             "predicted_up": 1876,
-            "predicted_down": 1653,
+            "predicted_down": 1655,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           "sma24_reversion": {
-            "n": 3528,
+            "n": 3530,
             "correct": 1720,
-            "accuracy_pct": 48.7528,
-            "predicted_up": 1669,
+            "accuracy_pct": 48.7252,
+            "predicted_up": 1671,
             "predicted_down": 1859,
             "actual_up": 1925,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           "sma48_reversion": {
-            "n": 3529,
+            "n": 3531,
             "correct": 1686,
-            "accuracy_pct": 47.7756,
-            "predicted_up": 1653,
+            "accuracy_pct": 47.7485,
+            "predicted_up": 1655,
             "predicted_down": 1876,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           }
         },
         "ranking": [
           {
             "rule": "momentum_48h",
-            "n": 3529,
-            "correct": 1884,
-            "accuracy_pct": 53.3862,
+            "n": 3531,
+            "correct": 1886,
+            "accuracy_pct": 53.4126,
             "predicted_up": 1889,
-            "predicted_down": 1640,
+            "predicted_down": 1642,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           {
             "rule": "sma48_trend",
-            "n": 3529,
-            "correct": 1843,
-            "accuracy_pct": 52.2244,
+            "n": 3531,
+            "correct": 1845,
+            "accuracy_pct": 52.2515,
             "predicted_up": 1876,
-            "predicted_down": 1653,
+            "predicted_down": 1655,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           {
             "rule": "momentum_24h",
-            "n": 3528,
-            "correct": 1834,
-            "accuracy_pct": 51.9841,
+            "n": 3530,
+            "correct": 1836,
+            "accuracy_pct": 52.0113,
             "predicted_up": 1908,
-            "predicted_down": 1620,
+            "predicted_down": 1622,
             "actual_up": 1926,
-            "actual_down": 1602
+            "actual_down": 1604
           },
           {
             "rule": "sma24_trend",
-            "n": 3528,
-            "correct": 1808,
-            "accuracy_pct": 51.2472,
+            "n": 3530,
+            "correct": 1810,
+            "accuracy_pct": 51.2748,
             "predicted_up": 1859,
-            "predicted_down": 1669,
+            "predicted_down": 1671,
             "actual_up": 1925,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           {
             "rule": "sma24_reversion",
-            "n": 3528,
+            "n": 3530,
             "correct": 1720,
-            "accuracy_pct": 48.7528,
-            "predicted_up": 1669,
+            "accuracy_pct": 48.7252,
+            "predicted_up": 1671,
             "predicted_down": 1859,
             "actual_up": 1925,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           {
             "rule": "mean_reversion_24h",
-            "n": 3528,
+            "n": 3530,
             "correct": 1694,
-            "accuracy_pct": 48.0159,
-            "predicted_up": 1620,
+            "accuracy_pct": 47.9887,
+            "predicted_up": 1622,
             "predicted_down": 1908,
             "actual_up": 1926,
-            "actual_down": 1602
+            "actual_down": 1604
           },
           {
             "rule": "sma48_reversion",
-            "n": 3529,
+            "n": 3531,
             "correct": 1686,
-            "accuracy_pct": 47.7756,
-            "predicted_up": 1653,
+            "accuracy_pct": 47.7485,
+            "predicted_up": 1655,
             "predicted_down": 1876,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           {
             "rule": "mean_reversion_48h",
-            "n": 3529,
+            "n": 3531,
             "correct": 1645,
-            "accuracy_pct": 46.6138,
-            "predicted_up": 1640,
+            "accuracy_pct": 46.5874,
+            "predicted_up": 1642,
             "predicted_down": 1889,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           },
           {
             "rule": "similarity_v2",
-            "n": 3529,
+            "n": 3531,
             "correct": 1588,
-            "accuracy_pct": 44.9986,
-            "predicted_up": 1913,
+            "accuracy_pct": 44.9731,
+            "predicted_up": 1915,
             "predicted_down": 1616,
             "actual_up": 1926,
-            "actual_down": 1603
+            "actual_down": 1605
           }
         ]
       }
@@ -1275,177 +1275,177 @@
       "48": {
         "rules": {
           "similarity_v2": {
-            "n": 197,
+            "n": 199,
             "correct": 98,
-            "accuracy_pct": 49.7462,
-            "predicted_up": 120,
+            "accuracy_pct": 49.2462,
+            "predicted_up": 122,
             "predicted_down": 77,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           "momentum_24h": {
-            "n": 197,
-            "correct": 96,
-            "accuracy_pct": 48.731,
+            "n": 199,
+            "correct": 98,
+            "accuracy_pct": 49.2462,
             "predicted_up": 108,
-            "predicted_down": 89,
+            "predicted_down": 91,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           "momentum_48h": {
-            "n": 197,
-            "correct": 88,
-            "accuracy_pct": 44.6701,
+            "n": 199,
+            "correct": 90,
+            "accuracy_pct": 45.2261,
             "predicted_up": 96,
-            "predicted_down": 101,
+            "predicted_down": 103,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           "mean_reversion_24h": {
-            "n": 197,
+            "n": 199,
             "correct": 101,
-            "accuracy_pct": 51.269,
-            "predicted_up": 89,
+            "accuracy_pct": 50.7538,
+            "predicted_up": 91,
             "predicted_down": 108,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           "mean_reversion_48h": {
-            "n": 197,
+            "n": 199,
             "correct": 109,
-            "accuracy_pct": 55.3299,
-            "predicted_up": 101,
+            "accuracy_pct": 54.7739,
+            "predicted_up": 103,
             "predicted_down": 96,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           "sma24_trend": {
-            "n": 197,
-            "correct": 87,
-            "accuracy_pct": 44.1624,
+            "n": 199,
+            "correct": 89,
+            "accuracy_pct": 44.7236,
             "predicted_up": 95,
-            "predicted_down": 102,
+            "predicted_down": 104,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           "sma48_trend": {
-            "n": 197,
-            "correct": 96,
-            "accuracy_pct": 48.731,
+            "n": 199,
+            "correct": 98,
+            "accuracy_pct": 49.2462,
             "predicted_up": 98,
-            "predicted_down": 99,
+            "predicted_down": 101,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           "sma24_reversion": {
-            "n": 197,
+            "n": 199,
             "correct": 110,
-            "accuracy_pct": 55.8376,
-            "predicted_up": 102,
+            "accuracy_pct": 55.2764,
+            "predicted_up": 104,
             "predicted_down": 95,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           "sma48_reversion": {
-            "n": 197,
+            "n": 199,
             "correct": 101,
-            "accuracy_pct": 51.269,
-            "predicted_up": 99,
+            "accuracy_pct": 50.7538,
+            "predicted_up": 101,
             "predicted_down": 98,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           }
         },
         "ranking": [
           {
             "rule": "sma24_reversion",
-            "n": 197,
+            "n": 199,
             "correct": 110,
-            "accuracy_pct": 55.8376,
-            "predicted_up": 102,
+            "accuracy_pct": 55.2764,
+            "predicted_up": 104,
             "predicted_down": 95,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           {
             "rule": "mean_reversion_48h",
-            "n": 197,
+            "n": 199,
             "correct": 109,
-            "accuracy_pct": 55.3299,
-            "predicted_up": 101,
+            "accuracy_pct": 54.7739,
+            "predicted_up": 103,
             "predicted_down": 96,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           {
             "rule": "mean_reversion_24h",
-            "n": 197,
+            "n": 199,
             "correct": 101,
-            "accuracy_pct": 51.269,
-            "predicted_up": 89,
+            "accuracy_pct": 50.7538,
+            "predicted_up": 91,
             "predicted_down": 108,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           {
             "rule": "sma48_reversion",
-            "n": 197,
+            "n": 199,
             "correct": 101,
-            "accuracy_pct": 51.269,
-            "predicted_up": 99,
+            "accuracy_pct": 50.7538,
+            "predicted_up": 101,
             "predicted_down": 98,
             "actual_up": 103,
-            "actual_down": 94
-          },
-          {
-            "rule": "similarity_v2",
-            "n": 197,
-            "correct": 98,
-            "accuracy_pct": 49.7462,
-            "predicted_up": 120,
-            "predicted_down": 77,
-            "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           {
             "rule": "momentum_24h",
-            "n": 197,
-            "correct": 96,
-            "accuracy_pct": 48.731,
+            "n": 199,
+            "correct": 98,
+            "accuracy_pct": 49.2462,
             "predicted_up": 108,
-            "predicted_down": 89,
+            "predicted_down": 91,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
+          },
+          {
+            "rule": "similarity_v2",
+            "n": 199,
+            "correct": 98,
+            "accuracy_pct": 49.2462,
+            "predicted_up": 122,
+            "predicted_down": 77,
+            "actual_up": 103,
+            "actual_down": 96
           },
           {
             "rule": "sma48_trend",
-            "n": 197,
-            "correct": 96,
-            "accuracy_pct": 48.731,
+            "n": 199,
+            "correct": 98,
+            "accuracy_pct": 49.2462,
             "predicted_up": 98,
-            "predicted_down": 99,
+            "predicted_down": 101,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           {
             "rule": "momentum_48h",
-            "n": 197,
-            "correct": 88,
-            "accuracy_pct": 44.6701,
+            "n": 199,
+            "correct": 90,
+            "accuracy_pct": 45.2261,
             "predicted_up": 96,
-            "predicted_down": 101,
+            "predicted_down": 103,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           },
           {
             "rule": "sma24_trend",
-            "n": 197,
-            "correct": 87,
-            "accuracy_pct": 44.1624,
+            "n": 199,
+            "correct": 89,
+            "accuracy_pct": 44.7236,
             "predicted_up": 95,
-            "predicted_down": 102,
+            "predicted_down": 104,
             "actual_up": 103,
-            "actual_down": 94
+            "actual_down": 96
           }
         ]
       },
@@ -1985,177 +1985,177 @@
       "BTC-USDT|48": {
         "rules": {
           "similarity_v2": {
-            "n": 89,
+            "n": 90,
             "correct": 45,
-            "accuracy_pct": 50.5618,
-            "predicted_up": 56,
+            "accuracy_pct": 50.0,
+            "predicted_up": 57,
             "predicted_down": 33,
             "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
           },
           "momentum_24h": {
-            "n": 89,
-            "correct": 47,
-            "accuracy_pct": 52.809,
+            "n": 90,
+            "correct": 48,
+            "accuracy_pct": 53.3333,
             "predicted_up": 48,
-            "predicted_down": 41,
-            "actual_up": 46,
-            "actual_down": 43
-          },
-          "momentum_48h": {
-            "n": 89,
-            "correct": 44,
-            "accuracy_pct": 49.4382,
-            "predicted_up": 41,
-            "predicted_down": 48,
-            "actual_up": 46,
-            "actual_down": 43
-          },
-          "mean_reversion_24h": {
-            "n": 89,
-            "correct": 42,
-            "accuracy_pct": 47.191,
-            "predicted_up": 41,
-            "predicted_down": 48,
-            "actual_up": 46,
-            "actual_down": 43
-          },
-          "mean_reversion_48h": {
-            "n": 89,
-            "correct": 45,
-            "accuracy_pct": 50.5618,
-            "predicted_up": 48,
-            "predicted_down": 41,
-            "actual_up": 46,
-            "actual_down": 43
-          },
-          "sma24_trend": {
-            "n": 89,
-            "correct": 42,
-            "accuracy_pct": 47.191,
-            "predicted_up": 43,
-            "predicted_down": 46,
-            "actual_up": 46,
-            "actual_down": 43
-          },
-          "sma48_trend": {
-            "n": 89,
-            "correct": 49,
-            "accuracy_pct": 55.0562,
-            "predicted_up": 42,
-            "predicted_down": 47,
-            "actual_up": 46,
-            "actual_down": 43
-          },
-          "sma24_reversion": {
-            "n": 89,
-            "correct": 47,
-            "accuracy_pct": 52.809,
-            "predicted_up": 46,
-            "predicted_down": 43,
-            "actual_up": 46,
-            "actual_down": 43
-          },
-          "sma48_reversion": {
-            "n": 89,
-            "correct": 40,
-            "accuracy_pct": 44.9438,
-            "predicted_up": 47,
             "predicted_down": 42,
             "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
+          },
+          "momentum_48h": {
+            "n": 90,
+            "correct": 45,
+            "accuracy_pct": 50.0,
+            "predicted_up": 41,
+            "predicted_down": 49,
+            "actual_up": 46,
+            "actual_down": 44
+          },
+          "mean_reversion_24h": {
+            "n": 90,
+            "correct": 42,
+            "accuracy_pct": 46.6667,
+            "predicted_up": 42,
+            "predicted_down": 48,
+            "actual_up": 46,
+            "actual_down": 44
+          },
+          "mean_reversion_48h": {
+            "n": 90,
+            "correct": 45,
+            "accuracy_pct": 50.0,
+            "predicted_up": 49,
+            "predicted_down": 41,
+            "actual_up": 46,
+            "actual_down": 44
+          },
+          "sma24_trend": {
+            "n": 90,
+            "correct": 43,
+            "accuracy_pct": 47.7778,
+            "predicted_up": 43,
+            "predicted_down": 47,
+            "actual_up": 46,
+            "actual_down": 44
+          },
+          "sma48_trend": {
+            "n": 90,
+            "correct": 50,
+            "accuracy_pct": 55.5556,
+            "predicted_up": 42,
+            "predicted_down": 48,
+            "actual_up": 46,
+            "actual_down": 44
+          },
+          "sma24_reversion": {
+            "n": 90,
+            "correct": 47,
+            "accuracy_pct": 52.2222,
+            "predicted_up": 47,
+            "predicted_down": 43,
+            "actual_up": 46,
+            "actual_down": 44
+          },
+          "sma48_reversion": {
+            "n": 90,
+            "correct": 40,
+            "accuracy_pct": 44.4444,
+            "predicted_up": 48,
+            "predicted_down": 42,
+            "actual_up": 46,
+            "actual_down": 44
           }
         },
         "ranking": [
           {
             "rule": "sma48_trend",
-            "n": 89,
-            "correct": 49,
-            "accuracy_pct": 55.0562,
+            "n": 90,
+            "correct": 50,
+            "accuracy_pct": 55.5556,
             "predicted_up": 42,
-            "predicted_down": 47,
+            "predicted_down": 48,
             "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
           },
           {
             "rule": "momentum_24h",
-            "n": 89,
-            "correct": 47,
-            "accuracy_pct": 52.809,
+            "n": 90,
+            "correct": 48,
+            "accuracy_pct": 53.3333,
             "predicted_up": 48,
-            "predicted_down": 41,
+            "predicted_down": 42,
             "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
           },
           {
             "rule": "sma24_reversion",
-            "n": 89,
+            "n": 90,
             "correct": 47,
-            "accuracy_pct": 52.809,
-            "predicted_up": 46,
+            "accuracy_pct": 52.2222,
+            "predicted_up": 47,
             "predicted_down": 43,
             "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
           },
           {
             "rule": "mean_reversion_48h",
-            "n": 89,
+            "n": 90,
             "correct": 45,
-            "accuracy_pct": 50.5618,
-            "predicted_up": 48,
+            "accuracy_pct": 50.0,
+            "predicted_up": 49,
             "predicted_down": 41,
             "actual_up": 46,
-            "actual_down": 43
-          },
-          {
-            "rule": "similarity_v2",
-            "n": 89,
-            "correct": 45,
-            "accuracy_pct": 50.5618,
-            "predicted_up": 56,
-            "predicted_down": 33,
-            "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
           },
           {
             "rule": "momentum_48h",
-            "n": 89,
-            "correct": 44,
-            "accuracy_pct": 49.4382,
+            "n": 90,
+            "correct": 45,
+            "accuracy_pct": 50.0,
             "predicted_up": 41,
-            "predicted_down": 48,
+            "predicted_down": 49,
             "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
           },
           {
-            "rule": "mean_reversion_24h",
-            "n": 89,
-            "correct": 42,
-            "accuracy_pct": 47.191,
-            "predicted_up": 41,
-            "predicted_down": 48,
+            "rule": "similarity_v2",
+            "n": 90,
+            "correct": 45,
+            "accuracy_pct": 50.0,
+            "predicted_up": 57,
+            "predicted_down": 33,
             "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
           },
           {
             "rule": "sma24_trend",
-            "n": 89,
-            "correct": 42,
-            "accuracy_pct": 47.191,
+            "n": 90,
+            "correct": 43,
+            "accuracy_pct": 47.7778,
             "predicted_up": 43,
-            "predicted_down": 46,
+            "predicted_down": 47,
             "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
+          },
+          {
+            "rule": "mean_reversion_24h",
+            "n": 90,
+            "correct": 42,
+            "accuracy_pct": 46.6667,
+            "predicted_up": 42,
+            "predicted_down": 48,
+            "actual_up": 46,
+            "actual_down": 44
           },
           {
             "rule": "sma48_reversion",
-            "n": 89,
+            "n": 90,
             "correct": 40,
-            "accuracy_pct": 44.9438,
-            "predicted_up": 47,
+            "accuracy_pct": 44.4444,
+            "predicted_up": 48,
             "predicted_down": 42,
             "actual_up": 46,
-            "actual_down": 43
+            "actual_down": 44
           }
         ]
       },
@@ -2693,177 +2693,177 @@
       "ETH-USDT|48": {
         "rules": {
           "similarity_v2": {
-            "n": 108,
+            "n": 109,
             "correct": 53,
-            "accuracy_pct": 49.0741,
-            "predicted_up": 64,
+            "accuracy_pct": 48.6239,
+            "predicted_up": 65,
             "predicted_down": 44,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           "momentum_24h": {
-            "n": 108,
-            "correct": 49,
-            "accuracy_pct": 45.3704,
+            "n": 109,
+            "correct": 50,
+            "accuracy_pct": 45.8716,
             "predicted_up": 60,
-            "predicted_down": 48,
+            "predicted_down": 49,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           "momentum_48h": {
-            "n": 108,
-            "correct": 44,
-            "accuracy_pct": 40.7407,
+            "n": 109,
+            "correct": 45,
+            "accuracy_pct": 41.2844,
             "predicted_up": 55,
-            "predicted_down": 53,
+            "predicted_down": 54,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           "mean_reversion_24h": {
-            "n": 108,
+            "n": 109,
             "correct": 59,
-            "accuracy_pct": 54.6296,
-            "predicted_up": 48,
+            "accuracy_pct": 54.1284,
+            "predicted_up": 49,
             "predicted_down": 60,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           "mean_reversion_48h": {
-            "n": 108,
+            "n": 109,
             "correct": 64,
-            "accuracy_pct": 59.2593,
-            "predicted_up": 53,
+            "accuracy_pct": 58.7156,
+            "predicted_up": 54,
             "predicted_down": 55,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           "sma24_trend": {
-            "n": 108,
-            "correct": 45,
-            "accuracy_pct": 41.6667,
+            "n": 109,
+            "correct": 46,
+            "accuracy_pct": 42.2018,
             "predicted_up": 52,
-            "predicted_down": 56,
+            "predicted_down": 57,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           "sma48_trend": {
-            "n": 108,
-            "correct": 47,
-            "accuracy_pct": 43.5185,
+            "n": 109,
+            "correct": 48,
+            "accuracy_pct": 44.0367,
             "predicted_up": 56,
-            "predicted_down": 52,
+            "predicted_down": 53,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           "sma24_reversion": {
-            "n": 108,
+            "n": 109,
             "correct": 63,
-            "accuracy_pct": 58.3333,
-            "predicted_up": 56,
+            "accuracy_pct": 57.7982,
+            "predicted_up": 57,
             "predicted_down": 52,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           "sma48_reversion": {
-            "n": 108,
+            "n": 109,
             "correct": 61,
-            "accuracy_pct": 56.4815,
-            "predicted_up": 52,
+            "accuracy_pct": 55.9633,
+            "predicted_up": 53,
             "predicted_down": 56,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           }
         },
         "ranking": [
           {
             "rule": "mean_reversion_48h",
-            "n": 108,
+            "n": 109,
             "correct": 64,
-            "accuracy_pct": 59.2593,
-            "predicted_up": 53,
+            "accuracy_pct": 58.7156,
+            "predicted_up": 54,
             "predicted_down": 55,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           {
             "rule": "sma24_reversion",
-            "n": 108,
+            "n": 109,
             "correct": 63,
-            "accuracy_pct": 58.3333,
-            "predicted_up": 56,
+            "accuracy_pct": 57.7982,
+            "predicted_up": 57,
             "predicted_down": 52,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           {
             "rule": "sma48_reversion",
-            "n": 108,
+            "n": 109,
             "correct": 61,
-            "accuracy_pct": 56.4815,
-            "predicted_up": 52,
+            "accuracy_pct": 55.9633,
+            "predicted_up": 53,
             "predicted_down": 56,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           {
             "rule": "mean_reversion_24h",
-            "n": 108,
+            "n": 109,
             "correct": 59,
-            "accuracy_pct": 54.6296,
-            "predicted_up": 48,
+            "accuracy_pct": 54.1284,
+            "predicted_up": 49,
             "predicted_down": 60,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           {
             "rule": "similarity_v2",
-            "n": 108,
+            "n": 109,
             "correct": 53,
-            "accuracy_pct": 49.0741,
-            "predicted_up": 64,
+            "accuracy_pct": 48.6239,
+            "predicted_up": 65,
             "predicted_down": 44,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           {
             "rule": "momentum_24h",
-            "n": 108,
-            "correct": 49,
-            "accuracy_pct": 45.3704,
+            "n": 109,
+            "correct": 50,
+            "accuracy_pct": 45.8716,
             "predicted_up": 60,
-            "predicted_down": 48,
+            "predicted_down": 49,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           {
             "rule": "sma48_trend",
-            "n": 108,
-            "correct": 47,
-            "accuracy_pct": 43.5185,
+            "n": 109,
+            "correct": 48,
+            "accuracy_pct": 44.0367,
             "predicted_up": 56,
-            "predicted_down": 52,
+            "predicted_down": 53,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           {
             "rule": "sma24_trend",
-            "n": 108,
-            "correct": 45,
-            "accuracy_pct": 41.6667,
+            "n": 109,
+            "correct": 46,
+            "accuracy_pct": 42.2018,
             "predicted_up": 52,
-            "predicted_down": 56,
+            "predicted_down": 57,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           },
           {
             "rule": "momentum_48h",
-            "n": 108,
-            "correct": 44,
-            "accuracy_pct": 40.7407,
+            "n": 109,
+            "correct": 45,
+            "accuracy_pct": 41.2844,
             "predicted_up": 55,
-            "predicted_down": 53,
+            "predicted_down": 54,
             "actual_up": 57,
-            "actual_down": 51
+            "actual_down": 52
           }
         ]
       },
@@ -3580,177 +3580,177 @@
       "24|trend_down": {
         "rules": {
           "similarity_v2": {
-            "n": 1019,
+            "n": 1021,
             "correct": 527,
-            "accuracy_pct": 51.7174,
-            "predicted_up": 666,
+            "accuracy_pct": 51.6161,
+            "predicted_up": 668,
             "predicted_down": 353,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           "momentum_24h": {
-            "n": 1019,
-            "correct": 429,
-            "accuracy_pct": 42.1001,
-            "predicted_up": 170,
-            "predicted_down": 849,
+            "n": 1021,
+            "correct": 430,
+            "accuracy_pct": 42.1156,
+            "predicted_up": 171,
+            "predicted_down": 850,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           "momentum_48h": {
-            "n": 1019,
-            "correct": 411,
-            "accuracy_pct": 40.3337,
+            "n": 1021,
+            "correct": 413,
+            "accuracy_pct": 40.4505,
             "predicted_up": 0,
-            "predicted_down": 1019,
+            "predicted_down": 1021,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           "mean_reversion_24h": {
-            "n": 1019,
-            "correct": 590,
-            "accuracy_pct": 57.8999,
-            "predicted_up": 849,
-            "predicted_down": 170,
+            "n": 1021,
+            "correct": 591,
+            "accuracy_pct": 57.8844,
+            "predicted_up": 850,
+            "predicted_down": 171,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           "mean_reversion_48h": {
-            "n": 1019,
+            "n": 1021,
             "correct": 608,
-            "accuracy_pct": 59.6663,
-            "predicted_up": 1019,
+            "accuracy_pct": 59.5495,
+            "predicted_up": 1021,
             "predicted_down": 0,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           "sma24_trend": {
-            "n": 1019,
-            "correct": 431,
-            "accuracy_pct": 42.2964,
+            "n": 1021,
+            "correct": 433,
+            "accuracy_pct": 42.4094,
             "predicted_up": 234,
-            "predicted_down": 785,
+            "predicted_down": 787,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           "sma48_trend": {
-            "n": 1019,
-            "correct": 411,
-            "accuracy_pct": 40.3337,
+            "n": 1021,
+            "correct": 413,
+            "accuracy_pct": 40.4505,
             "predicted_up": 0,
-            "predicted_down": 1019,
+            "predicted_down": 1021,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           "sma24_reversion": {
-            "n": 1019,
+            "n": 1021,
             "correct": 588,
-            "accuracy_pct": 57.7036,
-            "predicted_up": 785,
+            "accuracy_pct": 57.5906,
+            "predicted_up": 787,
             "predicted_down": 234,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           "sma48_reversion": {
-            "n": 1019,
+            "n": 1021,
             "correct": 608,
-            "accuracy_pct": 59.6663,
-            "predicted_up": 1019,
+            "accuracy_pct": 59.5495,
+            "predicted_up": 1021,
             "predicted_down": 0,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           }
         },
         "ranking": [
           {
             "rule": "mean_reversion_48h",
-            "n": 1019,
+            "n": 1021,
             "correct": 608,
-            "accuracy_pct": 59.6663,
-            "predicted_up": 1019,
+            "accuracy_pct": 59.5495,
+            "predicted_up": 1021,
             "predicted_down": 0,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           {
             "rule": "sma48_reversion",
-            "n": 1019,
+            "n": 1021,
             "correct": 608,
-            "accuracy_pct": 59.6663,
-            "predicted_up": 1019,
+            "accuracy_pct": 59.5495,
+            "predicted_up": 1021,
             "predicted_down": 0,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           {
             "rule": "mean_reversion_24h",
-            "n": 1019,
-            "correct": 590,
-            "accuracy_pct": 57.8999,
-            "predicted_up": 849,
-            "predicted_down": 170,
+            "n": 1021,
+            "correct": 591,
+            "accuracy_pct": 57.8844,
+            "predicted_up": 850,
+            "predicted_down": 171,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           {
             "rule": "sma24_reversion",
-            "n": 1019,
+            "n": 1021,
             "correct": 588,
-            "accuracy_pct": 57.7036,
-            "predicted_up": 785,
+            "accuracy_pct": 57.5906,
+            "predicted_up": 787,
             "predicted_down": 234,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           {
             "rule": "similarity_v2",
-            "n": 1019,
+            "n": 1021,
             "correct": 527,
-            "accuracy_pct": 51.7174,
-            "predicted_up": 666,
+            "accuracy_pct": 51.6161,
+            "predicted_up": 668,
             "predicted_down": 353,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           {
             "rule": "sma24_trend",
-            "n": 1019,
-            "correct": 431,
-            "accuracy_pct": 42.2964,
+            "n": 1021,
+            "correct": 433,
+            "accuracy_pct": 42.4094,
             "predicted_up": 234,
-            "predicted_down": 785,
+            "predicted_down": 787,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           {
             "rule": "momentum_24h",
-            "n": 1019,
-            "correct": 429,
-            "accuracy_pct": 42.1001,
-            "predicted_up": 170,
-            "predicted_down": 849,
+            "n": 1021,
+            "correct": 430,
+            "accuracy_pct": 42.1156,
+            "predicted_up": 171,
+            "predicted_down": 850,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           {
             "rule": "momentum_48h",
-            "n": 1019,
-            "correct": 411,
-            "accuracy_pct": 40.3337,
+            "n": 1021,
+            "correct": 413,
+            "accuracy_pct": 40.4505,
             "predicted_up": 0,
-            "predicted_down": 1019,
+            "predicted_down": 1021,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           },
           {
             "rule": "sma48_trend",
-            "n": 1019,
-            "correct": 411,
-            "accuracy_pct": 40.3337,
+            "n": 1021,
+            "correct": 413,
+            "accuracy_pct": 40.4505,
             "predicted_up": 0,
-            "predicted_down": 1019,
+            "predicted_down": 1021,
             "actual_up": 608,
-            "actual_down": 411
+            "actual_down": 413
           }
         ]
       },
@@ -4111,354 +4111,354 @@
       "48|trend_down": {
         "rules": {
           "similarity_v2": {
-            "n": 1015,
+            "n": 1017,
             "correct": 510,
-            "accuracy_pct": 50.2463,
-            "predicted_up": 688,
+            "accuracy_pct": 50.1475,
+            "predicted_up": 690,
             "predicted_down": 327,
             "actual_up": 579,
-            "actual_down": 436
+            "actual_down": 438
           },
           "momentum_24h": {
-            "n": 1016,
-            "correct": 488,
-            "accuracy_pct": 48.0315,
+            "n": 1018,
+            "correct": 490,
+            "accuracy_pct": 48.1336,
             "predicted_up": 170,
-            "predicted_down": 846,
+            "predicted_down": 848,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           "momentum_48h": {
-            "n": 1016,
-            "correct": 436,
-            "accuracy_pct": 42.9134,
+            "n": 1018,
+            "correct": 438,
+            "accuracy_pct": 43.0255,
             "predicted_up": 0,
-            "predicted_down": 1016,
+            "predicted_down": 1018,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           "mean_reversion_24h": {
-            "n": 1016,
+            "n": 1018,
             "correct": 528,
-            "accuracy_pct": 51.9685,
-            "predicted_up": 846,
+            "accuracy_pct": 51.8664,
+            "predicted_up": 848,
             "predicted_down": 170,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           "mean_reversion_48h": {
-            "n": 1016,
+            "n": 1018,
             "correct": 580,
-            "accuracy_pct": 57.0866,
-            "predicted_up": 1016,
+            "accuracy_pct": 56.9745,
+            "predicted_up": 1018,
             "predicted_down": 0,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           "sma24_trend": {
-            "n": 1016,
-            "correct": 491,
-            "accuracy_pct": 48.3268,
+            "n": 1018,
+            "correct": 493,
+            "accuracy_pct": 48.4283,
             "predicted_up": 233,
-            "predicted_down": 783,
+            "predicted_down": 785,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           "sma48_trend": {
-            "n": 1016,
-            "correct": 436,
-            "accuracy_pct": 42.9134,
+            "n": 1018,
+            "correct": 438,
+            "accuracy_pct": 43.0255,
             "predicted_up": 0,
-            "predicted_down": 1016,
+            "predicted_down": 1018,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           "sma24_reversion": {
-            "n": 1016,
+            "n": 1018,
             "correct": 525,
-            "accuracy_pct": 51.6732,
-            "predicted_up": 783,
+            "accuracy_pct": 51.5717,
+            "predicted_up": 785,
             "predicted_down": 233,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           "sma48_reversion": {
-            "n": 1016,
+            "n": 1018,
             "correct": 580,
-            "accuracy_pct": 57.0866,
-            "predicted_up": 1016,
+            "accuracy_pct": 56.9745,
+            "predicted_up": 1018,
             "predicted_down": 0,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           }
         },
         "ranking": [
           {
             "rule": "mean_reversion_48h",
-            "n": 1016,
+            "n": 1018,
             "correct": 580,
-            "accuracy_pct": 57.0866,
-            "predicted_up": 1016,
+            "accuracy_pct": 56.9745,
+            "predicted_up": 1018,
             "predicted_down": 0,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           {
             "rule": "sma48_reversion",
-            "n": 1016,
+            "n": 1018,
             "correct": 580,
-            "accuracy_pct": 57.0866,
-            "predicted_up": 1016,
+            "accuracy_pct": 56.9745,
+            "predicted_up": 1018,
             "predicted_down": 0,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           {
             "rule": "mean_reversion_24h",
-            "n": 1016,
+            "n": 1018,
             "correct": 528,
-            "accuracy_pct": 51.9685,
-            "predicted_up": 846,
+            "accuracy_pct": 51.8664,
+            "predicted_up": 848,
             "predicted_down": 170,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           {
             "rule": "sma24_reversion",
-            "n": 1016,
+            "n": 1018,
             "correct": 525,
-            "accuracy_pct": 51.6732,
-            "predicted_up": 783,
+            "accuracy_pct": 51.5717,
+            "predicted_up": 785,
             "predicted_down": 233,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           {
             "rule": "similarity_v2",
-            "n": 1015,
+            "n": 1017,
             "correct": 510,
-            "accuracy_pct": 50.2463,
-            "predicted_up": 688,
+            "accuracy_pct": 50.1475,
+            "predicted_up": 690,
             "predicted_down": 327,
             "actual_up": 579,
-            "actual_down": 436
+            "actual_down": 438
           },
           {
             "rule": "sma24_trend",
-            "n": 1016,
-            "correct": 491,
-            "accuracy_pct": 48.3268,
+            "n": 1018,
+            "correct": 493,
+            "accuracy_pct": 48.4283,
             "predicted_up": 233,
-            "predicted_down": 783,
+            "predicted_down": 785,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           {
             "rule": "momentum_24h",
-            "n": 1016,
-            "correct": 488,
-            "accuracy_pct": 48.0315,
+            "n": 1018,
+            "correct": 490,
+            "accuracy_pct": 48.1336,
             "predicted_up": 170,
-            "predicted_down": 846,
+            "predicted_down": 848,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           {
             "rule": "momentum_48h",
-            "n": 1016,
-            "correct": 436,
-            "accuracy_pct": 42.9134,
+            "n": 1018,
+            "correct": 438,
+            "accuracy_pct": 43.0255,
             "predicted_up": 0,
-            "predicted_down": 1016,
+            "predicted_down": 1018,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           },
           {
             "rule": "sma48_trend",
-            "n": 1016,
-            "correct": 436,
-            "accuracy_pct": 42.9134,
+            "n": 1018,
+            "correct": 438,
+            "accuracy_pct": 43.0255,
             "predicted_up": 0,
-            "predicted_down": 1016,
+            "predicted_down": 1018,
             "actual_up": 580,
-            "actual_down": 436
+            "actual_down": 438
           }
         ]
       },
       "168|range": {
         "rules": {
           "similarity_v2": {
-            "n": 1393,
-            "correct": 644,
-            "accuracy_pct": 46.2312,
+            "n": 1395,
+            "correct": 646,
+            "accuracy_pct": 46.3082,
             "predicted_up": 857,
-            "predicted_down": 536,
+            "predicted_down": 538,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           "momentum_24h": {
-            "n": 1392,
-            "correct": 691,
-            "accuracy_pct": 49.6408,
+            "n": 1394,
+            "correct": 693,
+            "accuracy_pct": 49.7131,
             "predicted_up": 708,
-            "predicted_down": 684,
+            "predicted_down": 686,
             "actual_up": 705,
-            "actual_down": 687
+            "actual_down": 689
           },
           "momentum_48h": {
-            "n": 1393,
-            "correct": 664,
-            "accuracy_pct": 47.6669,
+            "n": 1395,
+            "correct": 666,
+            "accuracy_pct": 47.7419,
             "predicted_up": 703,
-            "predicted_down": 690,
+            "predicted_down": 692,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           "mean_reversion_24h": {
-            "n": 1392,
+            "n": 1394,
             "correct": 701,
-            "accuracy_pct": 50.3592,
-            "predicted_up": 684,
+            "accuracy_pct": 50.2869,
+            "predicted_up": 686,
             "predicted_down": 708,
             "actual_up": 705,
-            "actual_down": 687
+            "actual_down": 689
           },
           "mean_reversion_48h": {
-            "n": 1393,
+            "n": 1395,
             "correct": 729,
-            "accuracy_pct": 52.3331,
-            "predicted_up": 690,
+            "accuracy_pct": 52.2581,
+            "predicted_up": 692,
             "predicted_down": 703,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           "sma24_trend": {
-            "n": 1393,
-            "correct": 700,
-            "accuracy_pct": 50.2513,
+            "n": 1395,
+            "correct": 702,
+            "accuracy_pct": 50.3226,
             "predicted_up": 677,
-            "predicted_down": 716,
+            "predicted_down": 718,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           "sma48_trend": {
-            "n": 1393,
-            "correct": 670,
-            "accuracy_pct": 48.0976,
+            "n": 1395,
+            "correct": 672,
+            "accuracy_pct": 48.172,
             "predicted_up": 695,
-            "predicted_down": 698,
+            "predicted_down": 700,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           "sma24_reversion": {
-            "n": 1393,
+            "n": 1395,
             "correct": 693,
-            "accuracy_pct": 49.7487,
-            "predicted_up": 716,
+            "accuracy_pct": 49.6774,
+            "predicted_up": 718,
             "predicted_down": 677,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           "sma48_reversion": {
-            "n": 1393,
+            "n": 1395,
             "correct": 723,
-            "accuracy_pct": 51.9024,
-            "predicted_up": 698,
+            "accuracy_pct": 51.828,
+            "predicted_up": 700,
             "predicted_down": 695,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           }
         },
         "ranking": [
           {
             "rule": "mean_reversion_48h",
-            "n": 1393,
+            "n": 1395,
             "correct": 729,
-            "accuracy_pct": 52.3331,
-            "predicted_up": 690,
+            "accuracy_pct": 52.2581,
+            "predicted_up": 692,
             "predicted_down": 703,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           {
             "rule": "sma48_reversion",
-            "n": 1393,
+            "n": 1395,
             "correct": 723,
-            "accuracy_pct": 51.9024,
-            "predicted_up": 698,
+            "accuracy_pct": 51.828,
+            "predicted_up": 700,
             "predicted_down": 695,
             "actual_up": 706,
-            "actual_down": 687
-          },
-          {
-            "rule": "mean_reversion_24h",
-            "n": 1392,
-            "correct": 701,
-            "accuracy_pct": 50.3592,
-            "predicted_up": 684,
-            "predicted_down": 708,
-            "actual_up": 705,
-            "actual_down": 687
+            "actual_down": 689
           },
           {
             "rule": "sma24_trend",
-            "n": 1393,
-            "correct": 700,
-            "accuracy_pct": 50.2513,
+            "n": 1395,
+            "correct": 702,
+            "accuracy_pct": 50.3226,
             "predicted_up": 677,
-            "predicted_down": 716,
+            "predicted_down": 718,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           {
-            "rule": "sma24_reversion",
-            "n": 1393,
-            "correct": 693,
-            "accuracy_pct": 49.7487,
-            "predicted_up": 716,
-            "predicted_down": 677,
-            "actual_up": 706,
-            "actual_down": 687
+            "rule": "mean_reversion_24h",
+            "n": 1394,
+            "correct": 701,
+            "accuracy_pct": 50.2869,
+            "predicted_up": 686,
+            "predicted_down": 708,
+            "actual_up": 705,
+            "actual_down": 689
           },
           {
             "rule": "momentum_24h",
-            "n": 1392,
-            "correct": 691,
-            "accuracy_pct": 49.6408,
+            "n": 1394,
+            "correct": 693,
+            "accuracy_pct": 49.7131,
             "predicted_up": 708,
-            "predicted_down": 684,
+            "predicted_down": 686,
             "actual_up": 705,
-            "actual_down": 687
+            "actual_down": 689
+          },
+          {
+            "rule": "sma24_reversion",
+            "n": 1395,
+            "correct": 693,
+            "accuracy_pct": 49.6774,
+            "predicted_up": 718,
+            "predicted_down": 677,
+            "actual_up": 706,
+            "actual_down": 689
           },
           {
             "rule": "sma48_trend",
-            "n": 1393,
-            "correct": 670,
-            "accuracy_pct": 48.0976,
+            "n": 1395,
+            "correct": 672,
+            "accuracy_pct": 48.172,
             "predicted_up": 695,
-            "predicted_down": 698,
+            "predicted_down": 700,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           {
             "rule": "momentum_48h",
-            "n": 1393,
-            "correct": 664,
-            "accuracy_pct": 47.6669,
+            "n": 1395,
+            "correct": 666,
+            "accuracy_pct": 47.7419,
             "predicted_up": 703,
-            "predicted_down": 690,
+            "predicted_down": 692,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           },
           {
             "rule": "similarity_v2",
-            "n": 1393,
-            "correct": 644,
-            "accuracy_pct": 46.2312,
+            "n": 1395,
+            "correct": 646,
+            "accuracy_pct": 46.3082,
             "predicted_up": 857,
-            "predicted_down": 536,
+            "predicted_down": 538,
             "actual_up": 706,
-            "actual_down": 687
+            "actual_down": 689
           }
         ]
       },
@@ -5173,177 +5173,177 @@
       "336|trend_down": {
         "rules": {
           "similarity_v2": {
-            "n": 965,
+            "n": 967,
             "correct": 405,
-            "accuracy_pct": 41.9689,
-            "predicted_up": 550,
+            "accuracy_pct": 41.8821,
+            "predicted_up": 552,
             "predicted_down": 415,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           "momentum_24h": {
-            "n": 965,
-            "correct": 477,
-            "accuracy_pct": 49.4301,
+            "n": 967,
+            "correct": 479,
+            "accuracy_pct": 49.5346,
             "predicted_up": 160,
-            "predicted_down": 805,
+            "predicted_down": 807,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           "momentum_48h": {
-            "n": 965,
-            "correct": 491,
-            "accuracy_pct": 50.8808,
+            "n": 967,
+            "correct": 493,
+            "accuracy_pct": 50.9824,
             "predicted_up": 0,
-            "predicted_down": 965,
+            "predicted_down": 967,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           "mean_reversion_24h": {
-            "n": 965,
+            "n": 967,
             "correct": 488,
-            "accuracy_pct": 50.5699,
-            "predicted_up": 805,
+            "accuracy_pct": 50.4654,
+            "predicted_up": 807,
             "predicted_down": 160,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           "mean_reversion_48h": {
-            "n": 965,
+            "n": 967,
             "correct": 474,
-            "accuracy_pct": 49.1192,
-            "predicted_up": 965,
+            "accuracy_pct": 49.0176,
+            "predicted_up": 967,
             "predicted_down": 0,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           "sma24_trend": {
-            "n": 965,
-            "correct": 470,
-            "accuracy_pct": 48.7047,
+            "n": 967,
+            "correct": 472,
+            "accuracy_pct": 48.8108,
             "predicted_up": 219,
-            "predicted_down": 746,
+            "predicted_down": 748,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           "sma48_trend": {
-            "n": 965,
-            "correct": 491,
-            "accuracy_pct": 50.8808,
+            "n": 967,
+            "correct": 493,
+            "accuracy_pct": 50.9824,
             "predicted_up": 0,
-            "predicted_down": 965,
+            "predicted_down": 967,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           "sma24_reversion": {
-            "n": 965,
+            "n": 967,
             "correct": 495,
-            "accuracy_pct": 51.2953,
-            "predicted_up": 746,
+            "accuracy_pct": 51.1892,
+            "predicted_up": 748,
             "predicted_down": 219,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           "sma48_reversion": {
-            "n": 965,
+            "n": 967,
             "correct": 474,
-            "accuracy_pct": 49.1192,
-            "predicted_up": 965,
+            "accuracy_pct": 49.0176,
+            "predicted_up": 967,
             "predicted_down": 0,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           }
         },
         "ranking": [
           {
             "rule": "sma24_reversion",
-            "n": 965,
+            "n": 967,
             "correct": 495,
-            "accuracy_pct": 51.2953,
-            "predicted_up": 746,
+            "accuracy_pct": 51.1892,
+            "predicted_up": 748,
             "predicted_down": 219,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           {
             "rule": "momentum_48h",
-            "n": 965,
-            "correct": 491,
-            "accuracy_pct": 50.8808,
+            "n": 967,
+            "correct": 493,
+            "accuracy_pct": 50.9824,
             "predicted_up": 0,
-            "predicted_down": 965,
+            "predicted_down": 967,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           {
             "rule": "sma48_trend",
-            "n": 965,
-            "correct": 491,
-            "accuracy_pct": 50.8808,
+            "n": 967,
+            "correct": 493,
+            "accuracy_pct": 50.9824,
             "predicted_up": 0,
-            "predicted_down": 965,
+            "predicted_down": 967,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           {
             "rule": "mean_reversion_24h",
-            "n": 965,
+            "n": 967,
             "correct": 488,
-            "accuracy_pct": 50.5699,
-            "predicted_up": 805,
+            "accuracy_pct": 50.4654,
+            "predicted_up": 807,
             "predicted_down": 160,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           {
             "rule": "momentum_24h",
-            "n": 965,
-            "correct": 477,
-            "accuracy_pct": 49.4301,
+            "n": 967,
+            "correct": 479,
+            "accuracy_pct": 49.5346,
             "predicted_up": 160,
-            "predicted_down": 805,
+            "predicted_down": 807,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           {
             "rule": "mean_reversion_48h",
-            "n": 965,
+            "n": 967,
             "correct": 474,
-            "accuracy_pct": 49.1192,
-            "predicted_up": 965,
+            "accuracy_pct": 49.0176,
+            "predicted_up": 967,
             "predicted_down": 0,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           {
             "rule": "sma48_reversion",
-            "n": 965,
+            "n": 967,
             "correct": 474,
-            "accuracy_pct": 49.1192,
-            "predicted_up": 965,
+            "accuracy_pct": 49.0176,
+            "predicted_up": 967,
             "predicted_down": 0,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           {
             "rule": "sma24_trend",
-            "n": 965,
-            "correct": 470,
-            "accuracy_pct": 48.7047,
+            "n": 967,
+            "correct": 472,
+            "accuracy_pct": 48.8108,
             "predicted_up": 219,
-            "predicted_down": 746,
+            "predicted_down": 748,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           },
           {
             "rule": "similarity_v2",
-            "n": 965,
+            "n": 967,
             "correct": 405,
-            "accuracy_pct": 41.9689,
-            "predicted_up": 550,
+            "accuracy_pct": 41.8821,
+            "predicted_up": 552,
             "predicted_down": 415,
             "actual_up": 474,
-            "actual_down": 491
+            "actual_down": 493
           }
         ]
       }
@@ -5359,49 +5359,49 @@
       "prior_strength": 10.0
     },
     "overall": {
-      "n": 527,
-      "selector_accuracy_pct": 48.9564,
-      "similarity_v2_accuracy_same_rows_pct": 50.4744,
-      "mean_reversion_48h_accuracy_same_rows_pct": 54.649,
-      "edge_vs_v2_pp": -1.518,
-      "edge_vs_mr48_pp": -5.6926,
+      "n": 529,
+      "selector_accuracy_pct": 48.7713,
+      "similarity_v2_accuracy_same_rows_pct": 50.2836,
+      "mean_reversion_48h_accuracy_same_rows_pct": 54.4423,
+      "edge_vs_v2_pp": -1.5123,
+      "edge_vs_mr48_pp": -5.6711,
       "selected_rule_usage": {
         "mean_reversion_24h": 58,
-        "mean_reversion_48h": 197,
+        "mean_reversion_48h": 198,
         "momentum_24h": 65,
         "momentum_48h": 3,
         "similarity_v2": 21,
-        "sma24_reversion": 25,
+        "sma24_reversion": 26,
         "sma24_trend": 64,
         "sma48_reversion": 52,
         "sma48_trend": 42
       },
       "selection_scope_usage": {
         "asset_horizon_fallback": 81,
-        "same_regime": 446
+        "same_regime": 448
       }
     },
     "short_horizons_24_48": {
-      "n": 510,
-      "selector_accuracy_pct": 49.0196,
-      "similarity_v2_accuracy_same_rows_pct": 50.3922,
-      "mean_reversion_48h_accuracy_same_rows_pct": 54.902,
-      "edge_vs_v2_pp": -1.3725,
-      "edge_vs_mr48_pp": -5.8824,
+      "n": 512,
+      "selector_accuracy_pct": 48.8281,
+      "similarity_v2_accuracy_same_rows_pct": 50.1953,
+      "mean_reversion_48h_accuracy_same_rows_pct": 54.6875,
+      "edge_vs_v2_pp": -1.3672,
+      "edge_vs_mr48_pp": -5.8594,
       "selected_rule_usage": {
         "mean_reversion_24h": 58,
-        "mean_reversion_48h": 192,
+        "mean_reversion_48h": 193,
         "momentum_24h": 65,
         "momentum_48h": 3,
         "similarity_v2": 20,
-        "sma24_reversion": 25,
+        "sma24_reversion": 26,
         "sma24_trend": 53,
         "sma48_reversion": 52,
         "sma48_trend": 42
       },
       "selection_scope_usage": {
         "asset_horizon_fallback": 64,
-        "same_regime": 446
+        "same_regime": 448
       }
     },
     "by_horizon": {
@@ -5428,25 +5428,25 @@
         }
       },
       "48": {
-        "n": 157,
-        "selector_accuracy_pct": 49.0446,
-        "similarity_v2_accuracy_same_rows_pct": 49.6815,
-        "mean_reversion_48h_accuracy_same_rows_pct": 54.7771,
-        "edge_vs_v2_pp": -0.6369,
-        "edge_vs_mr48_pp": -5.7325,
+        "n": 159,
+        "selector_accuracy_pct": 48.4277,
+        "similarity_v2_accuracy_same_rows_pct": 49.0566,
+        "mean_reversion_48h_accuracy_same_rows_pct": 54.0881,
+        "edge_vs_v2_pp": -0.6289,
+        "edge_vs_mr48_pp": -5.6604,
         "selected_rule_usage": {
           "mean_reversion_24h": 37,
-          "mean_reversion_48h": 15,
+          "mean_reversion_48h": 16,
           "momentum_24h": 41,
           "momentum_48h": 1,
           "similarity_v2": 1,
-          "sma24_reversion": 16,
+          "sma24_reversion": 17,
           "sma24_trend": 4,
           "sma48_trend": 42
         },
         "selection_scope_usage": {
           "asset_horizon_fallback": 32,
-          "same_regime": 125
+          "same_regime": 127
         }
       },
       "168": {
@@ -5490,21 +5490,21 @@
         }
       },
       "BTC-USDT|48": {
-        "n": 69,
-        "selector_accuracy_pct": 52.1739,
-        "similarity_v2_accuracy_same_rows_pct": 52.1739,
-        "mean_reversion_48h_accuracy_same_rows_pct": 50.7246,
+        "n": 70,
+        "selector_accuracy_pct": 51.4286,
+        "similarity_v2_accuracy_same_rows_pct": 51.4286,
+        "mean_reversion_48h_accuracy_same_rows_pct": 50.0,
         "edge_vs_v2_pp": 0.0,
-        "edge_vs_mr48_pp": 1.4493,
+        "edge_vs_mr48_pp": 1.4286,
         "selected_rule_usage": {
           "mean_reversion_48h": 4,
           "momentum_24h": 13,
-          "sma24_reversion": 11,
+          "sma24_reversion": 12,
           "sma48_trend": 41
         },
         "selection_scope_usage": {
           "asset_horizon_fallback": 16,
-          "same_regime": 53
+          "same_regime": 54
         }
       },
       "BTC-USDT|168": {
@@ -5543,15 +5543,15 @@
         }
       },
       "ETH-USDT|48": {
-        "n": 88,
-        "selector_accuracy_pct": 46.5909,
-        "similarity_v2_accuracy_same_rows_pct": 47.7273,
-        "mean_reversion_48h_accuracy_same_rows_pct": 57.9545,
-        "edge_vs_v2_pp": -1.1364,
-        "edge_vs_mr48_pp": -11.3636,
+        "n": 89,
+        "selector_accuracy_pct": 46.0674,
+        "similarity_v2_accuracy_same_rows_pct": 47.191,
+        "mean_reversion_48h_accuracy_same_rows_pct": 57.3034,
+        "edge_vs_v2_pp": -1.1236,
+        "edge_vs_mr48_pp": -11.236,
         "selected_rule_usage": {
           "mean_reversion_24h": 37,
-          "mean_reversion_48h": 11,
+          "mean_reversion_48h": 12,
           "momentum_24h": 28,
           "momentum_48h": 1,
           "similarity_v2": 1,
@@ -5561,7 +5561,7 @@
         },
         "selection_scope_usage": {
           "asset_horizon_fallback": 16,
-          "same_regime": 72
+          "same_regime": 73
         }
       },
       "ETH-USDT|168": {
@@ -13977,6 +13977,38 @@
         "predicted_direction": 1,
         "actual_direction": 1,
         "correct": true,
+        "v2_direction": 1,
+        "mr48_direction": 1
+      },
+      {
+        "asset": "BTC-USDT",
+        "horizon_h": 48,
+        "entry_ts": 1794362400,
+        "regime": "trend_down",
+        "selection_scope": "same_regime",
+        "selected_rule": "sma24_reversion",
+        "selected_rule_train_n": 27,
+        "selected_rule_train_accuracy_pct": 62.963,
+        "selected_rule_shrinkage_score": 0.594595,
+        "predicted_direction": 1,
+        "actual_direction": -1,
+        "correct": false,
+        "v2_direction": 1,
+        "mr48_direction": 1
+      },
+      {
+        "asset": "ETH-USDT",
+        "horizon_h": 48,
+        "entry_ts": 1794362400,
+        "regime": "trend_down",
+        "selection_scope": "same_regime",
+        "selected_rule": "mean_reversion_48h",
+        "selected_rule_train_n": 29,
+        "selected_rule_train_accuracy_pct": 62.069,
+        "selected_rule_shrinkage_score": 0.589744,
+        "predicted_direction": 1,
+        "actual_direction": -1,
+        "correct": false,
         "v2_direction": 1,
         "mr48_direction": 1
       },
