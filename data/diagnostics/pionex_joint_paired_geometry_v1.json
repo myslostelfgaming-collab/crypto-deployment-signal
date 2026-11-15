@@ -1,7 +1,7 @@
 {
   "schema": "pionex_joint_paired_geometry_v1",
   "version": "4.5",
-  "generated_at_utc": "2026-11-15T10:02:00.007894+00:00",
+  "generated_at_utc": "2026-11-15T18:07:21.924702+00:00",
   "status": "PROSPECTIVE_RESEARCH_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -15,9 +15,9 @@
     ]
   },
   "source_state": {
-    "captured_at_utc": "2026-11-15T09:55:13.396493+00:00",
-    "captured_at_local": "2026-11-15T11:55:13.396493+02:00",
-    "current_price_usdt": 1827.25,
+    "captured_at_utc": "2026-11-15T17:59:04.607563+00:00",
+    "captured_at_local": "2026-11-15T19:59:04.607563+02:00",
+    "current_price_usdt": 1812.29,
     "geometry_market_price_source": "FRESH_PIONEX_API_STATE"
   },
   "execution_resolution": {
@@ -27,38 +27,38 @@
   },
   "paired_calibration": {
     "schema": "pionex_paired_cycle_calibration_v1",
-    "generated_at_utc": "2026-11-15T10:00:45.087433+00:00",
+    "generated_at_utc": "2026-11-15T18:05:35.868674+00:00",
     "status": "PAIRED_CALIBRATION_ACTIVE_WITH_HOLDOUT",
     "calibration_ready": true,
     "method": "Walk-forward reconstruction at historical manual Pionex state times. Only 24h-mature analogue paths available at each historical start are used. Predictions use observed historical quantity/grid and balances, corrected paired buy->sell cycle accounting, and the Phase 4D promoted execution replay resolution. Scale is estimated on earlier windows and reported against a chronologically later holdout.",
     "important_limitation": "Manual snapshots do not preserve every per-grid open-order state. Historical interval states are reconstructed from price and geometry, matching the existing Phase 4D calibration convention.",
     "actual_rounds_semantics_assumption": "Pionex rounds_total is treated as the realised completed-grid-round counter, consistent with the legacy calibration. If Pionex changes that UI/API semantic, this calibration must be revisited.",
     "execution_replay_resolution": "5min",
-    "evaluated_windows": 69,
-    "training_windows": 63,
+    "evaluated_windows": 70,
+    "training_windows": 64,
     "validation_windows": 6,
     "minimum_training_windows": 6,
     "minimum_validation_windows": 2,
-    "observed_median_profit_ratio_training": 0.963167,
-    "observed_median_rounds_ratio_training": 0.939786,
-    "profit_scale_applied": 0.963167,
-    "rounds_scale_applied": 0.939786,
+    "observed_median_profit_ratio_training": 0.972908,
+    "observed_median_rounds_ratio_training": 0.962014,
+    "profit_scale_applied": 0.972908,
+    "rounds_scale_applied": 0.962014,
     "scale_bounds": [
       0.35,
       1.5
     ],
     "holdout_validation": {
       "validation_windows": 6,
-      "profit_mae_usdt": 0.111986,
-      "profit_mape_pct": 237.9675,
-      "rounds_mae": 8.665615,
-      "rounds_mape_pct": 234.043
+      "profit_mae_usdt": 0.127609,
+      "profit_mape_pct": 244.9288,
+      "rounds_mae": 9.690239,
+      "rounds_mape_pct": 243.8162
     }
   },
   "calibration_quality": {
     "status": "CAUTION_HIGH_HOLDOUT_PERCENTAGE_ERROR",
-    "profit_mape_pct": 237.9675,
-    "rounds_mape_pct": 234.043,
+    "profit_mape_pct": 244.9288,
+    "rounds_mape_pct": 243.8162,
     "note": "Percentage errors can become unstable when realised daily profit or rounds are small. Phase 4.5 therefore treats calibration quality as a caution flag, not an automatic promotion rule."
   },
   "current_status_quo_paired_benchmark": {
@@ -66,35 +66,35 @@
     "upper_usdt": 2100.0,
     "center_usdt": 1950.0,
     "width_usdt": 300.0,
-    "width_pct_of_market": 16.4181,
-    "center_offset_pct_of_market": 6.717745,
+    "width_pct_of_market": 16.5536,
+    "center_offset_pct_of_market": 7.598674,
     "grids": 35,
     "grid_spacing_usdt": 8.823529,
     "quantity_per_grid_eth_est": 0.002,
-    "avg_order_notional_usdt_est": 3.6545,
-    "buy_intervals": 3,
-    "sell_intervals": 31,
+    "avg_order_notional_usdt_est": 3.6246,
+    "buy_intervals": 1,
+    "sell_intervals": 33,
     "net_profit_per_grid_pct_min": 0.32173,
     "net_profit_per_grid_pct_max": 0.38995,
-    "expected_paired_grid_profit_usdt_raw": 0.298802,
-    "median_paired_grid_profit_usdt_raw": 0.262039,
-    "expected_paired_grid_profit_usdt_calibrated": 0.287796,
-    "median_paired_grid_profit_usdt_calibrated": 0.252387,
-    "expected_paired_rounds_raw": 21.441667,
-    "median_paired_rounds_raw": 18.75,
-    "expected_paired_rounds_calibrated": 20.150578,
-    "median_paired_rounds_calibrated": 17.620987,
-    "p_zero_paired_rounds_pct": 1.6667,
-    "p_paired_rounds_ge_10_pct": 71.6667,
-    "p_paired_rounds_ge_25_pct": 38.3333,
-    "p_paired_rounds_ge_50_pct": 3.3333,
-    "escape_probability_pct": 58.3333,
-    "lower_escape_probability_pct": 58.3333,
+    "expected_paired_grid_profit_usdt_raw": 0.209811,
+    "median_paired_grid_profit_usdt_raw": 0.168265,
+    "expected_paired_grid_profit_usdt_calibrated": 0.204127,
+    "median_paired_grid_profit_usdt_calibrated": 0.163706,
+    "expected_paired_rounds_raw": 15.041667,
+    "median_paired_rounds_raw": 12.0,
+    "expected_paired_rounds_calibrated": 14.470294,
+    "median_paired_rounds_calibrated": 11.544168,
+    "p_zero_paired_rounds_pct": 6.6667,
+    "p_paired_rounds_ge_10_pct": 55.0,
+    "p_paired_rounds_ge_25_pct": 20.0,
+    "p_paired_rounds_ge_50_pct": 0.0,
+    "escape_probability_pct": 83.3333,
+    "lower_escape_probability_pct": 83.3333,
     "upper_escape_probability_pct": 0.0,
-    "p_total_pnl_positive_pct": 55.0,
-    "expected_total_pnl_usdt": -0.449994,
-    "p20_total_pnl_usdt": -3.253046,
-    "p10_total_pnl_usdt": -7.141136,
+    "p_total_pnl_positive_pct": 51.6667,
+    "expected_total_pnl_usdt": -0.372221,
+    "p20_total_pnl_usdt": -3.087295,
+    "p10_total_pnl_usdt": -6.838715,
     "sample_n": 60,
     "standard_risk_eligible": true,
     "risk_failures": [],
@@ -103,7 +103,7 @@
       "method": "v2_cohort_two_stage",
       "cohort": {
         "fallback_level": "SIMILAR_GEOMETRY",
-        "sample_n": 8,
+        "sample_n": 9,
         "target_regime": {
           "volatility": "HIGH",
           "path": "RANGING_MIXED",
@@ -114,67 +114,19 @@
           "lower_usdt": 1800.0,
           "upper_usdt": 2100.0,
           "grids": 35,
-          "width_pct_of_market": 16.4181,
+          "width_pct_of_market": 16.5536,
           "center_skew": "UPPER_SKEW"
         },
         "minimum_cohort_n": 8
       },
-      "rounds_scale": 0.821301,
-      "productivity_scale": 1.001431,
-      "profit_scale": 0.822476,
-      "expected_paired_grid_profit_usdt_v2": 0.245757,
-      "expected_paired_rounds_v2": 17.610063
+      "rounds_scale": 1.024143,
+      "productivity_scale": 1.004018,
+      "profit_scale": 1.028259,
+      "expected_paired_grid_profit_usdt_v2": 0.21574,
+      "expected_paired_rounds_v2": 15.404818
     }
   },
-  "current_geometry_fresh_rebalance_counterfactual": {
-    "lower_usdt": 1800.0,
-    "upper_usdt": 2100.0,
-    "center_usdt": 1950.0,
-    "width_usdt": 300.0,
-    "width_pct_of_market": 16.4181,
-    "center_offset_pct_of_market": 6.717745,
-    "grids": 35,
-    "grid_spacing_usdt": 8.823529,
-    "quantity_per_grid_eth_est": 0.002,
-    "avg_order_notional_usdt_est": 3.6545,
-    "net_profit_per_grid_pct_min": 0.32173,
-    "net_profit_per_grid_pct_max": 0.38995,
-    "expected_paired_grid_profit_usdt_calibrated": 0.287796,
-    "median_paired_grid_profit_usdt_calibrated": 0.252387,
-    "expected_paired_rounds_calibrated": 20.150578,
-    "median_paired_rounds_calibrated": 17.620987,
-    "expected_paired_grid_profit_usdt_raw": 0.298802,
-    "median_paired_grid_profit_usdt_raw": 0.262039,
-    "expected_paired_rounds_raw": 21.441667,
-    "median_paired_rounds_raw": 18.75,
-    "p_zero_paired_rounds_pct": 1.6667,
-    "p_paired_rounds_ge_10_pct": 71.6667,
-    "p_paired_rounds_ge_25_pct": 38.3333,
-    "p_paired_rounds_ge_50_pct": 3.3333,
-    "escape_probability_pct": 58.3333,
-    "lower_escape_probability_pct": 58.3333,
-    "upper_escape_probability_pct": 0.0,
-    "p_total_pnl_positive_pct": 55.0,
-    "expected_total_pnl_usdt": -0.447578,
-    "p20_total_pnl_usdt": -3.233715,
-    "p10_total_pnl_usdt": -7.103289,
-    "standard_risk_eligible": false,
-    "risk_failures": [
-      "ESCAPE_RISK_ABOVE_EFFECTIVE_CAP"
-    ],
-    "geometry_change_distance": 0.0,
-    "sizing_model": "POST_EDIT_REBALANCE_TOTAL_EQUITY_PLUS_ACTIVE_NOTIONAL_CAP",
-    "execution_feasibility": {
-      "status": "PASS_KNOWN_STATIC_CHECKS_LIVE_UI_STILL_REQUIRED",
-      "known_checks_applied": [
-        "MAX_GRIDS"
-      ],
-      "known_failures": [],
-      "exact_candidate_accepted_by_pionex_ui": false,
-      "policy_status": "DYNAMIC_LIVE_VALIDATION_REQUIRED",
-      "note": "Pionex Spot Grid minimum investment/order feasibility is dynamic with pair, range, grid count and order rules. A candidate is not operationally promoted without exact live Pionex setup validation."
-    }
-  },
+  "current_geometry_fresh_rebalance_counterfactual": null,
   "risk_policy": {
     "absolute_escape_cap_pct": 10.0,
     "effective_escape_cap_pct": 10.0,
@@ -182,9 +134,9 @@
     "do_not_worsen_p20_total_pnl_by_more_than_usdt": 0.5
   },
   "search": {
-    "coarse_candidate_count": 674,
+    "coarse_candidate_count": 661,
     "refinement_seed_count": 0,
-    "total_candidate_count": 674,
+    "total_candidate_count": 661,
     "coarse_center_step_usdt": 20.0,
     "coarse_width_step_pct": 2.0,
     "coarse_grid_counts": [
@@ -228,7 +180,7 @@
   "best_eligible_by_grid_count": [],
   "near_peak_candidates_top100": [],
   "candidate_counts": {
-    "total": 674,
+    "total": 661,
     "risk_eligible": 0,
     "known_execution_failure": 0
   },
@@ -261,57 +213,57 @@
     "mape_role": "SECONDARY_DIAGNOSTIC_ONLY",
     "profit": {
       "n": 6,
-      "mae": 0.074511,
+      "mae": 0.086604,
       "median_absolute_error": 0.049859,
-      "wape_pct": 31.4851,
-      "mape_pct": 24.0395,
+      "wape_pct": 32.9423,
+      "mape_pct": 22.7644,
       "mape_n": 5,
-      "bias": 0.041271,
-      "rmse": 0.09448,
-      "weighted_mae": 0.073508,
-      "weighted_wape_pct": 31.2544,
-      "weighted_bias": 0.040858,
+      "bias": -0.026154,
+      "rmse": 0.117553,
+      "weighted_mae": 0.090922,
+      "weighted_wape_pct": 34.2171,
+      "weighted_bias": -0.029326,
       "secondary_percentage_metric": "MAPE_GUARDED",
       "primary_percentage_metric": "WAPE"
     },
     "rounds": {
       "n": 6,
-      "mae": 5.758309,
+      "mae": 6.553588,
       "median_absolute_error": 3.33978,
-      "wape_pct": 32.4902,
-      "mape_pct": 24.7737,
+      "wape_pct": 33.2352,
+      "mape_pct": 22.7172,
       "mape_n": 5,
-      "bias": 3.531789,
-      "rmse": 7.23672,
-      "weighted_mae": 5.700066,
-      "weighted_wape_pct": 32.3355,
-      "weighted_bias": 3.511244,
+      "bias": -1.525892,
+      "rmse": 8.74664,
+      "weighted_mae": 6.887468,
+      "weighted_wape_pct": 34.5644,
+      "weighted_bias": -1.758022,
       "secondary_percentage_metric": "MAPE_GUARDED",
       "primary_percentage_metric": "WAPE"
     },
     "activity": {
-      "normal_windows": 59,
+      "normal_windows": 60,
       "low_activity_windows": 10,
       "zero_activity_windows": 0,
-      "low_or_zero_share_pct": 14.4928
+      "low_or_zero_share_pct": 14.2857
     },
     "validation": {
-      "fit_windows": 60,
+      "fit_windows": 61,
       "holdout_windows": 6,
       "prospective_windows": 3,
       "fit_range": [
         "2026-08-12T09:58:00+00:00",
-        "2026-10-30T07:16:34.954399+00:00"
+        "2026-10-31T11:14:26.196353+00:00"
       ],
       "holdout_range": [
-        "2026-10-30T08:59:01.494012+00:00",
-        "2026-11-08T02:42:55.019704+00:00"
+        "2026-11-01T15:16:48.129144+00:00",
+        "2026-11-11T12:57:20.783848+00:00"
       ],
       "prospective_range": [
-        "2026-11-10T10:00:20.376344+00:00",
-        "2026-11-15T02:49:08.786340+00:00"
+        "2026-11-11T12:57:20.783848+00:00",
+        "2026-11-15T17:59:04.607563+00:00"
       ],
-      "same_geometry_windows": 69,
+      "same_geometry_windows": 70,
       "excluded_geometry_change_windows": 32,
       "chronological_no_shuffle": true
     },
@@ -330,29 +282,29 @@
       "comparisons": {
         "profit": {
           "wape_pct": {
-            "challenger": 31.4851,
-            "champion": 35.3085,
-            "improvement_pct": 10.8286,
+            "challenger": 32.9423,
+            "champion": 35.9728,
+            "improvement_pct": 8.4244,
             "non_degrading": true
           },
           "mae": {
-            "challenger": 0.074511,
-            "champion": 0.083559,
-            "improvement_pct": 10.8283,
+            "challenger": 0.086604,
+            "champion": 0.09457,
+            "improvement_pct": 8.4234,
             "non_degrading": true
           }
         },
         "rounds": {
           "wape_pct": {
-            "challenger": 32.4902,
-            "champion": 36.5755,
-            "improvement_pct": 11.1695,
+            "challenger": 33.2352,
+            "champion": 36.6934,
+            "improvement_pct": 9.4246,
             "non_degrading": true
           },
           "mae": {
-            "challenger": 5.758309,
-            "champion": 6.482348,
-            "improvement_pct": 11.1694,
+            "challenger": 6.553588,
+            "champion": 7.235512,
+            "improvement_pct": 9.4247,
             "non_degrading": true
           }
         }
@@ -362,41 +314,41 @@
     "challenger_holdout": {
       "profit": {
         "n": 6,
-        "mae": 0.074511,
+        "mae": 0.086604,
         "median_absolute_error": 0.049859,
-        "wape_pct": 31.4851,
-        "mape_pct": 24.0395,
+        "wape_pct": 32.9423,
+        "mape_pct": 22.7644,
         "mape_n": 5,
-        "bias": 0.041271,
-        "rmse": 0.09448,
-        "weighted_mae": 0.073508,
-        "weighted_wape_pct": 31.2544,
-        "weighted_bias": 0.040858,
+        "bias": -0.026154,
+        "rmse": 0.117553,
+        "weighted_mae": 0.090922,
+        "weighted_wape_pct": 34.2171,
+        "weighted_bias": -0.029326,
         "secondary_percentage_metric": "MAPE_GUARDED",
         "primary_percentage_metric": "WAPE"
       },
       "rounds": {
         "n": 6,
-        "mae": 5.758309,
+        "mae": 6.553588,
         "median_absolute_error": 3.33978,
-        "wape_pct": 32.4902,
-        "mape_pct": 24.7737,
+        "wape_pct": 33.2352,
+        "mape_pct": 22.7172,
         "mape_n": 5,
-        "bias": 3.531789,
-        "rmse": 7.23672,
-        "weighted_mae": 5.700066,
-        "weighted_wape_pct": 32.3355,
-        "weighted_bias": 3.511244,
+        "bias": -1.525892,
+        "rmse": 8.74664,
+        "weighted_mae": 6.887468,
+        "weighted_wape_pct": 34.5644,
+        "weighted_bias": -1.758022,
         "secondary_percentage_metric": "MAPE_GUARDED",
         "primary_percentage_metric": "WAPE"
       }
     },
     "cohort": {
       "fallback_level": "SIMILAR_GEOMETRY",
-      "sample_n": 8,
+      "sample_n": 9,
       "target_regime": {
         "volatility": "HIGH",
-        "path": "RANGING_MIXED",
+        "path": "TREND_DOWN",
         "density": "LOW",
         "center_skew": "UPPER_SKEW"
       },
@@ -404,14 +356,14 @@
         "lower_usdt": 1800.0,
         "upper_usdt": 2100.0,
         "grids": 35,
-        "width_pct_of_market": 15.8802,
+        "width_pct_of_market": 16.5693,
         "center_skew": "UPPER_SKEW"
       },
       "minimum_cohort_n": 8
     },
     "legacy_mape": {
-      "profit_mape_pct": 237.9675,
-      "rounds_mape_pct": 234.043,
+      "profit_mape_pct": 244.9288,
+      "rounds_mape_pct": 243.8162,
       "role": "SECONDARY_LEGACY_DIAGNOSTIC"
     }
   },

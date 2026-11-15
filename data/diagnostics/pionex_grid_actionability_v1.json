@@ -1,6 +1,6 @@
 {
   "schema": "pionex_grid_actionability_v1",
-  "generated_at_utc": "2026-11-15T10:02:00.152649+00:00",
+  "generated_at_utc": "2026-11-15T18:07:22.064297+00:00",
   "status": "PROSPECTIVE_DECISION_SUPPORT_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -9,25 +9,25 @@
     "role": "Operational gate above Phase 4D research geometry"
   },
   "latest_observed_state": {
-    "captured_at_utc": "2026-11-15T09:55:13.396493+00:00",
-    "captured_at_local": "2026-11-15T11:55:13.396493+02:00",
-    "state_age_h": 0.113,
+    "captured_at_utc": "2026-11-15T17:59:04.607563+00:00",
+    "captured_at_local": "2026-11-15T19:59:04.607563+02:00",
+    "state_age_h": 0.1382,
     "fresh_for_operational_use": true,
     "freshness_limit_h": 6.0,
-    "current_price_usdt": 1827.25,
+    "current_price_usdt": 1812.29,
     "lower_usdt": 1800.0,
     "upper_usdt": 2100.0,
     "grids": 35,
     "observed_quantity_per_grid_eth": 0.002,
-    "eth_holdings": 0.062353555,
-    "usdt_holdings": 210.38657002405,
-    "rounds_24h_reported": null,
-    "rounds_total": 5756,
-    "grid_profit_usdt": 199.25069942865,
-    "nearest_waiting_buy_usdt": 1817.6471,
-    "nearest_waiting_buy_distance_pct": -0.5255,
-    "nearest_waiting_sell_usdt": 1835.2941,
-    "nearest_waiting_sell_distance_pct": 0.4402,
+    "eth_holdings": 0.066343555,
+    "usdt_holdings": 203.26023593405,
+    "rounds_24h_reported": 20,
+    "rounds_total": 5764,
+    "grid_profit_usdt": 199.36276183865,
+    "nearest_waiting_buy_usdt": 1800.0,
+    "nearest_waiting_buy_distance_pct": -0.6781,
+    "nearest_waiting_sell_usdt": 1817.6471,
+    "nearest_waiting_sell_distance_pct": 0.2956,
     "grid_spacing_usdt": 8.823529
   },
   "current_benchmark_quantity_audit": {
@@ -38,21 +38,21 @@
   },
   "latest_observed_activity_window": {
     "start_utc": "2026-11-15T02:49:08.786340+00:00",
-    "end_utc": "2026-11-15T09:55:13.396493+00:00",
-    "elapsed_h": 7.1013,
+    "end_utc": "2026-11-15T17:59:04.607563+00:00",
+    "elapsed_h": 15.1655,
     "same_geometry": true,
     "start_price_usdt": 1810.58,
-    "end_price_usdt": 1827.25,
-    "completed_rounds_delta": 8,
-    "grid_profit_delta_usdt": 0.11204477,
-    "eth_delta": -0.002007,
-    "usdt_delta": 3.76185709,
+    "end_price_usdt": 1812.29,
+    "completed_rounds_delta": 16,
+    "grid_profit_delta_usdt": 0.22410718,
+    "eth_delta": 0.001983,
+    "usdt_delta": -3.364477,
     "quantity_per_grid_eth": 0.002,
-    "net_inventory_grid_units_raw": -1.0035,
-    "net_inventory_grid_units_inferred": -1,
-    "inventory_inference_status": "NET_UNMATCHED_SELL_LEGS_INCREASE",
-    "estimated_fill_count_lower_bound": 17,
-    "end_reported_rounds_24h": null
+    "net_inventory_grid_units_raw": 0.9915,
+    "net_inventory_grid_units_inferred": 1,
+    "inventory_inference_status": "NET_UNMATCHED_BUY_LEGS_INCREASE",
+    "estimated_fill_count_lower_bound": 33,
+    "end_reported_rounds_24h": 20
   },
   "activity_model": {
     "completed_round_definition": "One completed Pionex round is treated as at least one buy plus one sell.",
@@ -61,42 +61,48 @@
     "windows_logged": 109
   },
   "research_geometry": {
-    "research_action": "KEEP_CURRENT",
+    "research_action": "RECENTER_NEAR_LOWER_EDGE+SHIFT_DOWN+WIDEN+FEWER_GRIDS",
     "research_confidence": "MEDIUM",
     "raw_selected": {
-      "lower_usdt": 1800.0,
-      "upper_usdt": 2100.0,
-      "center_usdt": 1950.0,
-      "width_usdt": 300.0,
-      "width_pct_of_market": 16.4181,
-      "grids": 35,
-      "quantity_per_grid_eth_est": 0.002,
-      "avg_order_notional_usdt_est": 3.6545,
-      "buy_intervals": 3,
-      "sell_intervals": 31,
-      "net_profit_per_grid_pct_min": 0.32173,
-      "net_profit_per_grid_pct_max": 0.38995,
-      "expected_grid_profit_usdt": 0.296539,
-      "median_grid_profit_usdt": 0.262216,
-      "expected_rounds": 19.79011,
-      "median_rounds": 17.46727,
-      "escape_probability_pct": 58.3333,
-      "lower_escape_probability_pct": 58.3333,
-      "upper_escape_probability_pct": 0.0,
-      "p_grid_profit_ge_0_25_pct": 51.6667,
-      "p_grid_profit_ge_0_50_pct": 16.6667,
-      "p_total_pnl_positive_pct": 55.0,
-      "expected_total_pnl_usdt": -0.449994,
-      "p20_total_pnl_usdt": -3.253046,
-      "p10_total_pnl_usdt": -7.141136,
-      "sample_n": 60
+      "lower_usdt": 1599.1923,
+      "upper_usdt": 1925.4045,
+      "center_usdt": 1762.2984,
+      "width_usdt": 326.2122,
+      "width_pct_of_market": 18.0,
+      "grids": 10,
+      "quantity_per_grid_eth_est": 0.00838768,
+      "avg_order_notional_usdt_est": 15.2009,
+      "buy_intervals": 5,
+      "sell_intervals": 4,
+      "net_profit_per_grid_pct_min": 1.81766,
+      "net_profit_per_grid_pct_max": 2.16537,
+      "expected_grid_profit_usdt": 0.642896,
+      "median_grid_profit_usdt": 0.694538,
+      "expected_rounds": 2.069628,
+      "median_rounds": 2.237436,
+      "escape_probability_pct": 16.6667,
+      "lower_escape_probability_pct": 3.3333,
+      "upper_escape_probability_pct": 13.3333,
+      "p_grid_profit_ge_0_25_pct": 71.6667,
+      "p_grid_profit_ge_0_50_pct": 53.3333,
+      "p_total_pnl_positive_pct": 60.0,
+      "expected_total_pnl_usdt": -0.140665,
+      "p20_total_pnl_usdt": -0.782435,
+      "p10_total_pnl_usdt": -3.369372,
+      "sample_n": 60,
+      "recovery_trigger": null,
+      "out_of_grid_direction": null,
+      "sizing_mode": "POST_EDIT_REBALANCE_PROXY",
+      "qty_by_active_notional": 0.008387680418722692,
+      "qty_by_equity": 0.020721175829022297,
+      "seed_equity_usdt": 323.493997225
     },
     "literal_practical_rounding": {
-      "lower_usdt": 1800.0,
-      "upper_usdt": 2100.0,
-      "center_usdt": 1950.0,
-      "width_usdt": 300.0,
-      "grids": 35,
+      "lower_usdt": 1600.0,
+      "upper_usdt": 1925.0,
+      "center_usdt": 1762.5,
+      "width_usdt": 325.0,
+      "grids": 10,
       "metrics_recomputed_for_rounded_bounds": false,
       "note": "Literal usability rounding only. Research metrics belong to the raw selected geometry; Pionex live edit validation is required before any use."
     }
@@ -104,12 +110,12 @@
   "prospective_gates": {
     "state_freshness": {
       "passed": true,
-      "state_age_h": 0.113
+      "state_age_h": 0.1382
     },
     "calibration": {
       "passed": true,
       "status": "CALIBRATION_ACTIVE",
-      "evaluated_windows": 69,
+      "evaluated_windows": 70,
       "minimum_windows": 3
     },
     "execution_resolution": {
@@ -117,7 +123,7 @@
       "passed": true,
       "status": "PROMOTION_READY",
       "active_execution_resolution": "5min",
-      "windows_evaluated": 74
+      "windows_evaluated": 75
     },
     "geometry_execution_integration": {
       "passed": true,
@@ -132,8 +138,8 @@
     }
   },
   "operational_decision": {
-    "action": "KEEP_CURRENT",
-    "actionable_geometry_change": false,
+    "action": "RECENTER_NEAR_LOWER_EDGE+SHIFT_DOWN+WIDEN+FEWER_GRIDS",
+    "actionable_geometry_change": true,
     "blockers": [],
     "note": "Research output remains visible even when blocked. Operational action defaults to KEEP_CURRENT until every prospective gate passes."
   },
@@ -159,10 +165,10 @@
     "paired_density_conflict": {
       "conflict": false,
       "paired_calibration_ready": true,
-      "production_selected_at_min_boundary": false,
-      "production_selected_grids": 35,
+      "production_selected_at_min_boundary": true,
+      "production_selected_grids": 10,
       "paired_robust_plateau_selected_grids": null,
-      "production_p_zero_paired_rounds_pct": 1.6667,
+      "production_p_zero_paired_rounds_pct": null,
       "paired_selected_expected_profit_gain_vs_production_low_grid_pct": null,
       "reason": "The calibrated paired-cycle model materially contradicts a legacy selection pinned to the minimum grid-count boundary."
     },
@@ -232,57 +238,57 @@
     "mape_role": "SECONDARY_DIAGNOSTIC_ONLY",
     "profit": {
       "n": 6,
-      "mae": 0.074511,
+      "mae": 0.086604,
       "median_absolute_error": 0.049859,
-      "wape_pct": 31.4851,
-      "mape_pct": 24.0395,
+      "wape_pct": 32.9423,
+      "mape_pct": 22.7644,
       "mape_n": 5,
-      "bias": 0.041271,
-      "rmse": 0.09448,
-      "weighted_mae": 0.073508,
-      "weighted_wape_pct": 31.2544,
-      "weighted_bias": 0.040858,
+      "bias": -0.026154,
+      "rmse": 0.117553,
+      "weighted_mae": 0.090922,
+      "weighted_wape_pct": 34.2171,
+      "weighted_bias": -0.029326,
       "secondary_percentage_metric": "MAPE_GUARDED",
       "primary_percentage_metric": "WAPE"
     },
     "rounds": {
       "n": 6,
-      "mae": 5.758309,
+      "mae": 6.553588,
       "median_absolute_error": 3.33978,
-      "wape_pct": 32.4902,
-      "mape_pct": 24.7737,
+      "wape_pct": 33.2352,
+      "mape_pct": 22.7172,
       "mape_n": 5,
-      "bias": 3.531789,
-      "rmse": 7.23672,
-      "weighted_mae": 5.700066,
-      "weighted_wape_pct": 32.3355,
-      "weighted_bias": 3.511244,
+      "bias": -1.525892,
+      "rmse": 8.74664,
+      "weighted_mae": 6.887468,
+      "weighted_wape_pct": 34.5644,
+      "weighted_bias": -1.758022,
       "secondary_percentage_metric": "MAPE_GUARDED",
       "primary_percentage_metric": "WAPE"
     },
     "activity": {
-      "normal_windows": 59,
+      "normal_windows": 60,
       "low_activity_windows": 10,
       "zero_activity_windows": 0,
-      "low_or_zero_share_pct": 14.4928
+      "low_or_zero_share_pct": 14.2857
     },
     "validation": {
-      "fit_windows": 60,
+      "fit_windows": 61,
       "holdout_windows": 6,
       "prospective_windows": 3,
       "fit_range": [
         "2026-08-12T09:58:00+00:00",
-        "2026-10-30T07:16:34.954399+00:00"
+        "2026-10-31T11:14:26.196353+00:00"
       ],
       "holdout_range": [
-        "2026-10-30T08:59:01.494012+00:00",
-        "2026-11-08T02:42:55.019704+00:00"
+        "2026-11-01T15:16:48.129144+00:00",
+        "2026-11-11T12:57:20.783848+00:00"
       ],
       "prospective_range": [
-        "2026-11-10T10:00:20.376344+00:00",
-        "2026-11-15T02:49:08.786340+00:00"
+        "2026-11-11T12:57:20.783848+00:00",
+        "2026-11-15T17:59:04.607563+00:00"
       ],
-      "same_geometry_windows": 69,
+      "same_geometry_windows": 70,
       "excluded_geometry_change_windows": 32,
       "chronological_no_shuffle": true
     },
@@ -301,29 +307,29 @@
       "comparisons": {
         "profit": {
           "wape_pct": {
-            "challenger": 31.4851,
-            "champion": 35.3085,
-            "improvement_pct": 10.8286,
+            "challenger": 32.9423,
+            "champion": 35.9728,
+            "improvement_pct": 8.4244,
             "non_degrading": true
           },
           "mae": {
-            "challenger": 0.074511,
-            "champion": 0.083559,
-            "improvement_pct": 10.8283,
+            "challenger": 0.086604,
+            "champion": 0.09457,
+            "improvement_pct": 8.4234,
             "non_degrading": true
           }
         },
         "rounds": {
           "wape_pct": {
-            "challenger": 32.4902,
-            "champion": 36.5755,
-            "improvement_pct": 11.1695,
+            "challenger": 33.2352,
+            "champion": 36.6934,
+            "improvement_pct": 9.4246,
             "non_degrading": true
           },
           "mae": {
-            "challenger": 5.758309,
-            "champion": 6.482348,
-            "improvement_pct": 11.1694,
+            "challenger": 6.553588,
+            "champion": 7.235512,
+            "improvement_pct": 9.4247,
             "non_degrading": true
           }
         }
@@ -333,41 +339,41 @@
     "challenger_holdout": {
       "profit": {
         "n": 6,
-        "mae": 0.074511,
+        "mae": 0.086604,
         "median_absolute_error": 0.049859,
-        "wape_pct": 31.4851,
-        "mape_pct": 24.0395,
+        "wape_pct": 32.9423,
+        "mape_pct": 22.7644,
         "mape_n": 5,
-        "bias": 0.041271,
-        "rmse": 0.09448,
-        "weighted_mae": 0.073508,
-        "weighted_wape_pct": 31.2544,
-        "weighted_bias": 0.040858,
+        "bias": -0.026154,
+        "rmse": 0.117553,
+        "weighted_mae": 0.090922,
+        "weighted_wape_pct": 34.2171,
+        "weighted_bias": -0.029326,
         "secondary_percentage_metric": "MAPE_GUARDED",
         "primary_percentage_metric": "WAPE"
       },
       "rounds": {
         "n": 6,
-        "mae": 5.758309,
+        "mae": 6.553588,
         "median_absolute_error": 3.33978,
-        "wape_pct": 32.4902,
-        "mape_pct": 24.7737,
+        "wape_pct": 33.2352,
+        "mape_pct": 22.7172,
         "mape_n": 5,
-        "bias": 3.531789,
-        "rmse": 7.23672,
-        "weighted_mae": 5.700066,
-        "weighted_wape_pct": 32.3355,
-        "weighted_bias": 3.511244,
+        "bias": -1.525892,
+        "rmse": 8.74664,
+        "weighted_mae": 6.887468,
+        "weighted_wape_pct": 34.5644,
+        "weighted_bias": -1.758022,
         "secondary_percentage_metric": "MAPE_GUARDED",
         "primary_percentage_metric": "WAPE"
       }
     },
     "cohort": {
       "fallback_level": "SIMILAR_GEOMETRY",
-      "sample_n": 8,
+      "sample_n": 9,
       "target_regime": {
         "volatility": "HIGH",
-        "path": "RANGING_MIXED",
+        "path": "TREND_DOWN",
         "density": "LOW",
         "center_skew": "UPPER_SKEW"
       },
@@ -375,14 +381,14 @@
         "lower_usdt": 1800.0,
         "upper_usdt": 2100.0,
         "grids": 35,
-        "width_pct_of_market": 15.8802,
+        "width_pct_of_market": 16.5693,
         "center_skew": "UPPER_SKEW"
       },
       "minimum_cohort_n": 8
     },
     "legacy_mape": {
-      "profit_mape_pct": 237.9675,
-      "rounds_mape_pct": 234.043,
+      "profit_mape_pct": 244.9288,
+      "rounds_mape_pct": 243.8162,
       "role": "SECONDARY_LEGACY_DIAGNOSTIC"
     }
   },
