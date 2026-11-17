@@ -1,6 +1,6 @@
 {
   "schema": "pionex_execution_resolution_v1",
-  "generated_at_utc": "2026-11-16T21:14:10.855240+00:00",
+  "generated_at_utc": "2026-11-17T05:14:47.355001+00:00",
   "status": "PROSPECTIVE_DIAGNOSTIC_ONLY",
   "scope": {
     "platform": "Pionex",
@@ -19,9 +19,9 @@
     ],
     "kucoin_primary_endpoint": "https://api.kucoin.com/api/ua/v1/market/kline",
     "kucoin_fallback_endpoint": "https://api.kucoin.com/api/v1/market/candles",
-    "persisted_5m_rows": 27782,
+    "persisted_5m_rows": 27878,
     "persisted_5m_first_utc": "2026-08-12T09:50:00+00:00",
-    "persisted_5m_last_utc": "2026-11-16T21:00:00+00:00",
+    "persisted_5m_last_utc": "2026-11-17T05:00:00+00:00",
     "aggregation_rule": "15m and 1h are built from the exact same 5m source candles; incomplete aggregates are excluded."
   },
   "prospective_windows": {
@@ -31,31 +31,31 @@
   "resolution_metrics": {
     "1hour": {
       "windows": 75,
-      "profit_mae_usdt": 0.04751821,
-      "rounds_mae": 2.26,
-      "mean_profit_relative_error": 0.222899,
-      "mean_rounds_relative_error": 0.233402,
-      "combined_relative_error_score": 0.228151,
+      "profit_mae_usdt": 0.04772367,
+      "rounds_mae": 2.28,
+      "mean_profit_relative_error": 0.223416,
+      "mean_rounds_relative_error": 0.233852,
+      "combined_relative_error_score": 0.228634,
       "rounds_within_path_ambiguity_pct": 44.0,
       "profit_within_path_ambiguity_pct": 42.6667
     },
     "15min": {
       "windows": 75,
-      "profit_mae_usdt": 0.04321322,
-      "rounds_mae": 2.68666667,
-      "mean_profit_relative_error": 0.197582,
-      "mean_rounds_relative_error": 0.210311,
-      "combined_relative_error_score": 0.203946,
+      "profit_mae_usdt": 0.04328173,
+      "rounds_mae": 2.69333333,
+      "mean_profit_relative_error": 0.196929,
+      "mean_rounds_relative_error": 0.209535,
+      "combined_relative_error_score": 0.203232,
       "rounds_within_path_ambiguity_pct": 29.3333,
       "profit_within_path_ambiguity_pct": 29.3333
     },
     "5min": {
       "windows": 75,
-      "profit_mae_usdt": 0.035699,
-      "rounds_mae": 2.12,
-      "mean_profit_relative_error": 0.152559,
-      "mean_rounds_relative_error": 0.164937,
-      "combined_relative_error_score": 0.158748,
+      "profit_mae_usdt": 0.03576751,
+      "rounds_mae": 2.12666667,
+      "mean_profit_relative_error": 0.152313,
+      "mean_rounds_relative_error": 0.164592,
+      "combined_relative_error_score": 0.158453,
       "rounds_within_path_ambiguity_pct": 34.6667,
       "profit_within_path_ambiguity_pct": 36.0
     }
@@ -67,7 +67,7 @@
     "active_execution_resolution": "5min",
     "windows_evaluated": 75,
     "minimum_windows_to_promote": 3,
-    "candidate_improvement_vs_1hour_pct": 30.419766,
+    "candidate_improvement_vs_1hour_pct": 30.695785,
     "minimum_required_improvement_vs_1hour_pct": 10.0,
     "coarsest_within_best_tolerance_pct": 5.0,
     "hard_execution_resolution_floor": "5min",
@@ -80,12 +80,12 @@
   "repo_hourly_consistency_reference": {
     "status": "OK",
     "reference_policy": "latest_logged_hourly_observation_per_open_timestamp",
-    "n": 2314,
+    "n": 2321,
     "mean_abs_pct_diff": {
       "open": 0.0,
       "high": 0.0,
       "low": 0.0,
-      "close": 0.0
+      "close": 2.59e-06
     },
     "p95_abs_pct_diff": {
       "open": 0.0,
@@ -97,13 +97,13 @@
       "open": 0.0,
       "high": 0.0,
       "low": 0.0,
-      "close": 0.0
+      "close": 0.00600188
     },
     "worst_close": {
-      "timestamp_utc": "2026-08-12T10:00:00+00:00",
-      "derived_close": 1909.08,
-      "reference_close": 1909.08,
-      "abs_pct_diff": 0.0
+      "timestamp_utc": "2026-11-17T03:00:00+00:00",
+      "derived_close": 1832.87,
+      "reference_close": 1832.76,
+      "abs_pct_diff": 0.00600188
     },
     "note": "Validation reference prefers the latest logged form of each historical hour so finalized 5m aggregates are not compared with an early partial 1h candle. Production historical master semantics are unchanged."
   },
